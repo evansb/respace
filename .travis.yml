@@ -8,7 +8,7 @@ cache:
     - node_modules
 
 install:
-  - npm install lerna typings -g
+  - npm install lerna@^2.0.0-beta typings -g
   - lerna bootstrap
   - lerna exec -- typings install
   - npm install
