@@ -40,13 +40,11 @@ $ npm install
 $ npm link
 $ respace serve packages/respace-preset-nus
 ```
-
 2. Compiling all packages to ES6, then ES5, and generate source map and typing definitions.
 ```
 $ respace build-all
 $ respace build respace-core # For single component
 ```
-
 3. TODO: Bundling each packages for browser use to `dist`
 4. TODO: Running test cases.
 5. Cleaning up
