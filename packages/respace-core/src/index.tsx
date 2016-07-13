@@ -1,4 +1,4 @@
-/// <reference path='../definitions/shims/index.d.ts' />
+/// <reference path='../typeshims/index.d.ts' />
 
 import { render } from 'react-dom'
 import App from './App'

@@ -9,6 +9,5 @@ npm-debug.log
 *.log
 dist
 definitions
-!shims
 es5
 es6
