@@ -1,0 +1,10 @@
+{
+  "name": "respace-preset-nus",
+  "respace:main": "index.ts",
+  "dependencies": {
+    "respace-core": "0.1.0",
+    "respace-ui-component-picker": "0.1.0",
+    "respace-ui-layout": "0.1.0",
+    "respace-theme-dark": "0.1.0"
+  }
+}

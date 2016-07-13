@@ -1,0 +1,50 @@
+'use strict'
+
+const path = require('path')
+const configurePlugins = require('./configurePlugins')
+const configureLoaders = require('./configureLoaders')
+const createConfig = require('./createConfig')
+
+module.exports = (bundleDir) => {
+  const config = createConfig(bundleDir)
+  const projectDir = path.resolve(__dirname, '..')
+  const webpackConfig = {
+    context: projectDir,
+    name: 'respace',
+    resolve: {
+      root: config.base,
+      packageMains: ['respace:main', 'jsnext:main', 'webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main'],
+      extensions: ['', '.js', '.jsx', '.jsx', '.ts', '.tsx', '.json']
+    },
+    module: {}
+  }
+
+  const baseEntry = config.isDevelopment
+      ? [ 'react-hot-loader/patch',
+          'webpack-dev-server/client?http://localhost:8000',
+          'webpack/hot/only-dev-server' ]
+      : []
+
+  webpackConfig.debug = true
+  webpackConfig.entry = {
+    [config.name]: baseEntry.concat([
+      'babel-polyfill',
+      path.join(config.base, config.pkg['respace:main'] || config.pkg['main'])
+    ])
+  }
+
+  if (config.isDevelopment) {
+    webpackConfig.devtool = 'eval'
+  }
+
+  webpackConfig.output = {
+    filename: `${config.name}.min.js`,
+    path: config.dist,
+    publicPath: '/'
+  }
+
+  configurePlugins(webpackConfig, config)
+  configureLoaders(webpackConfig, config)
+
+  return webpackConfig
+}

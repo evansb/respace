@@ -1,0 +1,39 @@
+{
+  "compileOnSave": false,
+  "buildOnSave": false,
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "module": "es6",
+    "target": "es6",
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "noImplicitAny": false,
+    "removeComments": false,
+    "sourceMap": true,
+    "jsx": "preserve",
+    "baseUrl": "packages",
+    "paths": {
+      "*": [
+        "*",
+        "*/src"
+      ]
+    }
+  },
+  "files": [
+    "packages/respace-core/src/index.tsx"
+  ],
+  "exclude": [
+    "**/node_modules",
+    "node_modules",
+    "dist",
+    "**/typings/globals",
+    "**/typings/index.d.ts"
+  ],
+  "awesomeTypescriptLoaderOptions": {
+    "useBabel": true,
+    "useCache": true,
+    "forkChecker": true
+  }
+}

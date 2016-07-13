@@ -1,0 +1,16 @@
+sudo: false
+language: node_js
+node_js:
+  - "5"
+
+cache:
+  directories:
+    - node_modules
+
+install:
+  - npm install lerna typings -g
+  - npm run boostrap
+  - npm install
+
+script:
+  - npm run test

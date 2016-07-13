@@ -1,0 +1,13 @@
+@import 'variables';
+
+// Layout Manager
+$mo-content-bg: lighten($gray-darker, 10%);
+$mo-drop-indicator-bg: $brand-success;
+$mo-tab-bg: $brand-primary;
+$mo-tab-inactive-bg: $gray-base;
+
+// Sidebar
+$mo-sidebar-bg: $gray-darker;
+$mo-sidebar-item-bg: $gray-dark;
+
+@import 'golden-layout-theme';
