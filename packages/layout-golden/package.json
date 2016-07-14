@@ -1,0 +1,14 @@
+{
+  "name": "@respace/layout-golden",
+  "version": "0.0.0",
+  "main": "es5/index.js",
+  "jsnext:main": "es6/index.js",
+  "respace:main": "src/index.js",
+  "description": "Layout manager that wraps Golden Layout",
+  "author": "Evan Sebastian",
+  "typings": "definitions/index.d.ts",
+  "dependencies": {
+    "@respace/common": "^0.0.0",
+    "rxjs": "^5.0.0-beta.10"
+  }
+}

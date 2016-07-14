@@ -13,7 +13,7 @@ module.exports = (bundleDir) => {
     name: 'respace',
     resolve: {
       root: config.base,
-      packageMains: ['respace:main', 'jsnext:main', 'webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main'],
+      packageMains: ['respace:main', 'webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main', 'jsnext:main'],
       extensions: ['', '.js', '.jsx', '.jsx', '.ts', '.tsx', '.json']
     },
     module: {}

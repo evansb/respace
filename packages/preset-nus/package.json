@@ -1,0 +1,11 @@
+{
+  "name": "@respace/preset-nus",
+  "respace:main": "index.ts",
+  "version": "0.0.0",
+  "dependencies": {
+    "@respace/core": "^0.0.0",
+    "@respace/layout-golden": "^0.0.0",
+    "@respace/theme-light": "^0.0.0",
+    "@respace/ui-document-tree": "^0.0.0"
+  }
+}

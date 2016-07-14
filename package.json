@@ -1,5 +1,5 @@
 {
-  "name": "respace-cli",
+  "name": "@respace/cli",
   "version": "0.1.0",
   "description": "CLI for bundling and developing Respace",
   "main": "index.js",
