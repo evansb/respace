@@ -1,13 +1,20 @@
 @import 'variables';
 
 // Layout Manager
-$mo-content-bg: lighten($gray-darker, 10%);
-$mo-drop-indicator-bg: $brand-success;
-$mo-tab-bg: $brand-primary;
-$mo-tab-inactive-bg: $gray-base;
+$rs-content-bg: black;
+$rs-drop-indicator-bg: $brand-success;
+$rs-tab-bg: $brand-primary;
+$rs-tab-inactive-bg: $gray-base;
 
 // Sidebar
-$mo-sidebar-bg: $gray-darker;
-$mo-sidebar-item-bg: $gray-dark;
+$rs-sidebar-bg: $gray-darker;
+$rs-sidebar-item-bg: $gray-dark;
+
+.respace {
+  overflow: hidden;
+  .sidebar {
+    background: $rs-sidebar-bg;
+  }
+}
 
 @import 'golden-layout-theme';

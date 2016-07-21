@@ -1,16 +1,35 @@
 import * as React from 'react'
+import { observer } from 'mobx-react'
 import DocumentStore from '../stores/document-store'
 import ComponentStore from '../stores/component-store'
-import LayoutStore from '../stores/layout-store'
+import Sidebar from './sidebar'
+import Content from './content'
+import AppState from '../app-state'
 
 export interface Props {
-  layoutStore: LayoutStore
+  layoutManager: React.ReactElement<any>
   documentStore: DocumentStore,
   componentStore: ComponentStore
+  appState: AppState
 }
 
-export default class App extends React.Component<Props, void> {
-  render() {
-    return <div>Hello everynyan!</div>
+const Root = (props: Props) => {
+  const style = {
+    height: '100%',
+    minWidth: props.appState.width
   }
+  let DevTools
+  if (__DEV__) {
+    DevTools = require('mobx-react-devtools').default
+  }
+  return (
+    <div className='respace' style={style}>
+      <Sidebar {...props} />
+      <Content {...props} />
+      {  __DEV__ && <DevTools /> }
+    </div>
+  )
 }
+
+export default observer(Root)
+

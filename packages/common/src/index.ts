@@ -7,3 +7,12 @@ import * as events from './events'
 
 export { schema, events }
 
+export interface IAppState {
+  width: number
+  height: number
+  sidebarToggled: boolean
+  mainContentWidth: number
+  sidebarWidth: number
+  toggleSidebar(): void
+}
+

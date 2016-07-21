@@ -7,14 +7,25 @@ import { events, IDocumentStore, AnyDocument } from '@respace/common'
 export default class DocumentStore implements IDocumentStore {
   private _events$: Subject<events.DocumentEvent>
   private _documents: ObservableMap<AnyDocument>
+  private _initialDocuments: AnyDocument[]
 
   static create(documents: AnyDocument[] = []): DocumentStore {
     return new DocumentStore(documents)
   }
 
+  start() {
+    this._initialDocuments.forEach((document) => {
+      if (document.meta.id) {
+        this._documents.set(document.meta.id, document)
+      }
+    })
+  }
+
   addDocument(document: AnyDocument) {
-    const [id, _document] = this.assignID(document)
-    this._documents.set(id, _document)
+    const _document = this.assignID(document)
+    if (document.meta.id) {
+      this._documents.set(document.meta.id, _document)
+    }
   }
 
   removeDocument(document: AnyDocument) {
@@ -28,7 +39,8 @@ export default class DocumentStore implements IDocumentStore {
   }
 
   private constructor(documents: AnyDocument[]) {
-    this._documents = map(documents.map(this.assignID))
+    this._initialDocuments = documents.map(this.assignID)
+    this._documents = map<AnyDocument>()
     this._events$ = Subject.create((observer) => {
       this._documents.observe((changes) => {
         switch (changes.type) {
@@ -47,13 +59,13 @@ export default class DocumentStore implements IDocumentStore {
     })
   }
 
-  private assignID(document: AnyDocument): [string, AnyDocument] {
+  private assignID(document: AnyDocument): AnyDocument {
     if (document.meta.id) {
-      return [document.meta.id, document]
+      return document
     } else {
       const id = uuid.v4()
       document.meta.id = id
-      return [document.meta.id, document]
+      return document
     }
   }
 }

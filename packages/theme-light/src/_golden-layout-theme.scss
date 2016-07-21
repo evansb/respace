@@ -1,7 +1,5 @@
-@import '~golden-layout/src/css/goldenlayout-base.css';
-
 .lm_goldenlayout {
-  background: darken($gray-darker, 5%);
+  background: whitesmoke;
 }
 
 .lm_content {
@@ -14,7 +12,7 @@
 }
 
 .lm_dropTargetIndicator {
-  outline: 2px solid $mo-drop-indicator-bg;
+  outline: 2px solid $rs-drop-indicator-bg;
   transition: all 200ms ease;
 }
 
@@ -48,17 +46,17 @@
 }
 
 .lm_selected .lm_header {
-  background: darken($mo-tab-bg, 10%);
+  background: darken($rs-tab-bg, 10%);
 }
 
 .lm_maximised .lm_header {
-  background: darken($mo-tab-bg, 10%);
+  background: darken($rs-tab-bg, 10%);
 }
 
 .lm_header .lm_tab {
   font-size: 0.7em;
   border-top: solid 2px $gray;
-  background: lighten($mo-tab-inactive-bg, 10%);
+  background: lighten($rs-tab-inactive-bg, 10%);
   color: $gray-light;
   font-weight: 700;
   font-size: 0.8em;
@@ -70,17 +68,17 @@
 }
 
 .lm_tab.lm_active {
-  border-top: solid 2px darken($mo-tab-bg, 10%);
-  background: $mo-tab-bg;
+  border-top: solid 2px darken($rs-tab-bg, 10%);
+  background: $rs-tab-bg;
   color: white;
 }
 
 .lm_tab.lm_active:hover {
-  background: lighten($mo-tab-bg, 10%);
+  background: lighten($rs-tab-bg, 10%);
 }
 
 .lm_tab:hover {
-  background: lighten($mo-tab-inactive-bg, 5%);
+  background: lighten($rs-tab-inactive-bg, 5%);
   color: white;
 }
 
@@ -123,10 +121,6 @@
   filter: alpha(opacity=100);
 }
 
-.lm_controls .lm_close {
-  display: hidden;
-}
-
 .lm_header .lm_tab .lm_close_tab {
 	background-position: center center;
 	background-repeat: no-repeat;
@@ -159,6 +153,6 @@
 
 .lm_popin:hover .lm_icon{
   opacity: 1;
-  background-color: $mo-drop-indicator-bg;
+  background-color: $rs-drop-indicator-bg;
   filter:alpha(opacity=100);
 }

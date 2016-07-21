@@ -1,44 +1,27 @@
-import { ILayoutStore, IDocumentStore } from './store'
-import { AnyDocument } from './document'
+import { IDocumentStore, IComponentStore } from './store'
+import { AnyDocument, DocumentColor } from './document'
 
 export interface BasicProps {
+  id: string
+  name: string
   title: string
 }
 
 export interface InjectedProps {
   document: AnyDocument
-  layoutStore: ILayoutStore
+  componentStore: IComponentStore
   documentStore: IDocumentStore
-  color: string
+  color: DocumentColor
 }
 
-export interface IComponentLifecycle<P extends BasicProps> {
-  /**
-   * Called when the component is registered to a workspace.
-   */
-  rsComponentDidRegister?()
-
-  /**
-   * Returns whether a document
-   */
-  rsShouldProcessDocument(document: AnyDocument): boolean
-
-  /**
-   * Compute initial props from document
-   */
-  rsInitialComponentProps(document: AnyDocument): P
-
-  /**
-   * Called when the component is registered to a workspace.
-   */
-  rsComponentDidUnregister?()
-}
-
-export interface IComponent<P extends BasicProps>
-extends IComponentLifecycle<P> {
+export interface IComponent<P extends BasicProps> {
   name: string
-
-  component: __React.ComponentClass<P & InjectedProps>
+  component?: __React.ComponentClass<P & InjectedProps>
+  sidebarComponent?: __React.ComponentClass<P & InjectedProps>
+  componentDidRegister?()
+  shouldProcessDocument(document: AnyDocument): boolean
+  getInitialProps(document: AnyDocument): P
+  componentDidUnregister?()
 }
 
 export type AnyComponent = IComponent<any>

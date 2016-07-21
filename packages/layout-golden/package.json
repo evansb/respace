@@ -3,12 +3,16 @@
   "version": "0.0.0",
   "main": "es5/index.js",
   "jsnext:main": "es6/index.js",
-  "respace:main": "src/index.js",
+  "respace:main": "src/index.tsx",
   "description": "Layout manager that wraps Golden Layout",
   "author": "Evan Sebastian",
   "typings": "definitions/index.d.ts",
   "dependencies": {
     "@respace/common": "^0.0.0",
+    "golden-layout": "^1.5.1",
+    "mobx": "^2.3.7",
+    "react": "^15.2.1",
+    "react-dom": "^15.2.1",
     "rxjs": "^5.0.0-beta.10"
   }
 }
