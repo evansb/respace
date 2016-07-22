@@ -102,10 +102,9 @@ class GoldenLayoutWrapper extends React.Component<IProps, IState> {
     dimension$.debounceTime(100).subscribe(({ width, height }) => {
       $(findDOMNode(this))
         .find('.lm_goldenlayout')
-        .width(width)
-        .height(height)
-        .show()
-      layout.updateSize(width, height)
+        .animate({ opacity: 'show', width, height }, 'fast', () => {
+          layout.updateSize()
+        })
     })
   }
 
