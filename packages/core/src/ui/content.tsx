@@ -1,21 +1,23 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
-import AppState from '../app-state'
+import * as rs from '@respace/common'
 
-export interface Props {
+export interface IContentProps {
   layoutManager: React.ReactElement<any>
-  appState: AppState
+  uiStore: rs.IUIStore
 }
 
-export default observer(({ layoutManager, appState }: Props) => {
+const Content = (({ layoutManager, uiStore }: IContentProps) => {
   const style = {
     float: 'left',
-    width: appState.mainContentWidth + 'px',
-    height: appState.height
+    width: uiStore.mainContentWidth + 'px',
+    height: uiStore.appHeight
   }
   return (
     <div style={style}>
-      { layoutManager }
+      { React.cloneElement(layoutManager, { uiStore }) }
     </div>
   )
 })
+
+export default observer(Content)

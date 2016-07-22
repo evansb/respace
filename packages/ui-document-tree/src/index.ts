@@ -1,3 +1,5 @@
+import { IComponent, AnyDocument } from '@respace/common'
 
-export default {
+const DocumentTree: IComponent<any> = {
 }
+export default DocumentTree

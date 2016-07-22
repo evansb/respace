@@ -21,11 +21,6 @@
       ]
     }
   },
-  "files": [
-    "packages/layout-golden/src/index.tsx",
-    "packages/preset-nus/index.ts",
-    "packages/core/src/index.tsx"
-  ],
   "exclude": [
     "**/node_modules",
     "node_modules",

@@ -1,12 +1,28 @@
-import { Subscription } from 'rxjs/Subscription'
+import { Observable } from 'rxjs/Observable'
+import { AnyComponentFactory, IComponentProps } from './component'
 import * as events from './events'
+
+export interface IStore<E> {
+  events$: Observable<E>
+}
 
 export interface IDocumentStore extends IStore<events.DocumentEvent> {
 }
 
-export interface IComponentStore extends IStore<events.ComponentEvent> {
-}
+export interface IUIStore extends IStore<events.UIEvent> {
+  // Dimension
+  appWidth: number
+  appHeight: number
+  mainContentWidth: number
+  sidebarWidth: number
 
-export interface IStore<E> {
-  subscribe(next: (event: E) => any): Subscription
+  // Sidebar
+  isSidebarToggled: boolean
+
+  // Business Logic
+  components: IComponentProps[]
+  sidebarComponents: IComponentProps[]
+
+  toggleSidebar(): void
+  registerFactory(factory: AnyComponentFactory)
 }

@@ -1,22 +1,20 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
 import DocumentStore from '../stores/document-store'
-import ComponentStore from '../stores/component-store'
+import UIStore from '../stores/ui-store'
 import Sidebar from './sidebar'
 import Content from './content'
-import AppState from '../app-state'
 
-export interface Props {
+export interface IAppProps {
   layoutManager: React.ReactElement<any>
   documentStore: DocumentStore,
-  componentStore: ComponentStore
-  appState: AppState
+  uiStore: UIStore
 }
 
-const Root = (props: Props) => {
+const App = (props: IAppProps) => {
   const style = {
     height: '100%',
-    minWidth: props.appState.width
+    minWidth: props.uiStore.appWidth
   }
   let DevTools
   if (__DEV__) {
@@ -31,5 +29,5 @@ const Root = (props: Props) => {
   )
 }
 
-export default observer(Root)
+export default observer(App)
 

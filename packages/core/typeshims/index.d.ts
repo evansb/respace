@@ -18,3 +18,5 @@ interface NodeModule {
     accept(modules: string | string[], callback: Function)
   }
 }
+
+declare module 'react-icons/fa/expand'

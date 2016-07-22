@@ -535,5 +535,9 @@ declare namespace GoldenLayout {
 }
 
 declare module 'golden-layout' {
-  export = GoldenLayout
+  export default GoldenLayout
+}
+
+declare module 'jquery' {
+  export default $
 }

@@ -1,27 +1,30 @@
-import { IDocumentStore, IComponentStore } from './store'
-import { AnyDocument, DocumentColor } from './document'
+import { Observable } from 'rxjs/Observable'
+import { AnyDocument } from './document'
+import * as events from './events'
 
-export interface BasicProps {
+export interface IBasicProps {
   id: string
   name: string
   title: string
 }
 
-export interface InjectedProps {
+export interface IInjectedProps {
+  uiEvents$: Observable<events.UIEvent>
+  documentEvents$: Observable<events.DocumentEvent>
   document: AnyDocument
-  componentStore: IComponentStore
-  documentStore: IDocumentStore
-  color: DocumentColor
 }
 
-export interface IComponent<P extends BasicProps> {
+export interface IComponentProps extends IBasicProps, IInjectedProps {
+}
+
+export interface IComponentFactory<P extends IBasicProps> {
   name: string
-  component?: __React.ComponentClass<P & InjectedProps>
-  sidebarComponent?: __React.ComponentClass<P & InjectedProps>
-  componentDidRegister?()
+  view?: __React.ComponentClass<P & IInjectedProps>
+  sidebarView?: __React.ComponentClass<P & IInjectedProps>
+  didRegister?()
   shouldProcessDocument(document: AnyDocument): boolean
-  getInitialProps(document: AnyDocument): P
-  componentDidUnregister?()
+  initialProps(document: AnyDocument): P
+  didUnregister?()
 }
 
-export type AnyComponent = IComponent<any>
+export type AnyComponentFactory = IComponentFactory<any>

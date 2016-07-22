@@ -1,57 +1,45 @@
 import { ObservableMap, map } from 'mobx'
 import * as uuid from 'uuid'
-import { Subject } from 'rxjs/Subject'
-import { Subscription } from 'rxjs/Subscription'
-import { events, IDocumentStore, AnyDocument } from '@respace/common'
+import { Observable } from 'rxjs/Observable'
+import * as rs from '@respace/common'
 
-export default class DocumentStore implements IDocumentStore {
-  private _events$: Subject<events.DocumentEvent>
-  private _documents: ObservableMap<AnyDocument>
-  private _initialDocuments: AnyDocument[]
+export default class DocumentStore implements rs.IDocumentStore {
+  public events$: Observable<rs.events.DocumentEvent>
+  private _documents: ObservableMap<rs.AnyDocument> = map<rs.AnyDocument>()
 
-  static create(documents: AnyDocument[] = []): DocumentStore {
-    return new DocumentStore(documents)
+  static create(): DocumentStore {
+    return new DocumentStore()
   }
 
   start() {
-    this._initialDocuments.forEach((document) => {
-      if (document.meta.id) {
-        this._documents.set(document.meta.id, document)
-      }
-    })
+    return
   }
 
-  addDocument(document: AnyDocument) {
+  addDocument(document: rs.AnyDocument) {
     const _document = this.assignID(document)
     if (document.meta.id) {
       this._documents.set(document.meta.id, _document)
     }
   }
 
-  removeDocument(document: AnyDocument) {
+  removeDocument(document: rs.AnyDocument) {
     if (document.meta.id) {
       this._documents.delete(document.meta.id)
     }
   }
 
-  subscribe(callback: (event: events.DocumentEvent) => any): Subscription {
-    return this._events$.subscribe(callback)
-  }
-
-  private constructor(documents: AnyDocument[]) {
-    this._initialDocuments = documents.map(this.assignID)
-    this._documents = map<AnyDocument>()
-    this._events$ = Subject.create((observer) => {
+  private constructor() {
+    this.events$ = Observable.create((observer) => {
       this._documents.observe((changes) => {
         switch (changes.type) {
           case 'add':
-            observer.next(new events.DocumentAdded(changes.newValue))
+            observer.next(new rs.events.DocumentAdded(changes.newValue))
             break
           case 'update':
-            observer.next(new events.DocumentChanged(changes.newValue))
+            observer.next(new rs.events.DocumentChanged(changes.newValue))
             break
           case 'delete':
-            observer.next(new events.DocumentRemoved(changes.newValue))
+            observer.next(new rs.events.DocumentRemoved(changes.newValue))
             break
           default:
         }
@@ -59,7 +47,7 @@ export default class DocumentStore implements IDocumentStore {
     })
   }
 
-  private assignID(document: AnyDocument): AnyDocument {
+  private assignID(document: rs.AnyDocument): rs.AnyDocument {
     if (document.meta.id) {
       return document
     } else {
