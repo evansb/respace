@@ -9,6 +9,10 @@ export interface IDocumentStore extends IStore<events.DocumentEvent> {
 }
 
 export interface IUIStore extends IStore<events.UIEvent> {
+  // Constants
+  SIDEBAR_MAX_WIDTH: number
+  SIDEBAR_MIN_WIDTH: number
+
   // Dimension
   appWidth: number
   appHeight: number
@@ -17,6 +21,7 @@ export interface IUIStore extends IStore<events.UIEvent> {
 
   // Sidebar
   isSidebarToggled: boolean
+  isSidebarAnimating: boolean
 
   // Business Logic
   components: IComponentProps[]

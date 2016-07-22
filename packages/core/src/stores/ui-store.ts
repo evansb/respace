@@ -3,17 +3,21 @@ import { Subscription } from 'rxjs/Subscription'
 import { Observable } from 'rxjs/Observable'
 import { ObservableMap, map, observable, computed, action } from 'mobx'
 import 'rxjs/add/observable/fromEvent'
+import 'rxjs/add/observable/combineLatest'
+import 'rxjs/add/observable/interval'
 import 'rxjs/add/operator/debounceTime'
+import 'rxjs/add/operator/startWith'
 
 import * as rs from '@respace/common'
 
 export default class UIStore implements rs.IUIStore {
-  static SIDEBAR_ACTIVE_WIDTH: number = 200
-  static SIDEBAR_INACTIVE_WIDTH: number = 47
+  SIDEBAR_MIN_WIDTH: number = 200
+  SIDEBAR_MAX_WIDTH: number = 47
 
   @observable appWidth: number = 0
   @observable appHeight: number = 0
   @observable isSidebarToggled: boolean = true
+  @observable isSidebarAnimating: boolean = true
 
   private _events$: Observable<rs.events.UIEvent>
   private _components: ObservableMap<rs.IComponentProps>
@@ -43,18 +47,14 @@ export default class UIStore implements rs.IUIStore {
   }
 
   @computed get mainContentWidth() {
-    if (this.isSidebarToggled) {
-      return this.appWidth - UIStore.SIDEBAR_ACTIVE_WIDTH
-    } else {
-      return this.appWidth - UIStore.SIDEBAR_INACTIVE_WIDTH
-    }
+    return this.appWidth - this.sidebarWidth
   }
 
   @computed get sidebarWidth() {
     if (this.isSidebarToggled) {
-      return UIStore.SIDEBAR_ACTIVE_WIDTH
+      return this.SIDEBAR_MAX_WIDTH
     } else {
-      return UIStore.SIDEBAR_INACTIVE_WIDTH
+      return this.SIDEBAR_MIN_WIDTH
     }
   }
 
@@ -68,16 +68,13 @@ export default class UIStore implements rs.IUIStore {
 
   @action('ui:fitToContainer')
   fitTo(container: HTMLElement) {
-    const width = container.offsetWidth
-    const height = container.offsetHeight
-    if (width !== this.appWidth || height !== this.appHeight) {
-      this.appWidth = container.offsetWidth
-      this.appHeight = container.offsetHeight
-    }
+    this.appWidth = container.offsetWidth
+    this.appHeight = container.offsetHeight
   }
 
   @action('ui:toggleSidebar')
   toggleSidebar() {
+    this.isSidebarAnimating = true
     this.isSidebarToggled = !this.isSidebarToggled
   }
 
@@ -87,8 +84,17 @@ export default class UIStore implements rs.IUIStore {
 
   start(container: HTMLElement) {
     if (this._started) { return }
-    const resize$ = Observable.fromEvent(window, 'resize').debounceTime(50)
-    const subscription = resize$.subscribe(() => { this.fitTo(container) })
+    const resize$ = Observable.combineLatest(
+      Observable.fromEvent(window, 'resize').debounceTime(50),
+      Observable.interval(1000)
+    )
+    const subscription = resize$.subscribe(() => {
+      const width = container.offsetWidth
+      const height = container.offsetHeight
+      if (width !== this.appWidth || height !== this.appHeight) {
+        this.fitTo(container)
+      }
+    })
     this._subscription.push(subscription)
     this._started = true
     this.fitTo(container)

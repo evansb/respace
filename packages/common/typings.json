@@ -6,6 +6,7 @@
     "react": "registry:dt/react#0.14.0+20160630100702",
     "react-bootstrap": "registry:dt/react-bootstrap#0.0.0+20160713061231",
     "react-dom": "registry:dt/react-dom#0.14.0+20160412154040",
+    "react-motion": "registry:dt/react-motion#0.0.0+20160705193226",
     "tv4": "registry:dt/tv4#1.2.5+20160317120654"
   }
 }

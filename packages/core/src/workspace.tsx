@@ -1,5 +1,6 @@
 import * as React from 'react'
 import * as tv4 from 'tv4'
+import * as rs from '@respace/common'
 import { observer } from 'mobx-react'
 import { AppContainer } from 'react-hot-loader'
 import { render } from 'react-dom'
@@ -14,6 +15,18 @@ export class Workspace {
 
   static create({ layoutManager }) {
     return new Workspace({ layoutManager })
+  }
+
+  use(...factories: rs.AnyComponentFactory[]) {
+    factories.forEach(factory => {
+      this._uiStore.registerFactory(factory)
+    })
+  }
+
+  addDocument(...documents: rs.AnyDocument[]) {
+    documents.forEach(document => {
+      this._documentStore.addDocument(document)
+    })
   }
 
   async render(container: HTMLElement) {

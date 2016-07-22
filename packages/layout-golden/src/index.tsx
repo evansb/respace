@@ -50,7 +50,6 @@ class GoldenLayoutWrapper extends React.Component<IProps, IState> {
 
   render() {
     const style = {
-      width: this.props.uiStore.mainContentWidth,
       height: '100%'
     }
     return <div style={style}></div>
@@ -90,16 +89,23 @@ class GoldenLayoutWrapper extends React.Component<IProps, IState> {
       autorun(() => {
         const width = this.props.uiStore.mainContentWidth
         const height = this.props.uiStore.appHeight
-        observer.next({ width, height })
+        if (this.props.uiStore.isSidebarAnimating) {
+          $(findDOMNode(this))
+            .find('.lm_goldenlayout')
+            .hide()
+        } else {
+          observer.next({ width, height })
+        }
       })
     })
 
     dimension$.debounceTime(100).subscribe(({ width, height }) => {
-      const $goldenLayoutRoot = $(findDOMNode(this))
+      $(findDOMNode(this))
         .find('.lm_goldenlayout')
-      $goldenLayoutRoot.animate({ width, height }, () => {
-        layout.updateSize()
-      })
+        .width(width)
+        .height(height)
+        .show()
+      layout.updateSize(width, height)
     })
   }
 
