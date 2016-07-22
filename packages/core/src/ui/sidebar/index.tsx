@@ -1,9 +1,12 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
 import { IUIStore, IDocumentStore } from '@respace/common'
-import { Row, Button } from 'react-bootstrap'
+import { Row, Button, ButtonGroup } from 'react-bootstrap'
 import { Motion, spring, presets } from 'react-motion'
 import FaExpand from 'react-icons/fa/expand'
+import FaCogs from 'react-icons/fa/cogs'
+import FaInfo from 'react-icons/fa/info-circle'
+import ComponentPicker from './component-picker'
 
 export interface ISidebarProps {
   documentStore: IDocumentStore,
@@ -21,6 +24,23 @@ const Sidebar = ({ documentStore, uiStore }: ISidebarProps) => {
   const components = uiStore.sidebarComponents.map(() => {
     return <Row></Row>
   })
+
+  const header = (
+    <ButtonGroup>
+      <Button onClick={handleExpand} bsStyle='success'>
+        <FaExpand />
+      </Button>
+      { uiStore.isSidebarToggled &&
+        <Button onClick={handleExpand} bsStyle='info'>
+          <FaCogs />
+        </Button> }
+      { uiStore.isSidebarToggled &&
+        <Button onClick={handleExpand} bsStyle='default'>
+          <FaInfo />
+        </Button>
+      }
+    </ButtonGroup>
+  )
   const sidebar = interp => {
     const style = {
       float: 'left',
@@ -29,10 +49,8 @@ const Sidebar = ({ documentStore, uiStore }: ISidebarProps) => {
     }
     return (
       <div className='sidebar' style={style}>
-        <Button onClick={handleExpand} bsStyle='primary'>
-          <FaExpand />
-          { components }
-        </Button>
+        { header }
+        <ComponentPicker {...{ uiStore }} />
       </div>
     )
   }

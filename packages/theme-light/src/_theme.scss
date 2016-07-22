@@ -14,6 +14,13 @@ $rs-sidebar-item-bg: $gray-dark;
   overflow: hidden;
   .sidebar {
     background: $rs-sidebar-bg;
+    .component-picker {
+      .item {
+        border-left-width: 2px;
+        border-left-style: solid;
+        border-left-color: $brand-primary;
+      }
+    }
   }
 }
 

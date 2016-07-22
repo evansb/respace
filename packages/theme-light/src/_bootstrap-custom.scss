@@ -1,30 +1,51 @@
-// Cosmo 3.3.6
+// Flatly 3.3.6
 // Bootswatch
 // -----------------------------------------------------
 
-$web-font-path: "https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700" !default;
+$web-font-path: "https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic" !default;
 @import url($web-font-path);
 
 // Navbar =====================================================================
 
 .navbar {
+  border-width: 0;
+
+  &-default {
+
+    .badge {
+      background-color: #fff;
+      color: $navbar-default-bg;
+    }
+  }
 
   &-inverse {
 
     .badge {
       background-color: #fff;
-      color: $brand-primary;
+      color: $navbar-inverse-bg;
     }
+  }
+
+  &-brand {
+    line-height: 1;
   }
 }
 
 // Buttons ====================================================================
 
-// Typography =================================================================
-
-body {
-  -webkit-font-smoothing: antialiased;
+.btn {
+  border-width: 2px;
 }
+
+.btn:active {
+  @include box-shadow(none);
+}
+
+.btn-group.open .dropdown-toggle {
+  @include box-shadow(none);
+}
+
+// Typography =================================================================
 
 .text-primary,
 .text-primary:hover {
@@ -70,14 +91,43 @@ table,
   .info {
     color: #fff;
 
-    a {
+    > th > a,
+    > td > a,
+    > a {
       color: #fff;
     }
+  }
+
+  > thead > tr > th,
+  > tbody > tr > th,
+  > tfoot > tr > th,
+  > thead > tr > td,
+  > tbody > tr > td,
+  > tfoot > tr > td {
+    border: none;
+  }
+
+  &-bordered > thead > tr > th,
+  &-bordered > tbody > tr > th,
+  &-bordered > tfoot > tr > th,
+  &-bordered > thead > tr > td,
+  &-bordered > tbody > tr > td,
+  &-bordered > tfoot > tr > td {
+    border: 1px solid $table-border-color;
   }
 }
 
 // Forms ======================================================================
 
+.form-control,
+input {
+  border-width: 2px;
+  @include box-shadow(none);
+
+  &:focus {
+    @include box-shadow(none);
+  }
+}
 
 .has-warning {
   .help-block,
@@ -95,9 +145,12 @@ table,
   }
 
   .form-control,
-  .form-control:focus,
+  .form-control:focus {
+    border: 2px solid $brand-warning;
+  }
+
   .input-group-addon {
-    border: 1px solid $brand-warning;
+    border-color: $brand-warning;
   }
 }
 
@@ -117,9 +170,12 @@ table,
   }
 
   .form-control,
-  .form-control:focus,
+  .form-control:focus {
+    border: 2px solid $brand-danger;
+  }
+
   .input-group-addon {
-    border: 1px solid $brand-danger;
+    border-color: $brand-danger;
   }
 }
 
@@ -139,83 +195,87 @@ table,
   }
 
   .form-control,
-  .form-control:focus,
+  .form-control:focus {
+    border: 2px solid $brand-success;
+  }
+
   .input-group-addon {
-    border: 1px solid $brand-success;
+    border-color: $brand-success;
   }
 }
 
 // Navs =======================================================================
 
-.nav-pills {
-
-  & > li > a {
-    border-radius: 0;
+.nav {
+  .open > a,
+  .open > a:hover,
+  .open > a:focus {
+    border-color: transparent;
   }
 }
 
-.dropdown-menu {
+.pager {
+  a,
+  a:hover {
+    color: #fff;
+  }
 
-  & > li > a:hover,
-  & > li > a:focus {
-    background-image: none;
+  .disabled {
+    &>a,
+    &>a:hover,
+    &>a:focus,
+    &>span {
+      background-color: $pagination-disabled-bg;
+    }
   }
 }
 
 // Indicators =================================================================
 
 .close {
+  color: #fff;
   text-decoration: none;
-  text-shadow: none;
   opacity: 0.4;
 
   &:hover,
   &:focus {
+    color: #fff;
     opacity: 1;
   }
 }
 
 .alert {
-  border: none;
 
   .alert-link {
-    text-decoration: underline;
     color: #fff;
+    text-decoration: underline;
   }
-}
-
-.label {
-  border-radius: 0;
 }
 
 // Progress bars ==============================================================
 
 .progress {
-  height: 8px;
+  height: 10px;
   @include box-shadow(none);
   .progress-bar {
-    font-size: 8px;
-    line-height: 8px;
+    font-size: 10px;
+    line-height: 10px;
   }
 }
 
 // Containers =================================================================
 
-.panel {
-  &-heading,
-  &-footer {
-    border-top-right-radius: 0;
-    border-top-left-radius: 0;
-  }
-
-  &-default {
-    .close {
-      color: $text-color;
-    }
-  }
+.well {
+  @include box-shadow(none);
 }
 
 a.list-group-item {
+
+  &.active,
+  &.active:hover,
+  &.active:focus {
+    border-color: $list-group-border;
+  }
 
   &-success {
     &.active {
@@ -251,6 +311,14 @@ a.list-group-item {
   }
 }
 
+.panel {
+  &-default {
+    .close {
+      color: $text-color;
+    }
+  }
+}
+
 .modal {
   .close {
     color: $text-color;
@@ -259,4 +327,20 @@ a.list-group-item {
 
 .popover {
   color: $text-color;
+}
+
+a:hover {
+  cursor: pointer;
+}
+
+.list-group-item {
+  padding: 3.5px 5px !important;
+}
+
+.list-group {
+  margin-bottom: 0px !important;
+}
+
+.panel {
+  margin-bottom: 0px !important;
 }

@@ -11,8 +11,8 @@ import 'rxjs/add/operator/startWith'
 import * as rs from '@respace/common'
 
 export default class UIStore implements rs.IUIStore {
-  SIDEBAR_MIN_WIDTH: number = 200
-  SIDEBAR_MAX_WIDTH: number = 47
+  SIDEBAR_MIN_WIDTH: number = 29
+  SIDEBAR_MAX_WIDTH: number = 200
 
   @observable appWidth: number = 0
   @observable appHeight: number = 0
