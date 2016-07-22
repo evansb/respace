@@ -7,6 +7,6 @@
   "respace:main": "src/index.tsx",
   "typings": "definitions/index.d.ts",
   "dependencies": {
-    "rxjs": "^5.0.0-beta.10"
+    "rxjs": "5.0.0-beta.10"
   }
 }

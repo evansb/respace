@@ -1,10 +1,11 @@
 import { ObservableMap, map } from 'mobx'
 import * as uuid from 'uuid'
+import { Subscription } from 'rxjs/Subscription'
 import { Observable } from 'rxjs/Observable'
 import * as rs from '@respace/common'
 
 export default class DocumentStore implements rs.IDocumentStore {
-  public events$: Observable<rs.events.DocumentEvent>
+  private _events$: Observable<rs.events.DocumentEvent>
   private _documents: ObservableMap<rs.AnyDocument> = map<rs.AnyDocument>()
 
   static create(): DocumentStore {
@@ -28,8 +29,12 @@ export default class DocumentStore implements rs.IDocumentStore {
     }
   }
 
+  subscribe(cb: (e: rs.events.DocumentEvent) => any): Subscription {
+    return this._events$.subscribe(cb)
+  }
+
   private constructor() {
-    this.events$ = Observable.create((observer) => {
+    this._events$ = Observable.create((observer) => {
       this._documents.observe((changes) => {
         switch (changes.type) {
           case 'add':

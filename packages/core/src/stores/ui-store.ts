@@ -7,8 +7,6 @@ import 'rxjs/add/operator/debounceTime'
 
 import * as rs from '@respace/common'
 
-type UIEvent = rs.events.UIEvent
-
 export default class UIStore implements rs.IUIStore {
   static SIDEBAR_ACTIVE_WIDTH: number = 200
   static SIDEBAR_INACTIVE_WIDTH: number = 47
@@ -16,12 +14,12 @@ export default class UIStore implements rs.IUIStore {
   @observable appWidth: number = 0
   @observable appHeight: number = 0
   @observable isSidebarToggled: boolean = true
-  events$: Observable<UIEvent>
 
+  private _events$: Observable<rs.events.UIEvent>
   private _components: ObservableMap<rs.IComponentProps>
   private _sidebarComponents: ObservableMap<rs.IComponentProps>
   private _subscription: Subscription[] = []
-  private _disposables: Lambda[] = []
+  private _disposables: any[] = []
   private _registry: ObservableMap<rs.AnyComponentFactory>
   private _started: boolean = false
 
@@ -60,11 +58,11 @@ export default class UIStore implements rs.IUIStore {
     }
   }
 
-  @computed get components() {
+  @computed get components(): rs.IComponentProps[] {
     return this._components.values()
   }
 
-  @computed get sidebarComponents() {
+  @computed get sidebarComponents(): rs.IComponentProps[] {
     return this._sidebarComponents.values()
   }
 
@@ -81,6 +79,10 @@ export default class UIStore implements rs.IUIStore {
   @action('ui:toggleSidebar')
   toggleSidebar() {
     this.isSidebarToggled = !this.isSidebarToggled
+  }
+
+  subscribe(cb: (e: rs.events.UIEvent) => any): Subscription {
+    return this._events$.subscribe(cb)
   }
 
   start(container: HTMLElement) {
@@ -125,7 +127,7 @@ export default class UIStore implements rs.IUIStore {
   }
 
   private startListeningDocumentStore(observer) {
-    return this._documentStore.events$.subscribe((e) => {
+    return this._documentStore.subscribe((e) => {
       if (e instanceof rs.events.DocumentAdded) {
         const document = e.document
         this._registry.forEach((factory) => {
@@ -137,14 +139,15 @@ export default class UIStore implements rs.IUIStore {
     })
   }
 
-  private addComponent<P extends rs.IBasicProps>(
-    factory: rs.IComponentFactory<P>,
+  private addComponent<P extends rs.IBasicProps, D>(
+    factory: rs.IComponentFactory<P, D>,
     document: rs.AnyDocument) {
 
-    const injectedProps: rs.IInjectedProps = {
-      document: document,
-      uiEvents$: this.events$,
-      documentEvents$: this._documentStore.events$
+    const injectedProps: rs.IInjectedProps<D> = {
+      document: document as rs.IDocument<D>,
+      subscribeDocumentStore: this._documentStore.subscribe.bind(
+        this._documentStore),
+      subscribeUIStore: this.subscribe.bind(this),
     }
 
     const componentProps = <rs.IComponentProps> Object.assign(
@@ -164,7 +167,7 @@ export default class UIStore implements rs.IUIStore {
     this._components = map<rs.IComponentProps>()
     this._sidebarComponents = map<rs.IComponentProps>()
     this._registry = map<rs.AnyComponentFactory>()
-    this.events$ = Observable.create((observer) => {
+    this._events$ = Observable.create((observer) => {
       const dispose1 = this.startEmittingViewModelsEvents(observer)
       const dispose2 = this.startEmittingRegistryEvents(observer)
       const subscription = this.startListeningDocumentStore(observer)

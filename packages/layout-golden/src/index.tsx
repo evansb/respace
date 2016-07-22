@@ -57,7 +57,7 @@ class GoldenLayoutWrapper extends React.Component<IProps, IState> {
   }
 
   private listenToComponentStore() {
-    const subscription = this.props.uiStore.events$.subscribe((e) => {
+    const subscription = this.props.uiStore.subscribe((e) => {
       if (e instanceof rs.events.FactoryRegistered) {
         if (e.factory.view) {
           this.state.layout.registerComponent(

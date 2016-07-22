@@ -1,9 +1,8 @@
-import { Observable } from 'rxjs/Observable'
 import { AnyComponentFactory, IComponentProps } from './component'
 import * as events from './events'
 
 export interface IStore<E> {
-  events$: Observable<E>
+  subscribe(callback: (event: E) => any)
 }
 
 export interface IDocumentStore extends IStore<events.DocumentEvent> {

@@ -1,4 +1,5 @@
 import * as React from 'react'
+import * as tv4 from 'tv4'
 import { observer } from 'mobx-react'
 import { AppContainer } from 'react-hot-loader'
 import { render } from 'react-dom'
