@@ -30,4 +30,3 @@ const App = (props: IAppProps) => {
 }
 
 export default observer(App)
-
