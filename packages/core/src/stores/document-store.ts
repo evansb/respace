@@ -7,8 +7,15 @@ import * as rs from '@respace/common'
 export default class DocumentStore implements rs.IDocumentStore {
   private _events$: Observable<rs.events.DocumentEvent>
   private _documents: ObservableMap<rs.AnyDocument> = map<rs.AnyDocument>()
+  private _storage: rs.IStorage
+  private _initialDocuments: Map<string, rs.AnyDocument> =
+    new Map<string, rs.AnyDocument>()
 
-  constructor() {
+  constructor(initialDocuments: rs.AnyDocument[]) {
+    initialDocuments.forEach((document) => {
+      this.assignID(document)
+      this._initialDocuments.set(document.meta.id, document)
+    })
     this._events$ = Observable.create((observer) => {
       this._documents.observe((changes) => {
         switch (changes.type) {
@@ -28,7 +35,16 @@ export default class DocumentStore implements rs.IDocumentStore {
   }
 
   start() {
+    this._initialDocuments.forEach((d) => { this.addDocument(d) })
     return Promise.resolve()
+  }
+
+  async rehydrate(storage: rs.IStorage) {
+    this._storage = storage
+    await this._initialDocuments.forEach(async (document) => {
+      const id = document.meta.id
+      this._initialDocuments.set(id, await storage.get(id, document))
+    })
   }
 
   addDocument(document: rs.AnyDocument) {

@@ -1,8 +1,7 @@
 import $ from 'jquery'
 import { Observable } from 'rxjs/Observable'
 import GoldenLayout from 'golden-layout'
-import { autorun } from 'mobx'
-import { Subscription } from 'rxjs/Subscription'
+import { autorun, toJS } from 'mobx'
 
 import 'rxjs/add/operator/debounceTime'
 import 'golden-layout/src/css/goldenlayout-base.css'
@@ -20,7 +19,7 @@ export default class GoldenLayoutStore implements rs.ILayoutStore {
   public container: HTMLElement
   private _uiStore: rs.IUIStore
   private _layout: GoldenLayout
-  private _subscriptions: Subscription[] = []
+  private _storage: rs.IStorage
 
   constructor() {
     this._layout = new GoldenLayout(createConfig())
@@ -41,15 +40,25 @@ export default class GoldenLayoutStore implements rs.ILayoutStore {
               item.config.props.isActive = false
             }
           })
-          this.listenToUIStore()
           this.updateSizeOnContentResize()
           resolve()
+        })
+        this._layout.on('stateChanged', () => {
+          this._storage.put('config', toJS(this._layout.toConfig()))
         })
         this._layout.init()
       } catch (e) {
         reject(e)
       }
     })
+  }
+
+  async rehydrate(storage: rs.IStorage) {
+    this._storage = storage
+    const existingConfig = <GoldenLayout.Config> (await storage.get('config'))
+    if (existingConfig) {
+      this._layout = new GoldenLayout(existingConfig)
+    }
   }
 
   updateSize(width: number, height: number) {
@@ -75,15 +84,6 @@ export default class GoldenLayoutStore implements rs.ILayoutStore {
     } else if (item) {
       parent.setActiveContentItem(item)
     }
-  }
-
-  private listenToUIStore() {
-    const subscription = this._uiStore.subscribe((e) => {
-      if (e instanceof rs.events.ComponentAdded) {
-        this.addComponent(e.props)
-      }
-    })
-    this._subscriptions.push(subscription)
   }
 
   private findComponent(id: string): FindComponentResult {

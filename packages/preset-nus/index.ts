@@ -7,6 +7,7 @@ const testDocuments = [
   {
     type: 'source-code',
     meta: {
+      id: 'Test',
       title: 'Test'
     },
     data: {
@@ -17,6 +18,7 @@ const testDocuments = [
   {
     type: 'source-code',
     meta: {
+      id: 'Test2',
       title: 'Test 2'
     },
     data: {
@@ -26,12 +28,13 @@ const testDocuments = [
   }
 ]
 
-const workspace = Workspace.create(GoldenLayout)
+const workspace = Workspace.create({
+  components: [DocumentTree],
+  documents: testDocuments,
+  layoutEngine: GoldenLayout
+})
 
 let container
 if (container = document.getElementById('root')) {
-  workspace.use(DocumentTree)
-  workspace.render(container).then(() => {
-    workspace.addDocument.apply(workspace, testDocuments)
-  })
+  workspace.render(container)
 }

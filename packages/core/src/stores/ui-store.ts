@@ -1,4 +1,3 @@
-import * as uuid from 'uuid'
 import { Subscription } from 'rxjs/Subscription'
 import { Observable } from 'rxjs/Observable'
 import { ObservableMap, map, observable, computed, action } from 'mobx'
@@ -30,8 +29,9 @@ export default class UIStore implements rs.IUIStore {
   private _registry: Map<string, rs.AnyComponentFactory>
   private _started: boolean = false
   private _documentStore: rs.IDocumentStore
+  private _storage: rs.IStorage
 
-  constructor() {
+  constructor(private _initialFactories: rs.AnyComponentFactory[]) {
     this._components = map<rs.AnyComponentProps>()
     this._sidebarComponents = map<rs.AnyComponentProps>()
     this._registry = new Map<string, rs.AnyComponentFactory>()
@@ -89,13 +89,20 @@ export default class UIStore implements rs.IUIStore {
   }
 
   @action('ui:toggleSidebar')
-  toggleSidebar() {
+  async toggleSidebar() {
     this.isSidebarAnimating = true
     this.isSidebarToggled = !this.isSidebarToggled
+    await this._storage.put('isSidebarToggled', this.isSidebarToggled)
   }
 
   subscribe(cb: (e: rs.events.UIEvent) => any): Subscription {
     return this._events$.subscribe(cb)
+  }
+
+  async rehydrate(storage: rs.IStorage) {
+    this._storage = storage
+    this.isSidebarToggled = await storage.get('isSidebarToggled',
+      this.isSidebarToggled)
   }
 
   start(documentStore: rs.IDocumentStore) {
@@ -104,13 +111,13 @@ export default class UIStore implements rs.IUIStore {
       this._documentStore = documentStore
       this._events$ = Observable.create((observer) => {
         const dispose1 = this.startEmittingViewModelsEvents(observer)
-        const subscription1 = this.startListeningDocumentStore(observer)
-        const subscription2 = this.startListeningToDimensionChange(observer)
         this._disposables.push(dispose1)
-        this._subscription.push(subscription1, subscription2)
       })
+      this.startListeningDocumentStore()
+      this.startListeningToDimensionChange()
       this._started = true
       this.fitToContainer()
+      this._initialFactories.forEach((f) => this.registerFactory(f))
       resolve()
     })
   }
@@ -119,19 +126,19 @@ export default class UIStore implements rs.IUIStore {
     this._subscription.forEach((s) => s.unsubscribe())
   }
 
-  private startListeningToDimensionChange(observer) {
+  private startListeningToDimensionChange() {
     const resize$ = Observable.combineLatest(
       Observable.fromEvent(window, 'resize').debounceTime(100),
       Observable.interval(1000)
     )
 
-    return resize$.subscribe(() => {
+    this._subscription.push(resize$.subscribe(() => {
       const width = this.container.offsetWidth
       const height = this.container.offsetHeight
       if (width !== this.appWidth || height !== this.appHeight) {
         this.fitToContainer()
       }
-    })
+    }))
   }
 
   private startEmittingViewModelsEvents(observer) {
@@ -148,34 +155,39 @@ export default class UIStore implements rs.IUIStore {
     })
   }
 
-  private startListeningDocumentStore(observer) {
-    return this._documentStore.subscribe((e) => {
+  private startListeningDocumentStore() {
+    this._subscription.push(this._documentStore.subscribe((e) => {
       if (e instanceof rs.events.DocumentAdded) {
         const document = e.document
         this._registry.forEach((factory) => {
           if (factory.shouldProcessDocument(document)) {
             this.addComponent(factory, document)
+            console.log('here')
           }
         })
       }
-    })
+    }))
   }
 
-  private addComponent<P extends rs.IBasicProps, D>(
+  private async addComponent<P extends rs.IBasicProps, D>(
     factory: rs.IComponentFactory<P, D>,
     document: rs.AnyDocument) {
 
-    const id = uuid.v4()
+    const id = document.meta.id + '.' + factory.name
 
     const props = factory.initialProps(document)
+
+    const storage = this._storage.createStorage(id)
 
     const componentProps = new ComponentProps(
       id,
       factory.name,
       props.title,
       factory.displayName,
-      document as rs.IDocument<D>
+      document as rs.IDocument<D>,
     )
+
+    await componentProps.rehydrate(storage)
 
     const finalProps = <rs.IComponentProps<D> & P> Object.assign(
       componentProps, props

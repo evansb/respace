@@ -1,19 +1,32 @@
+import * as uuid from 'uuid'
 import * as React from 'react'
+import localforage from 'localforage'
 import * as rs from '@respace/common'
 import { AppContainer } from 'react-hot-loader'
 import { render } from 'react-dom'
 import DocumentStore from './stores/document-store'
 import UIStore from './stores/ui-store'
 import App from './ui/app'
+import { createStorage } from './storage'
+
+export interface IWorkspaceInitializer {
+  components: rs.AnyComponentFactory[]
+  documents: rs.AnyDocument[]
+  layoutEngine: rs.ILayoutEngine
+}
 
 export class Workspace {
   private readonly _layoutView: React.ComponentClass<any>
   private readonly _layoutStore: rs.ILayoutStore
   private readonly _documentStore: DocumentStore
   private readonly _uiStore: UIStore
+  private _storage: LocalForage
+  private _sessionID: string
 
-  static create(layoutEngine: rs.ILayoutEngine) {
-    return new Workspace(layoutEngine)
+  static create(initializer: IWorkspaceInitializer) {
+    initializer.components = initializer.components || []
+    initializer.documents = initializer.documents || []
+    return new Workspace(initializer)
   }
 
   use(...factories: rs.AnyComponentFactory[]) {
@@ -47,9 +60,20 @@ export class Workspace {
         )
         render(root, container, async () => {
           this._uiStore.container = container
-          await this._documentStore.start()
+          await this.configureSession()
+
+          const documentStorage = createStorage(this._storage, 'document')
+          const uiStorage = createStorage(this._storage, 'ui')
+          const layoutStorage = createStorage(this._storage, 'layout')
+
+          await this._documentStore.rehydrate(documentStorage)
+          await this._uiStore.rehydrate(uiStorage)
+          await this._layoutStore.rehydrate(layoutStorage)
+
           await this._uiStore.start(this._documentStore)
           await this._layoutStore.start(this._uiStore)
+          await this._documentStore.start()
+
           resolve()
         })
       }
@@ -68,10 +92,29 @@ export class Workspace {
     })
   }
 
-  private constructor(layoutEngine: rs.ILayoutEngine) {
-    this._layoutStore = layoutEngine.createStore()
-    this._layoutView = layoutEngine.view
-    this._documentStore = new DocumentStore()
-    this._uiStore = new UIStore()
+  async configureSession() {
+    const sessionKey = window.location.href + '_session'
+    localforage.config({
+      name: 'respace'
+    })
+    let sessionID: string
+    const previousSessionID = await localforage.getItem<string>(sessionKey)
+    if (typeof previousSessionID === 'string') {
+      sessionID = previousSessionID
+    } else {
+      sessionID = uuid.v4()
+    }
+    this._sessionID = sessionID
+    await localforage.setItem<string>(sessionKey, sessionID)
+    this._storage = localforage.createInstance({
+      name: sessionID
+    })
+  }
+
+  private constructor(initializer: IWorkspaceInitializer) {
+    this._layoutStore = initializer.layoutEngine.createStore()
+    this._layoutView = initializer.layoutEngine.view
+    this._documentStore = new DocumentStore(initializer.documents)
+    this._uiStore = new UIStore(initializer.components)
   }
 }

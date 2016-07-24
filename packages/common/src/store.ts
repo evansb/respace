@@ -1,7 +1,9 @@
+import { IStorage } from './storage'
 import { AnyComponentFactory, AnyComponentProps } from './component'
 import * as events from './events'
 
 export interface IStore<E> {
+  rehydrate(storage: IStorage): Promise<{}>
   subscribe(callback: (event: E) => any)
 }
 
@@ -43,6 +45,7 @@ export interface IUIStore extends IStore<events.UIEvent> {
 
 export interface ILayoutStore {
   start(uiStore: IUIStore): Promise<{}>
+  rehydrate(storage: IStorage): Promise<{}>
   addComponent(component: AnyComponentProps): void
   destroy()
 }
