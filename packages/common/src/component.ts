@@ -9,6 +9,7 @@ export interface IBasicProps {
 export interface IInjectedProps<D> {
   id: string
   name: string
+  displayName: string
   document: IDocument<D>
   subscribeUIStore(cb: (e: events.UIEvent) => any): Subscription
   subscribeDocumentStore(cb: (e: events.DocumentEvent) => any): Subscription
@@ -19,6 +20,7 @@ export interface IComponentProps extends IBasicProps, IInjectedProps<any> {
 
 export interface IComponentFactory<P extends IBasicProps, D> {
   name: string
+  displayName: string
   view?: __React.ComponentClass<P & IInjectedProps<D>>
     |  __React.StatelessComponent<P & IInjectedProps<D>>
   sidebarView?: __React.ComponentClass<P & IInjectedProps<D>>

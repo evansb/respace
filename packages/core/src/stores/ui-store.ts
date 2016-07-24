@@ -169,6 +169,7 @@ export default class UIStore implements rs.IUIStore {
     const injectedProps: rs.IInjectedProps<D> = {
       id,
       name: factory.name,
+      displayName: factory.displayName,
       document: document as rs.IDocument<D>,
       subscribeDocumentStore: this._documentStore.subscribe.bind(
         this._documentStore),

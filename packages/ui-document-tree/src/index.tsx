@@ -37,6 +37,7 @@ class DocumentTreeView extends React.Component<rs.IComponentProps, void> {
 
 const DocumentTree: rs.IComponentFactory<rs.IBasicProps, any> = {
   name: 'ui-document-tree',
+  displayName: 'JSON Tree',
   view: DocumentTreeView,
   shouldProcessDocument(document: rs.AnyDocument) {
     return true

@@ -3,7 +3,7 @@ export enum DocumentColor {
 }
 
 export interface IDocumentMeta {
-  id?: string,
+  id: string,
   title?: string,
   color?: DocumentColor
 }
