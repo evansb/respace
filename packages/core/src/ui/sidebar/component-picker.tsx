@@ -1,25 +1,35 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
 import { Panel, Row, Col, ListGroup, ListGroupItem } from 'react-bootstrap'
-import { IUIStore, AnyDocument, IComponentProps } from '@respace/common'
+import * as rs from '@respace/common'
 import { addTooltip } from '../util'
 import { groupBy, forOwn } from 'lodash'
 import MdLabel from 'react-icons/md/label'
 import FaCode from 'react-icons/fa/code'
+import classnames from 'classnames'
 
 export interface IComponentPickerProps {
-  uiStore: IUIStore
+  uiStore: rs.IUIStore
+  layoutStore: rs.ILayoutStore
 }
 
 export interface IComponentItemProps {
-  uiStore: IUIStore
-  component: IComponentProps
+  uiStore: rs.IUIStore
+  component: rs.AnyComponentProps
+  layoutStore: rs.ILayoutStore
 }
 
-const ComponentItem = ({ uiStore, component }: IComponentItemProps) => {
+const ComponentItem = observer(({
+  uiStore, layoutStore, component }: IComponentItemProps) => {
+  const handleClick = () => {
+    layoutStore.addComponent(component)
+  }
+  const classes = classnames('list-group-item', 'item', {
+    'item-active': component.isActive
+  })
   return (
-    <ListGroupItem href='#' bsClass='list-group-item item'>
-      <Row>
+    <ListGroupItem href='#' bsClass={classes}>
+      <Row onClick={handleClick}>
         <Col xs={2}>
           <FaCode />
         </Col>
@@ -31,7 +41,7 @@ const ComponentItem = ({ uiStore, component }: IComponentItemProps) => {
       </Row>
     </ListGroupItem>
   )
-}
+})
 
 const DocumentGroup = observer(({ uiStore, document, children }) => {
   const documentTitle = document.meta.title || 'Untitled'
@@ -49,7 +59,7 @@ const DocumentGroup = observer(({ uiStore, document, children }) => {
     </Row>
   )
   return (
-    <Panel header={title} bsStyle='primary' defaultExpanded collapsible>
+    <Panel header={title} bsStyle='default' defaultExpanded collapsible>
       <ListGroup fill>
         { children }
       </ListGroup>
@@ -57,8 +67,8 @@ const DocumentGroup = observer(({ uiStore, document, children }) => {
   )
 })
 
-const ComponentPicker = ({ uiStore }: IComponentPickerProps) => {
-  const activeDocuments: { [id: string]: AnyDocument } = {}
+const ComponentPicker = ({ uiStore, layoutStore }: IComponentPickerProps) => {
+  const activeDocuments: { [id: string]: rs.AnyDocument } = {}
   uiStore.components.forEach((comp) => {
     activeDocuments[comp.document.meta.id] = comp.document
   })
@@ -73,7 +83,7 @@ const ComponentPicker = ({ uiStore }: IComponentPickerProps) => {
       const documentTitle = document.meta.title || 'Untitled'
       const children = components.map((component, idx) => {
         const key = document.meta.id + idx
-        const props = { uiStore, component, key }
+        const props = { uiStore, component, key, layoutStore }
         const item = <ComponentItem {...props} />
         const tooltipText = `${documentTitle} (${component.displayName})`
         const itemWithTooltip = addTooltip(item, tooltipText,

@@ -1,29 +1,23 @@
-import { Subscription } from 'rxjs/Subscription'
 import { AnyDocument, IDocument } from './document'
-import * as events from './events'
 
 export interface IBasicProps {
   title: string
 }
 
-export interface IInjectedProps<D> {
+export interface IComponentProps<D> extends IBasicProps {
   id: string
+  isActive: boolean
   name: string
   displayName: string
   document: IDocument<D>
-  subscribeUIStore(cb: (e: events.UIEvent) => any): Subscription
-  subscribeDocumentStore(cb: (e: events.DocumentEvent) => any): Subscription
-}
-
-export interface IComponentProps extends IBasicProps, IInjectedProps<any> {
 }
 
 export interface IComponentFactory<P extends IBasicProps, D> {
   name: string
   displayName: string
-  view?: __React.ComponentClass<P & IInjectedProps<D>>
-    |  __React.StatelessComponent<P & IInjectedProps<D>>
-  sidebarView?: __React.ComponentClass<P & IInjectedProps<D>>
+  view?: __React.ComponentClass<P & IComponentProps<D>>
+    |  __React.StatelessComponent<P & IComponentProps<D>>
+  sidebarView?: __React.ComponentClass<P & IComponentProps<D>>
   didRegister?()
   shouldProcessDocument(document: AnyDocument): boolean
   initialProps(document: IDocument<D>): P
@@ -31,3 +25,4 @@ export interface IComponentFactory<P extends IBasicProps, D> {
 }
 
 export type AnyComponentFactory = IComponentFactory<any, any>
+export type AnyComponentProps = IComponentProps<any>

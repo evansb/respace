@@ -19,7 +19,28 @@ $rs-sidebar-item-bg: $gray-dark;
   .sidebar {
     background: $rs-sidebar-bg;
     .component-picker {
+      .panel {
+        border: none;
+      }
+      .panel-heading {
+        border-bottom: none;
+        background-color: darken($gray-darker, 5%);
+      }
       .item {
+        background-color: darken($gray-dark, 5%);
+        color: $gray;
+      }
+      .item:hover {
+        color: white;
+        background-color: $brand-primary;
+      }
+      .item-active {
+        font-weight: 400;
+        border-left-width: 3px;
+        border-left-style: solid;
+        border-left-color: $brand-primary;
+        color: white;
+        background-color: $gray-dark;
       }
     }
   }

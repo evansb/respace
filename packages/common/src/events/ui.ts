@@ -1,4 +1,4 @@
-import { AnyComponentFactory, IComponentProps } from '../component'
+import { AnyComponentFactory, AnyComponentProps } from '../component'
 
 export class UIEvent {}
 
@@ -21,7 +21,7 @@ export class FactoryUnregistered extends UIEvent {
 }
 
 export class ComponentAdded extends UIEvent {
-  constructor (public id: string, public props: IComponentProps) {
+  constructor (public id: string, public props: AnyComponentProps) {
     super()
   }
 }

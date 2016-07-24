@@ -1,9 +1,11 @@
 .lm_goldenlayout {
-  background: $gray-darker;
+  background: $gray-base;
 }
 
 .lm_content {
-  background: $gray-dark;
+  background: $gray-darker;
+  padding-left: 7px;
+  padding-right: 7px;
   overflow: auto !important;
 }
 
@@ -30,7 +32,7 @@
 
 .lm_splitter:hover {
   opacity: 1;
-  background: #444;
+  background: $brand-warning;
 }
 
 .lm_header {

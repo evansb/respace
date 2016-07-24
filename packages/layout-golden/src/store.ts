@@ -35,6 +35,12 @@ export default class GoldenLayoutStore implements rs.ILayoutStore {
         })
         this._layout.container = this.container as any
         this._layout.on('initialised', () => {
+          (this._layout.root as any).on('itemDestroyed', (e) => {
+            const item = e.origin
+            if (item.isComponent) {
+              item.config.props.isActive = false
+            }
+          })
           this.listenToUIStore()
           this.updateSizeOnContentResize()
           resolve()
@@ -54,23 +60,27 @@ export default class GoldenLayoutStore implements rs.ILayoutStore {
     this._layout.destroy()
   }
 
+  addComponent(component: rs.AnyComponentProps) {
+    const { isNew, parent, item } = this.findComponent(component.id)
+    if (isNew) {
+      component.isActive = true
+      const newItem = {
+        id: component.id,
+        title: component.title,
+        type: 'react-component',
+        component: component.name,
+        props: component
+      }
+      parent.addChild(newItem)
+    } else if (item) {
+      parent.setActiveContentItem(item)
+    }
+  }
+
   private listenToUIStore() {
     const subscription = this._uiStore.subscribe((e) => {
       if (e instanceof rs.events.ComponentAdded) {
-        const { isNew, parent, item } = this.findComponent(e.id)
-        if (isNew) {
-          const newItem = {
-            id: e.id,
-            title: e.props.title,
-            type: 'react-component',
-            component: e.props.name,
-            props: e.props
-          }
-          parent.addChild(newItem)
-
-        } else if (item) {
-          parent.setActiveContentItem(item)
-        }
+        this.addComponent(e.props)
       }
     })
     this._subscriptions.push(subscription)
@@ -96,8 +106,7 @@ export default class GoldenLayoutStore implements rs.ILayoutStore {
       for (let j = 0; j < maybeParent.contentItems.length; j += 1) {
         const item = maybeParent.contentItems[j]
 
-        if (maybeParent.config &&
-              typeof maybeParent.config.content === 'array') {
+        if (maybeParent.config && maybeParent.config.content instanceof Array) {
           const itemConfig = maybeParent.config.content[j]
           if (item.isComponent && itemConfig && itemConfig.id === id) {
             return { isNew: false, parent: maybeParent, item }

@@ -36,7 +36,8 @@ export class Workspace {
           documentStore: this._documentStore,
           layoutManager: React.createElement(this._layoutView, {
             layoutStore: this._layoutStore
-          })
+          }),
+          layoutStore: this._layoutStore
         }
         const Redbox = __DEV__ ? require('redbox-react').default : null
         const root = (

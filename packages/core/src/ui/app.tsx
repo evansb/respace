@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { ILayoutStore } from '@respace/common'
 import { observer } from 'mobx-react'
 import DocumentStore from '../stores/document-store'
 import UIStore from '../stores/ui-store'
@@ -7,6 +8,7 @@ import Content from './content'
 
 export interface IAppProps {
   layoutManager: React.ReactElement<any>
+  layoutStore: ILayoutStore,
   documentStore: DocumentStore,
   uiStore: UIStore
 }

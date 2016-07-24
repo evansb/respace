@@ -1,4 +1,4 @@
-import { AnyComponentFactory, IComponentProps } from './component'
+import { AnyComponentFactory, AnyComponentProps } from './component'
 import * as events from './events'
 
 export interface IStore<E> {
@@ -32,8 +32,8 @@ export interface IUIStore extends IStore<events.UIEvent> {
 
   // Business Logic
   factories: AnyComponentFactory[]
-  components: IComponentProps[]
-  sidebarComponents: IComponentProps[]
+  components: AnyComponentProps[]
+  sidebarComponents: AnyComponentProps[]
 
   toggleSidebar(): void
   registerFactory(factory: AnyComponentFactory)
@@ -43,5 +43,6 @@ export interface IUIStore extends IStore<events.UIEvent> {
 
 export interface ILayoutStore {
   start(uiStore: IUIStore): Promise<{}>
+  addComponent(component: AnyComponentProps): void
   destroy()
 }

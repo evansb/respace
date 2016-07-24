@@ -8,12 +8,12 @@ $bootstrap-sass-asset-helper: false !default;
 //
 //## Gray and brand colors for use across Bootstrap.
 
-$gray-base:              #000 !default;
-$gray-darker:            lighten($gray-base, 13.5%) !default; // #222
-$gray-dark:              #303030 !default;   // #333
-$gray:                   #464545 !default;
-$gray-light:             #999 !default;   // #999
-$gray-lighter:           #EBEBEB !default; // #eee
+$gray-base:              #1E2124 !default;
+$gray-darker:            #2E3136; // #222
+$gray-dark:              #3B3F4C!default;   // #333
+$gray:                   #5E626C !default;
+$gray-light:             #D8D9DE !default;   // #999
+$gray-lighter:           #EBEEF0 !default; // #eee
 
 $brand-primary:         darken(#7289DA, 10%) !default;
 $brand-success:         #00bc8c !default;
@@ -523,7 +523,7 @@ $tooltip-max-width:           200px !default;
 //** Tooltip text color
 $tooltip-color:               #fff !default;
 //** Tooltip background color
-$tooltip-bg:                  #000 !default;
+$tooltip-bg:                  $brand-primary !default;
 $tooltip-opacity:             .9 !default;
 
 //** Tooltip arrow width

@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
-import { IUIStore, IDocumentStore } from '@respace/common'
+import { IUIStore, IDocumentStore, ILayoutStore } from '@respace/common'
 import { Button, ButtonGroup } from 'react-bootstrap'
 import { Motion, spring, presets } from 'react-motion'
 import FaExpand from 'react-icons/fa/expand'
@@ -10,11 +10,12 @@ import ComponentPicker from './component-picker'
 import { addTooltip } from '../util'
 
 export interface ISidebarProps {
+  layoutStore: ILayoutStore,
   documentStore: IDocumentStore,
   uiStore: IUIStore
 }
 
-const Sidebar = ({ documentStore, uiStore }: ISidebarProps) => {
+const Sidebar = ({ documentStore, uiStore, layoutStore }: ISidebarProps) => {
   const startWidth = uiStore.isSidebarToggled
       ? uiStore.SIDEBAR_MIN_WIDTH
       : uiStore.SIDEBAR_MAX_WIDTH
@@ -53,7 +54,7 @@ const Sidebar = ({ documentStore, uiStore }: ISidebarProps) => {
     return (
       <div className='sidebar' style={style}>
         { header }
-        <ComponentPicker {...{ uiStore }} />
+        <ComponentPicker {...{ uiStore, layoutStore }} />
       </div>
     )
   }

@@ -10,6 +10,7 @@ import 'rxjs/add/operator/debounceTime'
 import 'rxjs/add/operator/startWith'
 
 import * as rs from '@respace/common'
+import { ComponentProps } from '../component'
 
 export default class UIStore implements rs.IUIStore {
   SIDEBAR_MIN_WIDTH: number = 29
@@ -22,8 +23,8 @@ export default class UIStore implements rs.IUIStore {
 
   public container: HTMLElement
   private _events$: Observable<rs.events.UIEvent>
-  private _components: ObservableMap<rs.IComponentProps>
-  private _sidebarComponents: ObservableMap<rs.IComponentProps>
+  private _components: ObservableMap<rs.AnyComponentProps>
+  private _sidebarComponents: ObservableMap<rs.AnyComponentProps>
   private _subscription: Subscription[] = []
   private _disposables: any[] = []
   private _registry: Map<string, rs.AnyComponentFactory>
@@ -31,8 +32,8 @@ export default class UIStore implements rs.IUIStore {
   private _documentStore: rs.IDocumentStore
 
   constructor() {
-    this._components = map<rs.IComponentProps>()
-    this._sidebarComponents = map<rs.IComponentProps>()
+    this._components = map<rs.AnyComponentProps>()
+    this._sidebarComponents = map<rs.AnyComponentProps>()
     this._registry = new Map<string, rs.AnyComponentFactory>()
   }
 
@@ -73,11 +74,11 @@ export default class UIStore implements rs.IUIStore {
     }
   }
 
-  @computed get components(): rs.IComponentProps[] {
+  @computed get components(): rs.AnyComponentProps[] {
     return this._components.values()
   }
 
-  @computed get sidebarComponents(): rs.IComponentProps[] {
+  @computed get sidebarComponents(): rs.AnyComponentProps[] {
     return this._sidebarComponents.values()
   }
 
@@ -166,25 +167,24 @@ export default class UIStore implements rs.IUIStore {
 
     const id = uuid.v4()
 
-    const injectedProps: rs.IInjectedProps<D> = {
-      id,
-      name: factory.name,
-      displayName: factory.displayName,
-      document: document as rs.IDocument<D>,
-      subscribeDocumentStore: this._documentStore.subscribe.bind(
-        this._documentStore),
-      subscribeUIStore: this.subscribe.bind(this),
-    }
+    const props = factory.initialProps(document)
 
-    const componentProps = <rs.IComponentProps> Object.assign(
-      injectedProps,
-      factory.initialProps(document)
+    const componentProps = new ComponentProps(
+      id,
+      factory.name,
+      props.title,
+      factory.displayName,
+      document as rs.IDocument<D>
+    )
+
+    const finalProps = <rs.IComponentProps<D> & P> Object.assign(
+      componentProps, props
     )
 
     if (factory.view) {
-      this._components.set(id, componentProps)
+      this._components.set(id, finalProps)
     } else if (factory.sidebarView) {
-      this._sidebarComponents.set(id, componentProps)
+      this._sidebarComponents.set(id, finalProps)
     }
   }
 }
