@@ -26,9 +26,12 @@ const testDocuments = [
   }
 ]
 
-const workspace = Workspace.create({ layoutManager: GoldenLayout })
+const workspace = Workspace.create(GoldenLayout)
 
 let container
 if (container = document.getElementById('root')) {
-  workspace.render(container)
+  workspace.use(DocumentTree)
+  workspace.render(container).then(() => {
+    workspace.addDocument.apply(workspace, testDocuments)
+  })
 }

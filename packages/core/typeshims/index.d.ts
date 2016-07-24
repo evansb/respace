@@ -20,3 +20,7 @@ interface NodeModule {
 }
 
 declare module 'react-icons/fa/expand'
+declare module 'react-icons/fa/cogs'
+declare module 'react-icons/fa/info-circle'
+declare module 'react-icons/fa/code'
+declare module 'react-icons/md/label'

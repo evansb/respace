@@ -6,6 +6,13 @@ export interface IStore<E> {
 }
 
 export interface IDocumentStore extends IStore<events.DocumentEvent> {
+  start(): Promise<void>
+  destroy()
+}
+
+export interface ILayoutEngine {
+  createStore: () => ILayoutStore
+  view: __React.ComponentClass<any>
 }
 
 export interface IUIStore extends IStore<events.UIEvent> {
@@ -24,9 +31,17 @@ export interface IUIStore extends IStore<events.UIEvent> {
   isSidebarAnimating: boolean
 
   // Business Logic
+  factories: AnyComponentFactory[]
   components: IComponentProps[]
   sidebarComponents: IComponentProps[]
 
   toggleSidebar(): void
   registerFactory(factory: AnyComponentFactory)
+  start(documentStore: IDocumentStore): Promise<{}>
+  destroy()
+}
+
+export interface ILayoutStore {
+  start(uiStore: IUIStore): Promise<{}>
+  destroy()
 }

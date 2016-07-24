@@ -11,22 +11,30 @@ export interface IAppProps {
   uiStore: UIStore
 }
 
-const App = (props: IAppProps) => {
-  const style = {
-    height: '100%',
-    minWidth: props.uiStore.appWidth
+class App extends React.Component<IAppProps, void> {
+
+  componentWillUnmount() {
+    this.props.documentStore.destroy()
+    this.props.uiStore.destroy()
   }
-  let DevTools
-  if (__DEV__) {
-    DevTools = require('mobx-react-devtools').default
+
+  render() {
+    const style = {
+      height: '100%',
+      minWidth: this.props.uiStore.appWidth
+    }
+    let DevTools
+    if (__DEV__) {
+      DevTools = require('mobx-react-devtools').default
+    }
+    return (
+      <div className='respace' style={style}>
+        <Sidebar {...this.props} />
+        <Content {...this.props} />
+        {  __DEV__ && <DevTools /> }
+      </div>
+    )
   }
-  return (
-    <div className='respace' style={style}>
-      <Sidebar {...props} />
-      <Content {...props} />
-      {  __DEV__ && <DevTools /> }
-    </div>
-  )
 }
 
 export default observer(App)

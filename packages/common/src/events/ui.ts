@@ -2,6 +2,12 @@ import { AnyComponentFactory, IComponentProps } from '../component'
 
 export class UIEvent {}
 
+export class DimensionChanged extends UIEvent {
+  constructor(public width: number, public height: number) {
+    super()
+  }
+}
+
 export class FactoryRegistered extends UIEvent {
   constructor (public factory: AnyComponentFactory) {
     super()

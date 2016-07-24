@@ -1,7 +1,5 @@
 import * as React from 'react'
-import * as tv4 from 'tv4'
 import * as rs from '@respace/common'
-import { observer } from 'mobx-react'
 import { AppContainer } from 'react-hot-loader'
 import { render } from 'react-dom'
 import DocumentStore from './stores/document-store'
@@ -9,12 +7,13 @@ import UIStore from './stores/ui-store'
 import App from './ui/app'
 
 export class Workspace {
-  private _layoutManager: React.ComponentClass<any>
+  private readonly _layoutView: React.ComponentClass<any>
+  private readonly _layoutStore: rs.ILayoutStore
   private readonly _documentStore: DocumentStore
   private readonly _uiStore: UIStore
 
-  static create({ layoutManager }) {
-    return new Workspace({ layoutManager })
+  static create(layoutEngine: rs.ILayoutEngine) {
+    return new Workspace(layoutEngine)
   }
 
   use(...factories: rs.AnyComponentFactory[]) {
@@ -35,7 +34,9 @@ export class Workspace {
         const appProps = {
           uiStore: this._uiStore,
           documentStore: this._documentStore,
-          layoutManager: React.createElement(this._layoutManager)
+          layoutManager: React.createElement(this._layoutView, {
+            layoutStore: this._layoutStore
+          })
         }
         const Redbox = __DEV__ ? require('redbox-react').default : null
         const root = (
@@ -43,9 +44,11 @@ export class Workspace {
             <App {...appProps} />
           </AppContainer>
         )
-        render(root, container, () => {
-          this._uiStore.start(container)
-          this._documentStore.start()
+        render(root, container, async () => {
+          this._uiStore.container = container
+          await this._documentStore.start()
+          await this._uiStore.start(this._documentStore)
+          await this._layoutStore.start(this._uiStore)
           resolve()
         })
       }
@@ -64,9 +67,10 @@ export class Workspace {
     })
   }
 
-  private constructor({ layoutManager }) {
-    this._layoutManager = observer(layoutManager)
-    this._documentStore = DocumentStore.create()
-    this._uiStore = UIStore.create(this._documentStore)
+  private constructor(layoutEngine: rs.ILayoutEngine) {
+    this._layoutStore = layoutEngine.createStore()
+    this._layoutView = layoutEngine.view
+    this._documentStore = new DocumentStore()
+    this._uiStore = new UIStore()
   }
 }

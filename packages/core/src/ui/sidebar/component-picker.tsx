@@ -3,6 +3,7 @@ import { observer } from 'mobx-react'
 import { Panel, Row, Col, ListGroup, ListGroupItem } from 'react-bootstrap'
 import { IUIStore } from '@respace/common'
 import { addTooltip } from '../util'
+import { groupBy } from 'lodash'
 import MdLabel from 'react-icons/md/label'
 import FaCode from 'react-icons/fa/code'
 
@@ -49,6 +50,10 @@ const DocumentGroup = observer(({ uiStore }) => {
 })
 
 const ComponentPicker = ({ uiStore }: IComponentPickerProps) => {
+  const componentsGroupedByDocuments = groupBy(
+    uiStore.components,
+    (comp) => comp.document.meta.id
+  )
   return (
     <div className='component-picker'>
       <DocumentGroup uiStore={uiStore} />

@@ -1,4 +1,4 @@
-import {AnyDocument} from '../document'
+import { AnyDocument } from '../document'
 
 export class DocumentEvent {}
 

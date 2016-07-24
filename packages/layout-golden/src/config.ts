@@ -12,7 +12,7 @@ function newGoldenLayoutConfig(): GoldenLayout.Config {
       borderWidth: 5,
       minItemHeight: 10,
       minItemWidth: 10,
-      headerHeight: 24,
+      headerHeight: 20,
       dragProxyWidth: 300,
       dragProxyHeight: 200
     },

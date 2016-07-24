@@ -2,6 +2,7 @@ import * as uuid from 'uuid'
 import { Subscription } from 'rxjs/Subscription'
 import { Observable } from 'rxjs/Observable'
 import { ObservableMap, map, observable, computed, action } from 'mobx'
+import { observer } from 'mobx-react'
 import 'rxjs/add/observable/fromEvent'
 import 'rxjs/add/observable/combineLatest'
 import 'rxjs/add/observable/interval'
@@ -19,21 +20,27 @@ export default class UIStore implements rs.IUIStore {
   @observable isSidebarToggled: boolean = true
   @observable isSidebarAnimating: boolean = true
 
+  public container: HTMLElement
   private _events$: Observable<rs.events.UIEvent>
   private _components: ObservableMap<rs.IComponentProps>
   private _sidebarComponents: ObservableMap<rs.IComponentProps>
   private _subscription: Subscription[] = []
   private _disposables: any[] = []
-  private _registry: ObservableMap<rs.AnyComponentFactory>
+  private _registry: Map<string, rs.AnyComponentFactory>
   private _started: boolean = false
+  private _documentStore: rs.IDocumentStore
 
-  static create(documentStore: rs.IDocumentStore) {
-    const store = new UIStore(documentStore)
-    return store
+  constructor() {
+    this._components = map<rs.IComponentProps>()
+    this._sidebarComponents = map<rs.IComponentProps>()
+    this._registry = new Map<string, rs.AnyComponentFactory>()
   }
 
   registerFactory(factory: rs.AnyComponentFactory) {
     this._registry.set(factory.name, factory)
+    if (factory.view) {
+      factory.view = observer(factory.view as __React.StatelessComponent<any>)
+    }
     if (typeof factory.didRegister === 'function') {
       factory.didRegister()
     }
@@ -44,6 +51,14 @@ export default class UIStore implements rs.IUIStore {
     if (typeof factory.didUnregister === 'function') {
       factory.didUnregister()
     }
+  }
+
+  get factories(): rs.AnyComponentFactory[] {
+    const result: rs.AnyComponentFactory[] = []
+    for (const value of this._registry.values()) {
+      result.push(value)
+    }
+    return result
   }
 
   @computed get mainContentWidth() {
@@ -67,9 +82,9 @@ export default class UIStore implements rs.IUIStore {
   }
 
   @action('ui:fitToContainer')
-  fitTo(container: HTMLElement) {
-    this.appWidth = container.offsetWidth
-    this.appHeight = container.offsetHeight
+  fitToContainer() {
+    this.appWidth = this.container.offsetWidth
+    this.appHeight = this.container.offsetHeight
   }
 
   @action('ui:toggleSidebar')
@@ -82,26 +97,40 @@ export default class UIStore implements rs.IUIStore {
     return this._events$.subscribe(cb)
   }
 
-  start(container: HTMLElement) {
-    if (this._started) { return }
-    const resize$ = Observable.combineLatest(
-      Observable.fromEvent(window, 'resize').debounceTime(50),
-      Observable.interval(1000)
-    )
-    const subscription = resize$.subscribe(() => {
-      const width = container.offsetWidth
-      const height = container.offsetHeight
-      if (width !== this.appWidth || height !== this.appHeight) {
-        this.fitTo(container)
-      }
+  start(documentStore: rs.IDocumentStore) {
+    return new Promise((resolve, reject) => {
+      if (this._started) { resolve() }
+      this._documentStore = documentStore
+      this._events$ = Observable.create((observer) => {
+        const dispose1 = this.startEmittingViewModelsEvents(observer)
+        const subscription1 = this.startListeningDocumentStore(observer)
+        const subscription2 = this.startListeningToDimensionChange(observer)
+        this._disposables.push(dispose1)
+        this._subscription.push(subscription1, subscription2)
+      })
+      this._started = true
+      this.fitToContainer()
+      resolve()
     })
-    this._subscription.push(subscription)
-    this._started = true
-    this.fitTo(container)
   }
 
   destroy() {
     this._subscription.forEach((s) => s.unsubscribe())
+  }
+
+  private startListeningToDimensionChange(observer) {
+    const resize$ = Observable.combineLatest(
+      Observable.fromEvent(window, 'resize').debounceTime(100),
+      Observable.interval(1000)
+    )
+
+    return resize$.subscribe(() => {
+      const width = this.container.offsetWidth
+      const height = this.container.offsetHeight
+      if (width !== this.appWidth || height !== this.appHeight) {
+        this.fitToContainer()
+      }
+    })
   }
 
   private startEmittingViewModelsEvents(observer) {
@@ -112,20 +141,6 @@ export default class UIStore implements rs.IUIStore {
             changes.name,
             changes.newValue
           ))
-          break
-        default:
-      }
-    })
-  }
-
-  private startEmittingRegistryEvents(observer) {
-    return this._registry.observe((changes) => {
-      switch (changes.type) {
-        case 'add':
-          observer.next(new rs.events.FactoryRegistered(changes.newValue))
-          break
-        case 'delete':
-          observer.next(new rs.events.FactoryUnregistered(changes.newValue))
           break
         default:
       }
@@ -149,7 +164,11 @@ export default class UIStore implements rs.IUIStore {
     factory: rs.IComponentFactory<P, D>,
     document: rs.AnyDocument) {
 
+    const id = uuid.v4()
+
     const injectedProps: rs.IInjectedProps<D> = {
+      id,
+      name: factory.name,
       document: document as rs.IDocument<D>,
       subscribeDocumentStore: this._documentStore.subscribe.bind(
         this._documentStore),
@@ -161,24 +180,10 @@ export default class UIStore implements rs.IUIStore {
       factory.initialProps(document)
     )
 
-    const id = uuid.v4()
     if (factory.view) {
       this._components.set(id, componentProps)
     } else if (factory.sidebarView) {
       this._sidebarComponents.set(id, componentProps)
     }
-  }
-
-  private constructor(private _documentStore: rs.IDocumentStore) {
-    this._components = map<rs.IComponentProps>()
-    this._sidebarComponents = map<rs.IComponentProps>()
-    this._registry = map<rs.AnyComponentFactory>()
-    this._events$ = Observable.create((observer) => {
-      const dispose1 = this.startEmittingViewModelsEvents(observer)
-      const dispose2 = this.startEmittingRegistryEvents(observer)
-      const subscription = this.startListeningDocumentStore(observer)
-      this._disposables.push(dispose1, dispose2)
-      this._subscription.push(subscription)
-    })
   }
 }

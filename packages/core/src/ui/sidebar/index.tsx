@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
 import { IUIStore, IDocumentStore } from '@respace/common'
-import { Row, Button, ButtonGroup } from 'react-bootstrap'
+import { Button, ButtonGroup } from 'react-bootstrap'
 import { Motion, spring, presets } from 'react-motion'
 import FaExpand from 'react-icons/fa/expand'
 import FaCogs from 'react-icons/fa/cogs'
@@ -22,9 +22,6 @@ const Sidebar = ({ documentStore, uiStore }: ISidebarProps) => {
       ? uiStore.SIDEBAR_MAX_WIDTH
       : uiStore.SIDEBAR_MIN_WIDTH
   const handleExpand = uiStore.toggleSidebar.bind(uiStore)
-  const components = uiStore.sidebarComponents.map(() => {
-    return <Row></Row>
-  })
 
   const toggleSidebarButton = (
     <Button onClick={handleExpand} bsStyle='success'>

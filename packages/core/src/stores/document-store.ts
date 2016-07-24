@@ -8,32 +8,7 @@ export default class DocumentStore implements rs.IDocumentStore {
   private _events$: Observable<rs.events.DocumentEvent>
   private _documents: ObservableMap<rs.AnyDocument> = map<rs.AnyDocument>()
 
-  static create(): DocumentStore {
-    return new DocumentStore()
-  }
-
-  start() {
-    return
-  }
-
-  addDocument(document: rs.AnyDocument) {
-    const _document = this.assignID(document)
-    if (document.meta.id) {
-      this._documents.set(document.meta.id, _document)
-    }
-  }
-
-  removeDocument(document: rs.AnyDocument) {
-    if (document.meta.id) {
-      this._documents.delete(document.meta.id)
-    }
-  }
-
-  subscribe(cb: (e: rs.events.DocumentEvent) => any): Subscription {
-    return this._events$.subscribe(cb)
-  }
-
-  private constructor() {
+  constructor() {
     this._events$ = Observable.create((observer) => {
       this._documents.observe((changes) => {
         switch (changes.type) {
@@ -50,6 +25,30 @@ export default class DocumentStore implements rs.IDocumentStore {
         }
       })
     })
+  }
+
+  start() {
+    return Promise.resolve()
+  }
+
+  addDocument(document: rs.AnyDocument) {
+    const _document = this.assignID(document)
+    if (document.meta.id) {
+      this._documents.set(document.meta.id, _document)
+    }
+  }
+
+  removeDocument(document: rs.AnyDocument) {
+    if (document.meta.id) {
+      this._documents.delete(document.meta.id)
+    }
+  }
+
+  destroy() { // tslint:disable-line
+  }
+
+  subscribe(cb: (e: rs.events.DocumentEvent) => any): Subscription {
+    return this._events$.subscribe(cb)
   }
 
   private assignID(document: rs.AnyDocument): rs.AnyDocument {
