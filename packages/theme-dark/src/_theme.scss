@@ -12,13 +12,14 @@ $rs-sidebar-item-bg: $gray-dark;
 
 .respace {
   overflow: hidden;
+  background: $gray-base;
+  .content {
+    background: $gray-base;
+  }
   .sidebar {
     background: $rs-sidebar-bg;
     .component-picker {
       .item {
-        border-left-width: 2px;
-        border-left-style: solid;
-        border-left-color: $brand-primary;
       }
     }
   }

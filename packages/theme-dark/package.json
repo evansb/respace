@@ -1,6 +1,6 @@
 {
-  "name": "@respace/theme-light",
-  "description": "Light theme for Respace",
+  "name": "@respace/theme-dark",
+  "description": "Dark theme for Respace",
   "license": "MIT",
   "version": "0.0.0",
   "respace:main": "src/index.scss",

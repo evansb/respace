@@ -1,22 +1,23 @@
 import * as React from 'react'
+import { observer } from 'mobx-react'
 import { Panel, Row, Col, ListGroup, ListGroupItem } from 'react-bootstrap'
 import { IUIStore } from '@respace/common'
 import { addTooltip } from '../util'
-import FaFileText from 'react-icons/fa/file-text'
+import MdLabel from 'react-icons/md/label'
 import FaCode from 'react-icons/fa/code'
 
 export interface IComponentPickerProps {
   uiStore: IUIStore
 }
 
-const DocumentGroup = ({ uiStore }) => {
+const DocumentGroup = observer(({ uiStore }) => {
   const title = (
     <Row>
-      { addTooltip(<Col xs={2}><FaFileText /></Col>,
+      { addTooltip(<Col xs={2}><MdLabel /></Col>,
         'Documents', !uiStore.isSidebarToggled) }
       { uiStore.isSidebarToggled &&
         <Col xs={10}>
-          <b>DOCUMENTS</b>
+          <b>Mission Task</b>
         </Col>
       }
     </Row>
@@ -38,16 +39,16 @@ const DocumentGroup = ({ uiStore }) => {
   )
   const itemWithTooltip = addTooltip(item, 'Item1', !uiStore.isSidebarToggled)
   return (
-    <Panel header={title} bsStyle='primary'
-      defaultExpanded collapsible>
+    <Panel header={title} bsStyle='primary' defaultExpanded collapsible>
       <ListGroup fill>
+        { itemWithTooltip }
         { itemWithTooltip }
       </ListGroup>
     </Panel>
   )
-}
+})
 
-const ComponentPicker = ({ uiStore }) => {
+const ComponentPicker = ({ uiStore }: IComponentPickerProps) => {
   return (
     <div className='component-picker'>
       <DocumentGroup uiStore={uiStore} />

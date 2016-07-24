@@ -7,6 +7,7 @@ import FaExpand from 'react-icons/fa/expand'
 import FaCogs from 'react-icons/fa/cogs'
 import FaInfo from 'react-icons/fa/info-circle'
 import ComponentPicker from './component-picker'
+import { addTooltip } from '../util'
 
 export interface ISidebarProps {
   documentStore: IDocumentStore,
@@ -25,11 +26,15 @@ const Sidebar = ({ documentStore, uiStore }: ISidebarProps) => {
     return <Row></Row>
   })
 
+  const toggleSidebarButton = (
+    <Button onClick={handleExpand} bsStyle='success'>
+      <FaExpand />
+    </Button>
+  )
+
   const header = (
     <ButtonGroup>
-      <Button onClick={handleExpand} bsStyle='success'>
-        <FaExpand />
-      </Button>
+      { addTooltip(toggleSidebarButton, 'Toggle Sidebar', true, 'bottom') }
       { uiStore.isSidebarToggled &&
         <Button onClick={handleExpand} bsStyle='info'>
           <FaCogs />
@@ -41,6 +46,7 @@ const Sidebar = ({ documentStore, uiStore }: ISidebarProps) => {
       }
     </ButtonGroup>
   )
+
   const sidebar = interp => {
     const style = {
       float: 'left',
@@ -54,7 +60,9 @@ const Sidebar = ({ documentStore, uiStore }: ISidebarProps) => {
       </div>
     )
   }
-  const onRest = () => { uiStore.isSidebarAnimating = false }
+  const onRest = () => {
+    uiStore.isSidebarAnimating = false
+  }
   return (
     <Motion defaultStyle={{ width: startWidth }} onRest={ onRest }
             style={{ width: spring(endWidth, presets.stiff) }}>

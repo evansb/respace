@@ -1,7 +1,7 @@
 import { Workspace } from '@respace/core'
 import GoldenLayout from '@respace/layout-golden'
 import DocumentTree from '@respace/ui-document-tree'
-import '@respace/theme-light'
+import '@respace/theme-dark'
 
 const testDocuments = [
   {

@@ -1,7 +1,3 @@
-// Flatly 3.3.6
-// Bootswatch
-// -----------------------------------------------------
-
 $web-font-path: "https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,400italic" !default;
 @import url($web-font-path);
 
@@ -29,6 +25,16 @@ $web-font-path: "https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700
   &-brand {
     line-height: 1;
   }
+
+  &-form {
+    .form-control {
+      background-color: white;
+
+      &:focus {
+        border-color: white;
+      }
+    }
+  }
 }
 
 // Buttons ====================================================================
@@ -49,7 +55,7 @@ $web-font-path: "https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700
 
 .text-primary,
 .text-primary:hover {
-  color: $brand-primary;
+  color: lighten($brand-primary, 10%);
 }
 
 .text-success,
@@ -119,14 +125,24 @@ table,
 
 // Forms ======================================================================
 
+input,
+textarea {
+  color: $input-color;
+}
+
 .form-control,
-input {
-  border-width: 2px;
+input,
+textarea {
+  border: 2px hidden transparent;
   @include box-shadow(none);
 
   &:focus {
     @include box-shadow(none);
   }
+}
+
+.form-control-feedback {
+  color: $input-color;
 }
 
 .has-warning {
@@ -146,7 +162,7 @@ input {
 
   .form-control,
   .form-control:focus {
-    border: 2px solid $brand-warning;
+    @include box-shadow(none);
   }
 
   .input-group-addon {
@@ -171,7 +187,7 @@ input {
 
   .form-control,
   .form-control:focus {
-    border: 2px solid $brand-danger;
+    @include box-shadow(none);
   }
 
   .input-group-addon {
@@ -196,12 +212,16 @@ input {
 
   .form-control,
   .form-control:focus {
-    border: 2px solid $brand-success;
+    @include box-shadow(none);
   }
 
   .input-group-addon {
     border-color: $brand-success;
   }
+}
+
+.input-group-addon {
+  color: $text-color;
 }
 
 // Navs =======================================================================
@@ -210,8 +230,13 @@ input {
   .open > a,
   .open > a:hover,
   .open > a:focus {
-    border-color: transparent;
+    border-color: $nav-tabs-border-color;
   }
+}
+
+.nav-tabs > li > a,
+.nav-pills > li > a {
+  color: #fff;
 }
 
 .pager {
@@ -230,22 +255,24 @@ input {
   }
 }
 
+.breadcrumb a {
+  color: #fff;
+}
+
 // Indicators =================================================================
 
 .close {
-  color: #fff;
   text-decoration: none;
+  text-shadow: none;
   opacity: 0.4;
 
   &:hover,
   &:focus {
-    color: #fff;
     opacity: 1;
   }
 }
 
 .alert {
-
   .alert-link {
     color: #fff;
     text-decoration: underline;
@@ -311,22 +338,12 @@ a.list-group-item {
   }
 }
 
-.panel {
-  &-default {
-    .close {
-      color: $text-color;
-    }
-  }
-}
-
-.modal {
-  .close {
-    color: $text-color;
-  }
-}
-
 .popover {
   color: $text-color;
+}
+
+.panel-default > .panel-heading {
+  background-color: $panel-footer-bg;
 }
 
 a:hover {
@@ -339,6 +356,10 @@ a:hover {
 
 .list-group {
   margin-bottom: 0px !important;
+}
+
+.panel-title {
+  font-size: inherit !important;
 }
 
 .panel {

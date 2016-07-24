@@ -14,7 +14,7 @@ const Content = (({ layoutManager, uiStore }: IContentProps) => {
     height: uiStore.appHeight
   }
   return (
-    <div style={style}>
+    <div className='content' style={style}>
       { React.cloneElement(layoutManager, { uiStore }) }
     </div>
   )
