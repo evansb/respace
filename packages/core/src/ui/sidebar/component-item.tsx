@@ -16,7 +16,6 @@ function ComponentItem({ uiStore,
   const factory = uiStore.getFactory(component.name)
   let icon
   if (factory && factory.icon)  {
-    icon = console.log(factory.icon)
     icon = React.createElement(factory.icon)
   } else {
     icon = <FaCode />
