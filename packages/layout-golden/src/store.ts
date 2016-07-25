@@ -20,9 +20,11 @@ export default class GoldenLayoutStore implements rs.ILayoutStore {
   private _uiStore: rs.IUIStore
   private _layout: GoldenLayout
   private _storage: rs.IStorage
+  private _itemConfig: Map<string, GoldenLayout.ReactComponentConfig>
 
   constructor() {
     this._layout = new GoldenLayout(createConfig())
+    this._itemConfig = new Map<string, GoldenLayout.ReactComponentConfig>()
   }
 
   start(uiStore: rs.IUIStore) {
@@ -33,19 +35,21 @@ export default class GoldenLayoutStore implements rs.ILayoutStore {
           this._layout.registerComponent(factory.name, factory.view)
         })
         this._layout.container = this.container as any
+
         this._layout.on('initialised', () => {
-          (this._layout.root as any).on('itemDestroyed', (e) => {
-            const item = e.origin
-            if (item.isComponent) {
-              item.config.props.isActive = false
-            }
-          })
-          this.updateSizeOnContentResize()
+          this.collectItemConfig()
+          this.addItemDestroyedHandler()
+          this.addContentResizeHandler()
+          this.addComponentAddedHandler()
           resolve()
         })
+
         this._layout.on('stateChanged', () => {
-          this._storage.put('config', toJS(this._layout.toConfig()))
+          if (this._layout.isInitialised) {
+            this._storage.put('config', toJS(this._layout.toConfig()))
+          }
         })
+
         this._layout.init()
       } catch (e) {
         reject(e)
@@ -86,6 +90,37 @@ export default class GoldenLayoutStore implements rs.ILayoutStore {
     }
   }
 
+  private addComponentAddedHandler() {
+    this._uiStore.subscribe((e) => {
+      if (e instanceof rs.events.ComponentAdded) {
+        const config = this._itemConfig.get(e.id)
+        if (config) {
+          config.props = e.props
+        }
+      }
+    })
+  }
+
+  private addItemDestroyedHandler() {
+    const anyRoot = <any> this._layout.root
+    anyRoot.on('itemDestroyed', (e) => {
+      const item = e.origin
+      if (item.isComponent) {
+        item.config.props.isActive = false
+      }
+    })
+  }
+
+  private collectItemConfig() {
+    const components = this._layout.root.getItemsByType('component')
+    components.forEach((item) => {
+      const config = <GoldenLayout.ReactComponentConfig> item.config
+      if (typeof config.id === 'string') {
+        this._itemConfig.set(config.id, config)
+      }
+    })
+  }
+
   private findComponent(id: string): FindComponentResult {
     const layout = this._layout
 
@@ -119,7 +154,7 @@ export default class GoldenLayoutStore implements rs.ILayoutStore {
     return { isNew: true, parent: anyParent }
   }
 
-  private updateSizeOnContentResize() {
+  private addContentResizeHandler() {
     const dimension$ = Observable.create((observer) => {
       autorun(() => {
         if (this._uiStore.isSidebarAnimating) {

@@ -7,7 +7,7 @@ $rs-tab-bg: $brand-primary;
 $rs-tab-inactive-bg: $gray-base;
 
 // Sidebar
-$rs-sidebar-bg: $gray-darker;
+$rs-sidebar-bg: darken($gray-darker, 10%);
 $rs-sidebar-item-bg: $gray-dark;
 
 .respace {

@@ -40,6 +40,7 @@ export interface IUIStore extends IStore<events.UIEvent> {
   toggleSidebar(): void
   registerFactory(factory: AnyComponentFactory)
   start(documentStore: IDocumentStore): Promise<{}>
+  getComponent(id: string): AnyComponentProps | undefined
   destroy()
 }
 
