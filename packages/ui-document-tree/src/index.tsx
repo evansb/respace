@@ -12,16 +12,26 @@ const icon: React.ComponentClass<void> = require('react-icons/fa/tree').default
 
 class DocumentTreeView extends React.Component<rs.AnyComponentProps, void> {
   render() {
-    return (
-      <Grid>
-        <Row><h3>{this.props.document.meta.title}</h3></Row>
-        <Row><JSONTree data={this.props.document} /></Row>
-      </Grid>
-    )
+    const component = this.props.getComponent()
+    if (component) {
+      const document = component.document
+      return (
+        <Grid>
+          <Row><h3>{document.meta.title}</h3></Row>
+          <Row><JSONTree data={document} /></Row>
+        </Grid>
+      )
+    } else {
+      return (
+        <Grid>
+          <Row>Loading...</Row>
+        </Grid>
+      )
+    }
   }
 }
 
-const DocumentTree: rs.IComponentFactory<rs.IBasicProps, any> = {
+const DocumentTree: rs.IComponentFactory<any, void> = {
   name: 'ui-document-tree',
   displayName: 'JSON Tree',
   icon,
@@ -29,8 +39,8 @@ const DocumentTree: rs.IComponentFactory<rs.IBasicProps, any> = {
   shouldProcessDocument(document: rs.AnyDocument) {
     return true
   },
-  initialProps(document: rs.AnyDocument) {
-    return { title: document.meta.title || 'Untitled Document' }
+  initialState(document: rs.AnyDocument) {
+    return {}
   }
 }
 

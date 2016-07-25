@@ -1,3 +1,4 @@
+import * as React from 'react'
 import { Subscription } from 'rxjs/Subscription'
 import { Observable } from 'rxjs/Observable'
 import { ObservableMap, map, observable, computed, action } from 'mobx'
@@ -9,7 +10,7 @@ import 'rxjs/add/operator/debounceTime'
 import 'rxjs/add/operator/startWith'
 
 import * as rs from '@respace/common'
-import { ComponentProps } from '../component'
+import { Component } from '../component'
 
 export default class UIStore implements rs.IUIStore {
   SIDEBAR_MIN_WIDTH: number = 29
@@ -22,8 +23,8 @@ export default class UIStore implements rs.IUIStore {
 
   public container: HTMLElement
   private _events$: Observable<rs.events.UIEvent>
-  private _components: ObservableMap<rs.AnyComponentProps>
-  private _sidebarComponents: ObservableMap<rs.AnyComponentProps>
+  private _components: ObservableMap<rs.AnyComponent>
+  private _sidebarComponents: ObservableMap<rs.AnyComponent>
   private _subscription: Subscription[] = []
   private _disposables: any[] = []
   private _registry: Map<string, rs.AnyComponentFactory>
@@ -31,17 +32,18 @@ export default class UIStore implements rs.IUIStore {
   private _documentStore: rs.IDocumentStore
   private _storage: rs.IStorage
 
-  constructor(private _initialFactories: rs.AnyComponentFactory[]) {
-    this._components = map<rs.AnyComponentProps>()
-    this._sidebarComponents = map<rs.AnyComponentProps>()
+  constructor(initialFactories: rs.AnyComponentFactory[]) {
+    this._components = map<rs.AnyComponent>()
+    this._sidebarComponents = map<rs.AnyComponent>()
     this._registry = new Map<string, rs.AnyComponentFactory>()
+    initialFactories.forEach((f) => this.registerFactory(f))
   }
 
   registerFactory(factory: rs.AnyComponentFactory) {
-    this._registry.set(factory.name, factory)
     if (factory.view) {
-      factory.view = observer(factory.view as __React.StatelessComponent<any>)
+      factory.view = this.wrapComponent(factory.view) as any
     }
+    this._registry.set(factory.name, factory)
     if (typeof factory.didRegister === 'function') {
       factory.didRegister()
     }
@@ -74,20 +76,20 @@ export default class UIStore implements rs.IUIStore {
     }
   }
 
-  @computed get components(): rs.AnyComponentProps[] {
+  @computed get components(): rs.AnyComponent[] {
     return this._components.values()
   }
 
-  getComponent(id: string): rs.AnyComponentProps | undefined {
+  @computed get sidebarComponents(): rs.AnyComponent[] {
+    return this._sidebarComponents.values()
+  }
+
+  getComponent(id: string): rs.AnyComponent | undefined {
     return this._components.get(id)
   }
 
   getFactory(name: string): rs.AnyComponentFactory | undefined {
     return this._registry.get(name)
-  }
-
-  @computed get sidebarComponents(): rs.AnyComponentProps[] {
-    return this._sidebarComponents.values()
   }
 
   @action('ui:fitToContainer')
@@ -124,13 +126,43 @@ export default class UIStore implements rs.IUIStore {
       this.startListeningToDimensionChange()
       this._started = true
       this.fitToContainer()
-      this._initialFactories.forEach((f) => this.registerFactory(f))
       resolve()
+    })
+  }
+
+  onDocumentAdded(document: rs.AnyDocument, isInitial: boolean = false) {
+    this._registry.forEach((factory) => {
+      if (factory.shouldProcessDocument(document)) {
+        this.addComponent(factory, document, isInitial)
+      }
     })
   }
 
   destroy() {
     this._subscription.forEach((s) => s.unsubscribe())
+  }
+
+  private wrapComponent<P, S>(
+     Component: React.ComponentClass<any> | React.StatelessComponent<any>
+  ) {
+    const documentStore = this._documentStore
+    const uiStore = this
+    const getComponent = function () {
+      return uiStore.getComponent(this.props.id)
+    }
+    class Wrapped extends React.Component<P, S> {
+      render() {
+        if (!uiStore.getComponent(this.props.id)) {
+          return null
+        } else {
+          return <Component
+                    getComponent={getComponent.bind(this)}
+                    uiStore={uiStore} documentStore={documentStore}
+                    {...this.props} />
+        }
+      }
+    }
+    return observer(Wrapped)
   }
 
   private startListeningToDimensionChange() {
@@ -166,39 +198,33 @@ export default class UIStore implements rs.IUIStore {
     this._subscription.push(this._documentStore.subscribe((e) => {
       if (e instanceof rs.events.DocumentAdded) {
         const document = e.document
-        this._registry.forEach((factory) => {
-          if (factory.shouldProcessDocument(document)) {
-            this.addComponent(factory, document)
-          }
-        })
+        this.onDocumentAdded(document)
       }
     }))
   }
 
-  private async addComponent<P extends rs.IBasicProps, D>(
-    factory: rs.IComponentFactory<P, D>,
-    document: rs.AnyDocument) {
+  private async addComponent<D, S>(
+    factory: rs.IComponentFactory<D, S>,
+    document: rs.IDocument<D>,
+    isInitial: boolean
+  ) {
     const id = document.meta.id + '.' + factory.name
-    const props = factory.initialProps(document)
     const storage = this._storage.createStorage(id)
-    const componentProps = new ComponentProps(
+    const component = new Component(
       id,
       factory.name,
-      props.title,
+      'Untitled',
       factory.displayName,
       document as rs.IDocument<D>,
+      factory.initialState(document)
     )
 
-    await componentProps.rehydrate(storage)
-
-    const finalProps = <rs.IComponentProps<D> & P> Object.assign(
-      componentProps, props
-    )
+    await component.rehydrate(storage)
 
     if (factory.view) {
-      this._components.set(id, finalProps)
+      this._components.set(id, component)
     } else if (factory.sidebarView) {
-      this._sidebarComponents.set(id, finalProps)
+      this._sidebarComponents.set(id, component)
     }
   }
 }

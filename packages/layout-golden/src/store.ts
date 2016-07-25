@@ -1,7 +1,7 @@
 import $ from 'jquery'
 import { Observable } from 'rxjs/Observable'
 import GoldenLayout from 'golden-layout'
-import { autorun, toJS } from 'mobx'
+import { autorun } from 'mobx'
 
 import 'rxjs/add/operator/debounceTime'
 import 'golden-layout/src/css/goldenlayout-base.css'
@@ -34,19 +34,19 @@ export default class GoldenLayoutStore implements rs.ILayoutStore {
         this._uiStore.factories.forEach((factory) => {
           this._layout.registerComponent(factory.name, factory.view)
         })
+        console.log(uiStore.components.map((x) => x))
         this._layout.container = this.container as any
 
         this._layout.on('initialised', () => {
           this.collectItemConfig()
           this.addItemDestroyedHandler()
           this.addContentResizeHandler()
-          this.addComponentAddedHandler()
           resolve()
         })
 
         this._layout.on('stateChanged', () => {
           if (this._layout.isInitialised) {
-            this._storage.put('config', toJS(this._layout.toConfig()))
+            this._storage.put('config', this._layout.toConfig())
           }
         })
 
@@ -73,32 +73,21 @@ export default class GoldenLayoutStore implements rs.ILayoutStore {
     this._layout.destroy()
   }
 
-  addComponent(component: rs.AnyComponentProps) {
+  addComponent(component: rs.AnyComponent) {
     const { isNew, parent, item } = this.findComponent(component.id)
     if (isNew) {
       component.isActive = true
       const newItem = {
         id: component.id,
-        title: component.title,
+        title: component.displayName,
         type: 'react-component',
         component: component.name,
-        props: component
+        props: { id: component.id }
       }
       parent.addChild(newItem)
     } else if (item) {
       parent.setActiveContentItem(item)
     }
-  }
-
-  private addComponentAddedHandler() {
-    this._uiStore.subscribe((e) => {
-      if (e instanceof rs.events.ComponentAdded) {
-        const config = this._itemConfig.get(e.id)
-        if (config) {
-          config.props = e.props
-        }
-      }
-    })
   }
 
   private addItemDestroyedHandler() {

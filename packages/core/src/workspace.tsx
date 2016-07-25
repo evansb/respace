@@ -11,7 +11,7 @@ import { createStorage } from './storage'
 
 export interface IWorkspaceInitializer {
   components: rs.AnyComponentFactory[]
-  documents: rs.AnyDocument[]
+  documents: rs.AnyDocumentJSON[]
   layoutEngine: rs.ILayoutEngine
 }
 
@@ -71,8 +71,8 @@ export class Workspace {
           await this._layoutStore.rehydrate(layoutStorage)
 
           await this._uiStore.start(this._documentStore)
-          await this._layoutStore.start(this._uiStore)
           await this._documentStore.start()
+          await this._layoutStore.start(this._uiStore)
 
           resolve()
         })

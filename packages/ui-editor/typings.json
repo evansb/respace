@@ -1,0 +1,5 @@
+{
+  "globalDependencies": {
+    "ace": "registry:dt/ace#0.0.0+20160630235124"
+  }
+}

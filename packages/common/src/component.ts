@@ -1,29 +1,88 @@
 import { AnyDocument, IDocument } from './document'
+import { IStorage } from './storage'
+import * as events from './events'
 
-export interface IBasicProps {
-  title: string
+export interface IStore<E> {
+  rehydrate(storage: IStorage): Promise<{}>
+  subscribe(callback: (event: E) => any)
 }
 
-export interface IComponentProps<D> extends IBasicProps {
+export interface IDocumentStore extends IStore<events.DocumentEvent> {
+  start(): Promise<void>
+  destroy()
+}
+
+export interface ILayoutEngine {
+  createStore: () => ILayoutStore
+  view: __React.ComponentClass<any>
+}
+
+export interface IUIStore extends IStore<events.UIEvent> {
+  // Constants
+  SIDEBAR_MAX_WIDTH: number
+  SIDEBAR_MIN_WIDTH: number
+
+  // Dimension
+  appWidth: number
+  appHeight: number
+  mainContentWidth: number
+  sidebarWidth: number
+
+  // Sidebar
+  isSidebarToggled: boolean
+  isSidebarAnimating: boolean
+
+  // Business Logic
+  factories: AnyComponentFactory[]
+  components: AnyComponent[]
+  sidebarComponents: AnyComponent[]
+
+  toggleSidebar(): void
+  registerFactory(factory: AnyComponentFactory)
+  start(documentStore: IDocumentStore): Promise<{}>
+  getComponent(id: string): AnyComponent | undefined
+  getFactory(name: string): AnyComponentFactory | undefined
+  destroy()
+}
+
+export interface ILayoutStore {
+  start(uiStore: IUIStore): Promise<{}>
+  rehydrate(storage: IStorage): Promise<{}>
+  addComponent(component: AnyComponent): void
+  destroy()
+}
+
+export interface IComponent<D, S> {
   id: string
   isActive: boolean
   name: string
   displayName: string
   document: IDocument<D>
+  state: S
 }
 
-export interface IComponentFactory<P extends IBasicProps, D> {
+export interface IComponentProps<D, S> {
+  id: string
+  uiStore: IUIStore
+  documentStore: IDocumentStore
+  getComponent(): IComponent<D, S>
+}
+
+export interface IComponentFactory<D, S> {
   name: string
   displayName: string
   icon?: __React.ComponentClass<void>
-  view?: __React.ComponentClass<P & IComponentProps<D>>
-    |  __React.StatelessComponent<P & IComponentProps<D>>
-  sidebarView?: __React.ComponentClass<P & IComponentProps<D>>
+  view?: __React.ComponentClass<IComponentProps<D, S>>
+    |  __React.StatelessComponent<IComponentProps<D, S>>
+  sidebarView?: __React.ComponentClass<IComponentProps<D, S>>
   didRegister?()
-  shouldProcessDocument(document: AnyDocument): boolean
-  initialProps(document: IDocument<D>): P
   didUnregister?()
+  shouldProcessDocument(document: AnyDocument): boolean
+  initialState(document: IDocument<D>): S
 }
 
 export type AnyComponentFactory = IComponentFactory<any, any>
-export type AnyComponentProps = IComponentProps<any>
+
+export type AnyComponentProps = IComponentProps<any, any>
+
+export type AnyComponent = IComponent<any, any>

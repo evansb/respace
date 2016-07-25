@@ -8,7 +8,7 @@ import { addTooltip } from '../util'
 
 export interface IComponentItemProps {
   uiStore: rs.IUIStore
-  component: rs.AnyComponentProps
+  component: rs.AnyComponent
   layoutStore: rs.ILayoutStore
 }
 

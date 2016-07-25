@@ -8,10 +8,17 @@ export interface IDocumentMeta {
   color?: DocumentColor
 }
 
-export interface IDocument<T> {
+export interface IDocumentJSON<T> {
   type: string
   meta: IDocumentMeta
   data: T
 }
 
+export interface IDocument<T> extends IDocumentJSON<T> {
+  type: string
+  id: string
+  title: string
+}
+
 export type AnyDocument = IDocument<any>
+export type AnyDocumentJSON = IDocumentJSON<any>

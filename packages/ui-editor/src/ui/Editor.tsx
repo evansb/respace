@@ -1,11 +1,12 @@
 import * as React from 'react'
 import * as rs from '@respace/common'
+import AceEditor from './AceEditor'
+import EditorStore from '../store'
 
-export interface IProps extends rs.IComponentProps<rs.documents.ISourceCode> {
-}
+export type Props = rs.IComponentProps<rs.documents.ISourceCode, EditorStore>
 
-export default class Editor extends React.Component<IProps, void> {
+export default class Editor extends React.Component<Props, void> {
   render() {
-    return <div>{this.props.document.data.value}</div>
+    return <div><AceEditor {...this.props} /></div>
   }
 }
