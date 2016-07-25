@@ -2,7 +2,7 @@
  * Base JSON schema for all Respace documents.
  * @type {{tv4.JsonSchema}}
  */
-const schema: tv4.JsonSchema = {
+export const BaseDocumentSchema: tv4.JsonSchema = {
   title: 'Respace Base Document Schema',
   description: 'Base JSON Schema for Respace Documents',
   $schema: 'http://json-schema.org/schema#',
@@ -30,5 +30,3 @@ const schema: tv4.JsonSchema = {
   additionalProperties: true,
   required: ['type', 'data']
 }
-
-export default schema

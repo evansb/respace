@@ -2,7 +2,7 @@
  * Base JSON schema for all Respace source code.
  * @type {{tv4.JsonSchema}}
  */
-const schema: tv4.JsonSchema = {
+export const SourceCodeSchema: tv4.JsonSchema = {
   title: 'Respace Source Code Schema',
   description: 'JSON Schema for Respace Source Code',
   $schema: 'http://json-schema.org/schema#',
@@ -23,4 +23,7 @@ const schema: tv4.JsonSchema = {
   required: ['value']
 }
 
-export default schema
+export interface ISourceCode {
+  template: string
+  value: string
+}

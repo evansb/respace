@@ -1,6 +1,7 @@
 import { Workspace } from '@respace/core'
 import GoldenLayout from '@respace/layout-golden'
 import DocumentTree from '@respace/ui-document-tree'
+import Editor from '@respace/ui-editor'
 import '@respace/theme-dark'
 
 const testDocuments = [
@@ -29,7 +30,7 @@ const testDocuments = [
 ]
 
 const workspace = Workspace.create({
-  components: [DocumentTree],
+  components: [DocumentTree, Editor],
   documents: testDocuments,
   layoutEngine: GoldenLayout
 })

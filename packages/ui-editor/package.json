@@ -1,0 +1,18 @@
+{
+  "name": "@respace/ui-editor",
+  "version": "0.0.0",
+  "main": "es5/index.js",
+  "jsnext:main": "es6/index.js",
+  "respace:main": "src/index.tsx",
+  "description": "Text Editor",
+  "author": "Evan Sebastian",
+  "typings": "definitions/index.d.ts",
+  "dependencies": {
+    "@respace/common": "^0.0.0",
+    "brace": "^0.8.0",
+    "react": "15.2.1",
+    "react-bootstrap": "^0.30.0-rc.2",
+    "react-dom": "15.2.1",
+    "react-icons": "^2.2.1"
+  }
+}
