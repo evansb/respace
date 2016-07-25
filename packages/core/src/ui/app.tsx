@@ -13,7 +13,7 @@ export interface IAppProps {
   uiStore: UIStore
 }
 
-class App extends React.Component<IAppProps, void> {
+export class App extends React.Component<IAppProps, void> {
 
   componentWillUnmount() {
     this.props.documentStore.destroy()

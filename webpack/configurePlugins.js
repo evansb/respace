@@ -12,14 +12,18 @@ module.exports = (webpackConfig, config) => {
       __DEV__: config.isDevelopment
     })
   ]
+
+  webpackConfig.plugins.push(
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, 'template.html'),
+      hash: false,
+      filename: 'index.html',
+      inject: 'body'
+    })
+  )
+
   if (config.isDevelopment) {
     webpackConfig.plugins.push(
-      new HtmlWebpackPlugin({
-        template: path.join(__dirname, 'template.html'),
-        hash: false,
-        filename: 'index.html',
-        inject: 'body'
-      }),
       new webpack.HotModuleReplacementPlugin(),
       new webpack.NoErrorsPlugin()
     )
