@@ -110,8 +110,7 @@ export default class UIStore implements rs.IUIStore {
       if (this._started) { resolve() }
       this._documentStore = documentStore
       this._events$ = Observable.create((observer) => {
-        const dispose1 = this.startEmittingViewModelsEvents(observer)
-        this._disposables.push(dispose1)
+        this.startEmittingViewModelsEvents(observer)
       })
       this.startListeningDocumentStore()
       this.startListeningToDimensionChange()
@@ -142,7 +141,7 @@ export default class UIStore implements rs.IUIStore {
   }
 
   private startEmittingViewModelsEvents(observer) {
-    return this._components.observe((changes) => {
+    this._disposables.push(this._components.observe((changes) => {
       switch (changes.type) {
         case 'add':
           observer.next(new rs.events.ComponentAdded(
@@ -152,7 +151,7 @@ export default class UIStore implements rs.IUIStore {
           break
         default:
       }
-    })
+    }))
   }
 
   private startListeningDocumentStore() {
@@ -162,7 +161,6 @@ export default class UIStore implements rs.IUIStore {
         this._registry.forEach((factory) => {
           if (factory.shouldProcessDocument(document)) {
             this.addComponent(factory, document)
-            console.log('here')
           }
         })
       }
@@ -172,13 +170,9 @@ export default class UIStore implements rs.IUIStore {
   private async addComponent<P extends rs.IBasicProps, D>(
     factory: rs.IComponentFactory<P, D>,
     document: rs.AnyDocument) {
-
     const id = document.meta.id + '.' + factory.name
-
     const props = factory.initialProps(document)
-
     const storage = this._storage.createStorage(id)
-
     const componentProps = new ComponentProps(
       id,
       factory.name,
