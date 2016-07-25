@@ -13,6 +13,14 @@ export interface IComponentItemProps {
 
 function ComponentItem({ uiStore,
   layoutStore, component }: IComponentItemProps) {
+  const factory = uiStore.getFactory(component.name)
+  let icon
+  if (factory && factory.icon)  {
+    icon = console.log(factory.icon)
+    icon = React.createElement(factory.icon)
+  } else {
+    icon = <FaCode />
+  }
   const handleClick = () => {
     layoutStore.addComponent(component)
   }
@@ -22,9 +30,7 @@ function ComponentItem({ uiStore,
   return (
     <ListGroupItem href='#' bsClass={classes}>
       <Row onClick={handleClick}>
-        <Col xs={2}>
-          <FaCode />
-        </Col>
+        <Col xs={2}>{ icon }</Col>
         { uiStore.isSidebarToggled &&
           <Col xs={10}>
             { component.displayName}

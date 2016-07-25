@@ -82,6 +82,10 @@ export default class UIStore implements rs.IUIStore {
     return this._components.get(id)
   }
 
+  getFactory(name: string): rs.AnyComponentFactory | undefined {
+    return this._registry.get(name)
+  }
+
   @computed get sidebarComponents(): rs.AnyComponentProps[] {
     return this._sidebarComponents.values()
   }

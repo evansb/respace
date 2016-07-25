@@ -15,6 +15,7 @@ export interface IComponentProps<D> extends IBasicProps {
 export interface IComponentFactory<P extends IBasicProps, D> {
   name: string
   displayName: string
+  icon?: __React.ComponentClass<void>
   view?: __React.ComponentClass<P & IComponentProps<D>>
     |  __React.StatelessComponent<P & IComponentProps<D>>
   sidebarView?: __React.ComponentClass<P & IComponentProps<D>>

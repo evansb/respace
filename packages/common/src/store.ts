@@ -41,6 +41,7 @@ export interface IUIStore extends IStore<events.UIEvent> {
   registerFactory(factory: AnyComponentFactory)
   start(documentStore: IDocumentStore): Promise<{}>
   getComponent(id: string): AnyComponentProps | undefined
+  getFactory(name: string): AnyComponentFactory | undefined
   destroy()
 }
 

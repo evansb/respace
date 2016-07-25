@@ -8,6 +8,8 @@ import * as rs from '@respace/common'
 import JSONTree from 'react-json-tree'
 import { Row, Grid } from 'react-bootstrap'
 
+const icon: React.ComponentClass<void> = require('react-icons/fa/tree').default
+
 class DocumentTreeView extends React.Component<rs.AnyComponentProps, void> {
   render() {
     return (
@@ -22,6 +24,7 @@ class DocumentTreeView extends React.Component<rs.AnyComponentProps, void> {
 const DocumentTree: rs.IComponentFactory<rs.IBasicProps, any> = {
   name: 'ui-document-tree',
   displayName: 'JSON Tree',
+  icon,
   view: DocumentTreeView,
   shouldProcessDocument(document: rs.AnyDocument) {
     return true
