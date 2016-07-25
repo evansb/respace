@@ -11,22 +11,29 @@ export class ComponentProps<D> implements IComponentProps<D> {
     public name: string,
     title: string,
     displayName: string,
-    public document: IDocument<D>) {
+    public document: IDocument<D>
+   ) {
     this.displayName = displayName
     this.title = title
   }
 
   async rehydrate(storage: IStorage) {
-    this.isActive = await storage.get('isActive', this.isActive)
-    this.title = await storage.get('title', this.title)
+    const state = <this> (await storage.get('state'))
+    if (state) {
+      this.isActive = state.isActive || this.isActive
+      this.title = state.title || this.title
+      this.displayName = state.displayName || this.displayName
+    }
     autorun(() => {
       this.save(storage)
     })
   }
 
   save(storage: IStorage) {
-    storage.put('displayName', this.displayName)
-    storage.put('isActive', this.isActive)
-    storage.put('title', this.title)
+    storage.put('state', {
+      title: this.title,
+      displayName: this.displayName,
+      isActive: this.isActive
+    })
   }
 }
