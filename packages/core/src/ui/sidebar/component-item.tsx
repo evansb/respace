@@ -4,6 +4,7 @@ import { observer } from 'mobx-react'
 import { Row, Col, ListGroupItem } from 'react-bootstrap'
 import FaCode from 'react-icons/fa/code'
 import classnames from 'classnames'
+import { addTooltip } from '../util'
 
 export interface IComponentItemProps {
   uiStore: rs.IUIStore
@@ -20,6 +21,8 @@ function ComponentItem({ uiStore,
   } else {
     icon = <FaCode />
   }
+  const iconWithTooltip = addTooltip(icon,
+    component.displayName, !uiStore.isSidebarToggled)
   const handleClick = () => {
     layoutStore.addComponent(component)
   }
@@ -29,7 +32,7 @@ function ComponentItem({ uiStore,
   return (
     <ListGroupItem href='#' bsClass={classes}>
       <Row onClick={handleClick}>
-        <Col xs={2}>{ icon }</Col>
+        <Col xs={2}>{ iconWithTooltip }</Col>
         { uiStore.isSidebarToggled &&
           <Col xs={10}>
             { component.displayName}
