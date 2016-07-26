@@ -25,12 +25,8 @@ export default class InterpreterStore {
       return Promise.resolve()
     })
     transaction(() => {
-      const key = uuid.v4()
-      const key2 = uuid.v4()
       this.activeTab = this.consoleTab
       this._tabs.set(this.consoleTab.key, this.consoleTab)
-      this._tabs.set(key, { key, title: 'Test' })
-      this._tabs.set(key2, { key: key2, title: 'Test2' })
     })
   }
 
