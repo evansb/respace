@@ -18,7 +18,6 @@ export default class UIStore implements rs.IUIStore {
   @observable appWidth: number = 0
   @observable appHeight: number = 0
   @observable isSidebarToggled: boolean = true
-  @observable isSidebarAnimating: boolean = true
 
   public container: HTMLElement
   private _events$: Observable<rs.events.UIEvent>
@@ -99,7 +98,6 @@ export default class UIStore implements rs.IUIStore {
 
   @action('ui:toggleSidebar')
   async toggleSidebar() {
-    this.isSidebarAnimating = true
     this.isSidebarToggled = !this.isSidebarToggled
     await this._storage.put('isSidebarToggled', this.isSidebarToggled)
   }

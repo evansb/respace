@@ -30,7 +30,6 @@ export interface IUIStore extends IStore<events.UIEvent> {
 
   // Sidebar
   isSidebarToggled: boolean
-  isSidebarAnimating: boolean
 
   // Business Logic
   factories: AnyComponentFactory[]
