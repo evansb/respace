@@ -4,6 +4,16 @@ import DocumentTree from '@respace/ui-document-tree'
 import Editor from '@respace/ui-editor'
 import '@respace/theme-dark'
 
+const saveHandler = function (action, document) {
+  if (action === 'save') {
+    console.log('Saved!')
+    console.log(JSON.stringify(document))
+    return Promise.resolve()
+  } else {
+    return Promise.resolve()
+  }
+}
+
 const testDocuments = [
   {
     type: 'source-code',
@@ -14,7 +24,8 @@ const testDocuments = [
     data: {
       template: 'function bar() { return 3; }',
       value: 'function foo() { return 2; }'
-    }
+    },
+    handlers: [ saveHandler ]
   },
   {
     type: 'source-code',
@@ -25,7 +36,8 @@ const testDocuments = [
     data: {
       template: 'function zap() { return 3; }',
       value: 'function zoo() { return 2; }'
-    }
+    },
+    handlers: [ saveHandler ]
   }
 ]
 

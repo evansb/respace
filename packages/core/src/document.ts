@@ -3,14 +3,29 @@ import { observable, computed, toJSON,
   transaction, autorun, extendObservable } from 'mobx'
 
 export class Document<D> implements rs.IDocument<D> {
-  type: string
+  readonly type: string
   @observable meta: rs.IDocumentMeta = { id: 'error' }
   @observable data: D
 
-  constructor(document: rs.IDocumentJSON<D>) {
+  private _handlers: rs.DocumentHandler<D>[] = []
+
+  constructor(document: rs.IDocumentJSON<D>, storage?: rs.IStorage) {
     this.type = document.type
     extendObservable(this.meta, document.meta || {})
     this.data = observable(document.data)
+    if (document.handlers instanceof Array) {
+      this._handlers = document.handlers
+    }
+    if (storage) {
+      const s = storage
+      this.addHandler((action, snapshot) => {
+        if (action === 'save') {
+          return this.save(s)
+        } else {
+          return Promise.resolve()
+        }
+      })
+    }
   }
 
   @computed get id() {
@@ -19,6 +34,21 @@ export class Document<D> implements rs.IDocument<D> {
 
   @computed get title() {
     return this.meta.title || 'Untitled Document'
+  }
+
+  addHandler(handler: rs.DocumentHandler<D>) {
+    this._handlers.push(handler)
+  }
+
+  async dispatch(action: string) {
+    const snapshot = {
+      type: this.type,
+      meta: toJSON(this.meta),
+      data: toJSON(this.data) as D
+    }
+    this._handlers.forEach(async (handler) => {
+      await handler(action, snapshot)
+    })
   }
 
   async rehydrate(storage: rs.IStorage) {
@@ -34,8 +64,8 @@ export class Document<D> implements rs.IDocument<D> {
     })
   }
 
-  save(storage: rs.IStorage) {
-    storage.put('state', {
+  private save(storage: rs.IStorage) {
+    return storage.put('state', {
       meta: toJSON(this.meta),
       data: toJSON(this.data)
     })

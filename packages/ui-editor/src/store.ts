@@ -40,26 +40,30 @@ export default class EditorStore {
   }
 
   @action('ui-editor:save')
-  save() {
+  async save() {
+    this._document.dispatch('save')
     this.isDirty = false
   }
 
-  submit() {
+  @action('ui-editor:submit')
+  async submit() {
     if (!this.isSubmitConfirmationShown) {
       this.isSubmitConfirmationShown = !this.isSubmitConfirmationShown
     } else {
-      console.log('Submit!')
+      await this._document.dispatch('submit')
+      this.isSubmitConfirmationShown = false
     }
   }
 
   @action('ui-editor:revert')
-  revert() {
-    console.log(this.isRevertConfirmationShown)
+  async revert() {
     if (!this.isRevertConfirmationShown) {
       this.isRevertConfirmationShown = !this.isRevertConfirmationShown
     } else {
       this._editor.getSession().setValue(this._document.data.template)
       this._document.data.value = this._document.data.template
+      await this._document.dispatch('revert')
+      this.isRevertConfirmationShown = false
     }
   }
 
@@ -77,8 +81,9 @@ export default class EditorStore {
     }
   }
 
-  run() {
-    console.log('run!')
+  @action('ui-editor:run')
+  async run() {
+    await this._document.dispatch('run')
   }
 
   private addChangeHandler() {
