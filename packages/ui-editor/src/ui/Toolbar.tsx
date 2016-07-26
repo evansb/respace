@@ -2,7 +2,7 @@ import * as React from 'react'
 import * as rs from '@respace/common'
 import { observer } from 'mobx-react'
 import { ButtonToolbar, ButtonGroup, Button, Row, Col,
-  OverlayTrigger, Tooltip } from 'react-bootstrap'
+  OverlayTrigger, Tooltip, Modal } from 'react-bootstrap'
 import EditorStore from '../store'
 
 export type Props = rs.IComponentProps<rs.documents.ISourceCode, EditorStore>
@@ -23,7 +23,27 @@ const SubmitIcon = require('react-icons/fa/check').default
 const ZoomInIcon = require('react-icons/fa/plus').default
 const ZoomOutIcon = require('react-icons/fa/minus').default
 
+function RevertConfirmation_({ store }: { store: EditorStore }) {
+  const cancel = () => { store.isRevertConfirmationShown = false }
+  return (
+    <Modal show={store.isRevertConfirmationShown} onHide={cancel} >
+      <Modal.Header closeButton>
+        <Modal.Title>Confirm Start Over</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p>Are you sure you want to revert all progress of this document to its
+        initial template?</p>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={() => store.submit()}>Yes</Button>
+        <Button onClick={cancel}>No</Button>
+      </Modal.Footer>
+    </Modal>
+  )
+}
+
 function Toolbar({ component }: Props) {
+  const RevertConfirmation = observer(RevertConfirmation_)
   const store = component.state
   const style = {
     paddingTop: '2px',
@@ -83,6 +103,7 @@ function Toolbar({ component }: Props) {
           { submitButton }
         </Col>
       </Row>
+      <RevertConfirmation store={store} />
     </div>
    )
 }

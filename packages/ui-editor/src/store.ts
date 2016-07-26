@@ -17,6 +17,8 @@ export default class EditorStore {
   @observable printMarginColumn = 80
   @observable isDirty = false
   @observable isAutorunEnabled = false
+  @observable isRevertConfirmationShown = false
+  @observable isSubmitConfirmationShown = false
 
   statusBarHeight = 20
   toolbarHeight = 30
@@ -32,7 +34,7 @@ export default class EditorStore {
     this.addChangeHandler()
     autorun(() => { this._editor.setTheme(this.theme) })
     autorun(() => { this._editor.setFontSize(this.fontSize + 'px') })
-    autorun(() => { this._editor.getSession().setMode(`ace/mode/${this.mode}`) })
+    autorun(() => { this._editor.getSession().setMode(`ace/mode/${this.mode}`)})
     autorun(() => { this._editor.setShowPrintMargin(this.showPrintMargin) })
     autorun(() => { this._editor.setPrintMarginColumn(this.printMarginColumn) })
   }
@@ -42,10 +44,23 @@ export default class EditorStore {
     this.isDirty = false
   }
 
-  @action('ui-editor:save')
+  submit() {
+    if (!this.isSubmitConfirmationShown) {
+      this.isSubmitConfirmationShown = !this.isSubmitConfirmationShown
+    } else {
+      console.log('Submit!')
+    }
+  }
+
+  @action('ui-editor:revert')
   revert() {
-    this._editor.getSession().setValue(this._document.data.template)
-    this._document.data.value = this._document.data.value
+    console.log(this.isRevertConfirmationShown)
+    if (!this.isRevertConfirmationShown) {
+      this.isRevertConfirmationShown = !this.isRevertConfirmationShown
+    } else {
+      this._editor.getSession().setValue(this._document.data.template)
+      this._document.data.value = this._document.data.template
+    }
   }
 
   @action('ui-editor:increaseFontSize')
