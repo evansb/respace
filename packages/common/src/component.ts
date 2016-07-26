@@ -54,10 +54,15 @@ export interface ILayoutStore {
 export interface IComponent<D, S> {
   id: string
   isActive: boolean
+  width: number
+  height: number
+  container: Element
   name: string
   displayName: string
   document: IDocument<D>
   state: S
+
+  updateSize()
 }
 
 export interface IComponentProps<D, S> {

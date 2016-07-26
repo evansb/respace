@@ -45,6 +45,11 @@ export default class GoldenLayoutStore implements rs.ILayoutStore {
 
         this._layout.on('stateChanged', () => {
           if (this._layout.isInitialised) {
+            this._uiStore.components.forEach((component) => {
+              if (component.isActive) {
+                component.updateSize()
+              }
+            })
             this._storage.put('config', this._layout.toConfig())
           }
         })

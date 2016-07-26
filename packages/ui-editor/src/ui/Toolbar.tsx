@@ -26,6 +26,10 @@ const ZoomOutIcon = require('react-icons/fa/minus').default
 function Toolbar({ component }: Props) {
   const store = component.state
   const style = {
+    position: 'absolute',
+    top: '0px',
+    left: '0px',
+    width: '100%',
     paddingTop: '2px',
     paddingLeft: '5px',
     backgroundColor: '#17181A',
@@ -65,24 +69,22 @@ function Toolbar({ component }: Props) {
 
   return (
     <div style={style}>
-      <Row>
-        <Col xs={8}>
-          <ButtonToolbar>
-            <ButtonGroup bsSize='small'>
-              { addTooltip(runButton, 'Run') }
-              { addTooltip(saveButton, 'Save') }
-              { addTooltip(revertButton, 'Start Over') }
-            </ButtonGroup>
-            <ButtonGroup bsSize='small'>
-              { addTooltip(zoomInButton, 'Incr. Font Size') }
-              { addTooltip(zoomOutButton, 'Decr. Font Size') }
-            </ButtonGroup>
-          </ButtonToolbar>
-        </Col>
-        <Col style={{textAlign: 'right'}} xs={4}>
-          { submitButton }
-        </Col>
-      </Row>
+      <Col xs={8}>
+        <ButtonToolbar>
+          <ButtonGroup bsSize='small'>
+            { addTooltip(runButton, 'Run') }
+            { addTooltip(saveButton, 'Save') }
+            { addTooltip(revertButton, 'Start Over') }
+          </ButtonGroup>
+          <ButtonGroup bsSize='small'>
+            { addTooltip(zoomInButton, 'Incr. Font Size') }
+            { addTooltip(zoomOutButton, 'Decr. Font Size') }
+          </ButtonGroup>
+        </ButtonToolbar>
+      </Col>
+      <Col style={{textAlign: 'right'}} xs={4}>
+        { submitButton }
+      </Col>
     </div>
    )
 }

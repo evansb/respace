@@ -32,6 +32,9 @@ $rs-sidebar-item-bg: $gray-dark;
         background-color: darken($gray-darker, 10%);
       }
       .item {
+        border-left-width: 3px;
+        border-left-style: solid;
+        border-left-color: $gray;
         background-color: darken($gray-dark, 10%);
         color: darken($gray-light, 10%);
       }
@@ -41,8 +44,6 @@ $rs-sidebar-item-bg: $gray-dark;
       }
       .item-active {
         font-weight: 500;
-        border-left-width: 3px;
-        border-left-style: solid;
         border-left-color: lighten($brand-primary, 10%);
         color: white;
         background-color: $gray-dark;

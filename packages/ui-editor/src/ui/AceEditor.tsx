@@ -17,7 +17,6 @@ export default class AceEditor extends React.Component<Props, void> {
   componentDidMount() {
     this._editor = ace.edit(findDOMNode(this) as HTMLElement)
     const store = this.props.component.state
-    this._editor.$blockScrolling = 100
     store.setEditor(this._editor)
   }
 
@@ -30,10 +29,10 @@ export default class AceEditor extends React.Component<Props, void> {
     const style = {
       position: 'absolute',
       left: '0px',
+      overflow: 'scroll',
       top: store.toolbarHeight,
       bottom: store.statusBarHeight,
-      width: '650px',
-      maxHeight: '1000px'
+      width: this.props.component.width
     }
     return <div style={style}></div>
   }

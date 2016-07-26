@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { findDOMNode } from 'react-dom'
 import { AnyComponentProps, IUIStore } from '@respace/common'
 import { observer } from 'mobx-react'
 
@@ -7,6 +8,13 @@ export default function wrapComponent<P extends AnyComponentProps, S>(
   Component: React.ComponentClass<any> | React.StatelessComponent<any>
 ): React.ComponentClass<P> {
   class Wrapped extends React.Component<P, S> {
+    componentDidUpdate(prevProps) {
+      const component = uiStore.getComponent(this.props.id)
+      if (component && !component.container) {
+        component.container = findDOMNode(this)
+        component.updateSize()
+      }
+    }
     render() {
       const component = uiStore.getComponent(this.props.id)
       if (!component) {

@@ -29,6 +29,8 @@ function StatusBar({ component }: Props) {
     position: 'absolute',
     paddingTop: '2px',
     fontSize: '0.9em',
+    left: '0px',
+    right: '0px',
     bottom: '0px',
     color: '#CDCED1',
     height: store.statusBarHeight
