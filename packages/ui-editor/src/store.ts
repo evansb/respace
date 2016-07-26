@@ -30,8 +30,14 @@ export default class EditorStore {
 
   setEditor(editor: AceAjax.Editor) {
     this._editor = editor
-    editor.getSession().setValue(this._document.data.value)
     this.addChangeHandler()
+    this._editor.getSession().setValue(this._document.data.value)
+    this._document.addHandler((action, document) => {
+      if (action === 'loaded') {
+        this._editor.getSession().setValue(document.data.value)
+      }
+      return Promise.resolve()
+    })
     autorun(() => { this._editor.setTheme(this.theme) })
     autorun(() => { this._editor.setFontSize(this.fontSize + 'px') })
     autorun(() => { this._editor.getSession().setMode(`ace/mode/${this.mode}`)})
