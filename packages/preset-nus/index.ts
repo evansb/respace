@@ -2,6 +2,7 @@ import { Workspace } from '@respace/core'
 import GoldenLayout from '@respace/layout-golden'
 import DocumentTree from '@respace/ui-document-tree'
 import Editor from '@respace/ui-editor'
+import Interpreter from '@respace/ui-interpreter'
 import '@respace/theme-dark'
 
 const saveHandler = function (action, document) {
@@ -42,7 +43,7 @@ const testDocuments = [
 ]
 
 const workspace = Workspace.create({
-  components: [DocumentTree, Editor],
+  components: [DocumentTree, Editor, Interpreter],
   documents: testDocuments,
   layoutEngine: GoldenLayout
 })

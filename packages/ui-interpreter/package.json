@@ -1,0 +1,15 @@
+{
+  "name": "@respace/ui-interpreter",
+  "version": "0.0.0",
+  "main": "es5/index.js",
+  "jsnext:main": "es6/index.js",
+  "respace:main": "src/index.tsx",
+  "description": "Reactive Interpreter for Respace",
+  "author": "Evan Sebastian",
+  "typings": "definitions/index.d.ts",
+  "dependencies": {
+    "@respace/common": "^0.0.0",
+    "react-icons": "^2.2.1",
+    "rxjs": "5.0.0-beta.10"
+  }
+}

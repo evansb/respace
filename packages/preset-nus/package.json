@@ -7,6 +7,7 @@
     "@respace/layout-golden": "^0.0.0",
     "@respace/theme-dark": "^0.0.0",
     "@respace/ui-document-tree": "^0.0.0",
-    "@respace/ui-editor": "^0.0.0"
+    "@respace/ui-editor": "^0.0.0",
+    "@respace/ui-interpreter": "^0.0.0"
   }
 }
