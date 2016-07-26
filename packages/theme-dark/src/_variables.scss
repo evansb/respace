@@ -420,19 +420,19 @@ $navbar-inverse-toggle-border-color:        darken($navbar-inverse-bg, 10%) !def
 //##
 
 //=== Shared nav styles
-$nav-link-padding:                          10px 15px !default;
-$nav-link-hover-bg:                         $gray-dark !default;
+$nav-link-padding:                          5px 7px !default;
+$nav-link-hover-bg:                         darken($gray-darker, 5%) !default;
 
 $nav-disabled-link-color:                   lighten($gray, 10%) !default;
 $nav-disabled-link-hover-color:             lighten($gray, 10%) !default;
 
 //== Tabs
-$nav-tabs-border-color:                     $gray !default;
+$nav-tabs-border-color:                     $gray-dark !default;
 
 $nav-tabs-link-hover-border-color:          $gray !default;
 
 $nav-tabs-active-link-hover-bg:             $body-bg !default;
-$nav-tabs-active-link-hover-color:          $brand-success !default;
+$nav-tabs-active-link-hover-color:          white !default;
 $nav-tabs-active-link-hover-border-color:   $nav-tabs-link-hover-border-color !default;
 
 $nav-tabs-justified-link-border-color:            $gray-lighter !default;

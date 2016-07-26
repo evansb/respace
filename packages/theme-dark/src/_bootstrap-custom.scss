@@ -365,3 +365,20 @@ a:hover {
 .panel {
   margin-bottom: 0px !important;
 }
+
+.nav li[role='presentation'] {
+  background-color: darken($gray-dark, 10%);
+  a {
+    margin-right: 0px;
+  }
+}
+
+.nav li[role='presentation'] {
+  border-top: solid 2px;
+  border-top-color: $gray;
+}
+
+.nav li[role='presentation'].active {
+  font-weight: bold;
+  border-top-color: $brand-success;
+}

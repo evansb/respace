@@ -13,6 +13,11 @@ $rs-sidebar-item-bg: $gray-dark;
 .respace {
   overflow: hidden;
   background: $gray-base;
+  .close-button :hover {
+    color: white;
+    background-color: $brand-danger;
+    border-radius: 12px;
+  }
   .content {
     background: $gray-base;
   }

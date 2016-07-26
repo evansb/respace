@@ -1,12 +1,12 @@
 import * as React from 'react'
 import * as rs from '@respace/common'
 import InterpreterView from './ui/Interpreter'
-import InterpreterStore from './store'
+import Store from './store'
 
 const icon: React.ComponentClass<void> =
   require('react-icons/fa/terminal').default
 
-const Interpreter: rs.IComponentFactory<rs.documents.ISourceCode, InterpreterStore> = { // tslint:disable-line
+const Interpreter: rs.IComponentFactory<rs.documents.ISourceCode, Store> = {
   name: 'ui-interpreter',
   displayName: 'Interpreter',
   icon,
@@ -15,7 +15,7 @@ const Interpreter: rs.IComponentFactory<rs.documents.ISourceCode, InterpreterSto
     return document.type === 'source-code'
   },
   initialState(document: rs.IDocument<rs.documents.ISourceCode>) {
-    return new InterpreterStore(document)
+    return new Store(document)
   }
 }
 
