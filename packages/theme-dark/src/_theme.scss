@@ -29,21 +29,21 @@ $rs-sidebar-item-bg: $gray-dark;
       }
       .panel-heading {
         border-bottom: none;
-        background-color: darken($gray-darker, 5%);
+        background-color: darken($gray-darker, 10%);
       }
       .item {
-        background-color: darken($gray-dark, 5%);
-        color: $gray;
+        background-color: darken($gray-dark, 10%);
+        color: darken($gray-light, 10%);
       }
       .item:hover {
         color: white;
-        background-color: $brand-primary;
+        background-color: $brand-primary
       }
       .item-active {
-        font-weight: 400;
+        font-weight: 500;
         border-left-width: 3px;
         border-left-style: solid;
-        border-left-color: $brand-primary;
+        border-left-color: lighten($brand-primary, 10%);
         color: white;
         background-color: $gray-dark;
       }
