@@ -12,22 +12,14 @@ const icon: React.ComponentClass<void> = require('react-icons/fa/tree').default
 
 class DocumentTreeView extends React.Component<rs.AnyComponentProps, void> {
   render() {
-    const component = this.props.getComponent()
-    if (component) {
-      const document = component.document
-      return (
-        <Grid>
-          <Row><h3>{document.meta.title}</h3></Row>
-          <Row><JSONTree data={document} /></Row>
-        </Grid>
-      )
-    } else {
-      return (
-        <Grid>
-          <Row>Loading...</Row>
-        </Grid>
-      )
-    }
+    const component = this.props.component
+    const document = component.document
+    return (
+      <Grid>
+        <Row><h3>{document.meta.title}</h3></Row>
+        <Row><JSONTree data={document} /></Row>
+      </Grid>
+    )
   }
 }
 

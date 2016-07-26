@@ -1,4 +1,4 @@
-import { ObservableMap, map, observable } from 'mobx'
+import { ObservableMap, map } from 'mobx'
 import * as uuid from 'uuid'
 import { Subscription } from 'rxjs/Subscription'
 import { Observable } from 'rxjs/Observable'

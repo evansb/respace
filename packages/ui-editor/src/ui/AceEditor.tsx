@@ -13,15 +13,21 @@ export type Props = rs.IComponentProps<rs.documents.ISourceCode, EditorStore>
 @observer
 export default class AceEditor extends React.Component<Props, void> {
   componentDidMount() {
-    const store = this.props.getComponent().state
     const editor = ace.edit(findDOMNode(this) as HTMLElement)
+    const store = this.props.component.state
     editor.$blockScrolling = 100
     store.setEditor(editor)
   }
+
   render(): React.ReactElement<any> {
+    const store = this.props.component.state
     const style = {
-      width: '640px',
-      height: '400px'
+      position: 'absolute',
+      left: '0px',
+      top: store.toolbarHeight,
+      bottom: store.statusBarHeight,
+      width: '650px',
+      maxHeight: '1000px'
     }
     return <div style={style}></div>
   }

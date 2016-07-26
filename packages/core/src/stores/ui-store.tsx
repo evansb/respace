@@ -1,8 +1,6 @@
-import * as React from 'react'
 import { Subscription } from 'rxjs/Subscription'
 import { Observable } from 'rxjs/Observable'
 import { ObservableMap, map, observable, computed, action } from 'mobx'
-import { observer } from 'mobx-react'
 import 'rxjs/add/observable/fromEvent'
 import 'rxjs/add/observable/combineLatest'
 import 'rxjs/add/observable/interval'
@@ -11,6 +9,7 @@ import 'rxjs/add/operator/startWith'
 
 import * as rs from '@respace/common'
 import { Component } from '../component'
+import wrapComponent from './wrapComponent'
 
 export default class UIStore implements rs.IUIStore {
   SIDEBAR_MIN_WIDTH: number = 29
@@ -41,7 +40,7 @@ export default class UIStore implements rs.IUIStore {
 
   registerFactory(factory: rs.AnyComponentFactory) {
     if (factory.view) {
-      factory.view = this.wrapComponent(factory.view) as any
+      factory.view = wrapComponent(this, factory.view) as any
     }
     this._registry.set(factory.name, factory)
     if (typeof factory.didRegister === 'function') {
@@ -140,29 +139,6 @@ export default class UIStore implements rs.IUIStore {
 
   destroy() {
     this._subscription.forEach((s) => s.unsubscribe())
-  }
-
-  private wrapComponent<P, S>(
-     Component: React.ComponentClass<any> | React.StatelessComponent<any>
-  ) {
-    const documentStore = this._documentStore
-    const uiStore = this
-    const getComponent = function () {
-      return uiStore.getComponent(this.props.id)
-    }
-    class Wrapped extends React.Component<P, S> {
-      render() {
-        if (!uiStore.getComponent(this.props.id)) {
-          return null
-        } else {
-          return <Component
-                    getComponent={getComponent.bind(this)}
-                    uiStore={uiStore} documentStore={documentStore}
-                    {...this.props} />
-        }
-      }
-    }
-    return observer(Wrapped)
   }
 
   private startListeningToDimensionChange() {

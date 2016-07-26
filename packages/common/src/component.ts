@@ -63,9 +63,8 @@ export interface IComponent<D, S> {
 
 export interface IComponentProps<D, S> {
   id: string
+  component: IComponent<D, S>
   uiStore: IUIStore
-  documentStore: IDocumentStore
-  getComponent(): IComponent<D, S>
 }
 
 export interface IComponentFactory<D, S> {

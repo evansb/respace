@@ -1,5 +1,5 @@
 import * as rs from '@respace/common'
-import { observable, autorun } from 'mobx'
+import { observable, autorun, transaction, action } from 'mobx'
 import { Observable } from 'rxjs/Observable'
 
 import 'rxjs/add/observable/fromEvent'
@@ -7,11 +7,19 @@ import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/debounceTime'
 
 export default class EditorStore {
-  @observable public theme = 'ace/theme/tomorrow_night'
-  @observable public mode = 'ace/mode/javascript'
-  @observable public fontSize = '12px'
-  @observable public showPrintMargin = true
-  @observable public printMarginColumn = 80
+  MIN_FONT_SIZE = 8
+  MAX_FONT_SIZE = 64
+
+  @observable theme = 'ace/theme/tomorrow_night'
+  @observable mode = 'javascript'
+  @observable fontSize = 12
+  @observable showPrintMargin = true
+  @observable printMarginColumn = 80
+  @observable isDirty = false
+  @observable isAutorunEnabled = false
+
+  statusBarHeight = 20
+  toolbarHeight = 30
 
   private _editor: AceAjax.Editor
 
@@ -23,19 +31,50 @@ export default class EditorStore {
     editor.getSession().setValue(this._document.data.value)
     this.addChangeHandler()
     autorun(() => { this._editor.setTheme(this.theme) })
-    autorun(() => { this._editor.setFontSize(this.fontSize) })
-    autorun(() => { this._editor.getSession().setMode(this.mode) })
+    autorun(() => { this._editor.setFontSize(this.fontSize + 'px') })
+    autorun(() => { this._editor.getSession().setMode(`ace/mode/${this.mode}`) })
     autorun(() => { this._editor.setShowPrintMargin(this.showPrintMargin) })
     autorun(() => { this._editor.setPrintMarginColumn(this.printMarginColumn) })
+  }
+
+  @action('ui-editor:save')
+  save() {
+    this.isDirty = false
+  }
+
+  @action('ui-editor:save')
+  revert() {
+    this._editor.getSession().setValue(this._document.data.template)
+    this._document.data.value = this._document.data.value
+  }
+
+  @action('ui-editor:increaseFontSize')
+  increaseFontSize() {
+    if (this.fontSize <= (this.MAX_FONT_SIZE - 2)) {
+      this.fontSize += 2
+    }
+  }
+
+  @action('ui-editor:decreaseFontSize')
+  decreaseFontSize() {
+    if (this.fontSize >= (this.MIN_FONT_SIZE + 2)) {
+      this.fontSize -= 2
+    }
+  }
+
+  run() {
+    console.log('run!')
   }
 
   private addChangeHandler() {
     const session = this._editor.getSession()
     Observable.fromEvent(<any> session, 'change')
-      .debounceTime(500)
+      .debounceTime(100)
       .subscribe(() => {
-        this._document.data.value = session.getValue()
+        transaction(() => {
+          this.isDirty = true
+          this._document.data.value = session.getValue()
+        })
       })
   }
-
 }
