@@ -148,11 +148,7 @@ export default class GoldenLayoutStore implements rs.ILayoutStore {
   private addContentResizeHandler() {
     const dimension$ = Observable.create((observer) => {
       autorun(() => {
-        if (this._uiStore.isSidebarAnimating) {
-          $(this.container)
-            .find('.lm_goldenlayout')
-            .hide()
-        } else {
+        if (!this._uiStore.isSidebarAnimating) {
           observer.next({
             width: this._uiStore.appWidth,
             height: this._uiStore.appHeight

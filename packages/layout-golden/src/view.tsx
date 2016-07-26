@@ -9,6 +9,11 @@ export interface IProps {
 }
 
 class GoldenLayoutWrapper extends React.Component<IProps, void> {
+
+  shouldComponentUpdate() {
+    return false
+  }
+
   componentDidMount() {
     this.props.layoutStore.container = findDOMNode(this) as HTMLElement
   }
