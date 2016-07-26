@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as rs from '@respace/common'
 import { observer } from 'mobx-react'
-import { ButtonToolbar, ButtonGroup, Button, Row, Col,
+import { ButtonToolbar, ButtonGroup, Button, Col,
   OverlayTrigger, Tooltip } from 'react-bootstrap'
 import EditorStore from '../store'
 

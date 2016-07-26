@@ -1,3 +1,4 @@
+/// <reference path='../typeshims/index.d.ts' />
 /// <reference path='../typings/index.d.ts' />
 import * as documents from './documents'
 import * as events from './events'
