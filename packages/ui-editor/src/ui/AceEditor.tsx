@@ -32,7 +32,7 @@ export default class AceEditor extends React.Component<Props, void> {
       overflow: 'scroll',
       top: store.toolbarHeight,
       bottom: store.statusBarHeight,
-      width: this.props.component.width
+      width: '100%'
     }
     return <div style={style}></div>
   }
