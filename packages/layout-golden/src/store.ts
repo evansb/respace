@@ -34,7 +34,6 @@ export default class GoldenLayoutStore implements rs.ILayoutStore {
         this._uiStore.factories.forEach((factory) => {
           this._layout.registerComponent(factory.name, factory.view)
         })
-        console.log(uiStore.components.map((x) => x))
         this._layout.container = this.container as any
 
         this._layout.on('initialised', () => {
@@ -94,8 +93,11 @@ export default class GoldenLayoutStore implements rs.ILayoutStore {
     const anyRoot = <any> this._layout.root
     anyRoot.on('itemDestroyed', (e) => {
       const item = e.origin
-      if (item.isComponent) {
-        item.config.props.isActive = false
+      if (item.isComponent && item.config.props && item.config.props.id) {
+        const component = this._uiStore.getComponent(item.config.props.id)
+        if (component) {
+          component.isActive = false
+        }
       }
     })
   }

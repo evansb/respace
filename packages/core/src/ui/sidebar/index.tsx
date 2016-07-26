@@ -61,6 +61,7 @@ const Sidebar = ({ documentStore, uiStore, layoutStore }: ISidebarProps) => {
   const onRest = () => {
     uiStore.isSidebarAnimating = false
   }
+
   return (
     <Motion defaultStyle={{ width: startWidth }} onRest={ onRest }
             style={{ width: spring(endWidth, presets.stiff) }}>
