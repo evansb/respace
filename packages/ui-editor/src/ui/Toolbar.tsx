@@ -25,19 +25,20 @@ const ZoomOutIcon = require('react-icons/fa/minus').default
 
 function RevertConfirmation_({ store }: { store: EditorStore }) {
   const cancel = () => { store.isRevertConfirmationShown = false }
+  const { Header, Title, Body, Footer } = Modal
   return (
     <Modal show={store.isRevertConfirmationShown} onHide={cancel} >
-      <Modal.Header closeButton>
-        <Modal.Title>Confirm Start Over</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
+      <Header closeButton>
+        <Title>Confirm Start Over</Title>
+      </Header>
+      <Body>
         <p>Are you sure you want to revert all progress of this document to its
         initial template?</p>
-      </Modal.Body>
-      <Modal.Footer>
+      </Body>
+      <Footer>
         <Button onClick={() => store.submit()}>Yes</Button>
         <Button onClick={cancel}>No</Button>
-      </Modal.Footer>
+      </Footer>
     </Modal>
   )
 }
