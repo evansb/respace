@@ -12,11 +12,17 @@ export type Props = rs.IComponentProps<rs.documents.ISourceCode, EditorStore>
 
 @observer
 export default class AceEditor extends React.Component<Props, void> {
+  private _editor: AceAjax.Editor
+
   componentDidMount() {
-    const editor = ace.edit(findDOMNode(this) as HTMLElement)
+    this._editor = ace.edit(findDOMNode(this) as HTMLElement)
     const store = this.props.component.state
-    editor.$blockScrolling = 100
-    store.setEditor(editor)
+    this._editor.$blockScrolling = 100
+    store.setEditor(this._editor)
+  }
+
+  componentWillUnmount() {
+    this._editor.destroy()
   }
 
   render(): React.ReactElement<any> {
