@@ -78,7 +78,7 @@ export default class GoldenLayoutStore implements rs.ILayoutStore {
       component.isActive = true
       const newItem = {
         id: component.id,
-        title: component.displayName,
+        title: `${component.document.title} [${component.displayName}]`,
         type: 'react-component',
         component: component.name,
         props: { id: component.id }
