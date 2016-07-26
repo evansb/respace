@@ -33,8 +33,7 @@ module.exports = (bundleDir) => {
   })
 
   const baseEntry = config.isDevelopment
-      ? [ 'react-hot-loader/patch',
-          'webpack-dev-server/client?http://localhost:8000',
+      ? [ 'webpack-dev-server/client?http://localhost:8000',
           'webpack/hot/only-dev-server' ]
       : []
 
