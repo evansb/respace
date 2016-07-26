@@ -12,12 +12,25 @@ module.exports = (bundleDir) => {
     context: projectDir,
     name: 'respace',
     resolve: {
+      alias: {},
       root: config.base,
       packageMains: ['respace:main', 'webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main', 'jsnext:main'],
       extensions: ['', '.js', '.jsx', '.jsx', '.ts', '.tsx', '.json']
     },
     module: {}
   }
+
+  const base = path.join(projectDir, 'packages', 'common', 'node_modules')
+  const commonDeps = [
+    'react',
+    'react-dom',
+    'react-bootstrap',
+    'mobx',
+    'mobx-react'
+  ]
+  commonDeps.forEach((dep) => {
+    webpackConfig.resolve.alias[dep] = path.join(base, dep)
+  })
 
   const baseEntry = config.isDevelopment
       ? [ 'react-hot-loader/patch',

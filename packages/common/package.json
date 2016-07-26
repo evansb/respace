@@ -7,6 +7,11 @@
   "respace:main": "src/index.tsx",
   "typings": "definitions/index.d.ts",
   "dependencies": {
+    "mobx": "^2.4.0",
+    "mobx-react": "^3.5.1",
+    "react": "^15.2.1",
+    "react-bootstrap": "^0.30.0",
+    "react-dom": "^15.2.1",
     "rxjs": "5.0.0-beta.10"
   }
 }
