@@ -29,7 +29,7 @@ export default class AceEditor extends React.Component<Props, void> {
     const style = {
       position: 'absolute',
       left: '0px',
-      overflow: 'scroll',
+      overflow: 'auto',
       top: store.toolbarHeight,
       bottom: store.statusBarHeight,
       width: '100%'

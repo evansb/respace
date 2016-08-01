@@ -31,6 +31,7 @@ export default class EditorStore {
   setEditor(editor: AceAjax.Editor) {
     this._editor = editor
     this.addChangeHandler()
+    this._editor.$blockScrolling = 1000
     this._editor.getSession().setValue(this._document.data.value)
     this._document.addHandler((action, document) => {
       if (action === 'loaded') {
