@@ -57,7 +57,7 @@ function SnapshotResult({ snapshotData, store }: IProps) {
     color: 'white',
     paddingLeft: '10px',
     fontSize: '12px',
-    backgroundColor: '#1D1F21',
+    backgroundColor: '#17181A',
     borderColor: '#1E2124'
   }
   let valueType = 'Error'
