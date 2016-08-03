@@ -49,7 +49,7 @@ export class Document<D> implements rs.IDocument<D> {
   }
 
   async rehydrate(storage: rs.IStorage) {
-    this.load(storage)
+    await this.load(storage)
     this.addHandler((action, snapshot) => {
       if (action === 'save') {
         return this.save(storage)
