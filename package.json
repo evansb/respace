@@ -69,6 +69,7 @@
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^2.13.6",
+    "json-loader": "^0.5.4",
     "merge2": "^1.0.2",
     "tslint": "^3.13.0",
     "typescript": "^2.0.0"

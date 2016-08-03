@@ -27,7 +27,12 @@ export class Document<D> implements rs.IDocument<D> {
   }
 
   addHandler(handler: rs.DocumentHandler<D>) {
-    this._handlers.push(handler)
+    let found = this._handlers.some(h => {
+      return h === handler
+    })
+    if (!found) {
+      this._handlers.push(handler)
+    }
   }
 
   async dispatch(action: string) {
