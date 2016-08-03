@@ -6,6 +6,7 @@ export interface IDocumentMeta {
   id: string,
   title?: string,
   color?: DocumentColor
+  [other: string]: any
 }
 
 export type DocumentHandler<T> = (action: string,

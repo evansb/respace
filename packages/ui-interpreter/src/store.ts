@@ -54,7 +54,7 @@ export default class InterpreterStore {
   @observable snapshots: SnapshotData[] = []
   @observable activeTab: ITab
 
-  @observable week: number
+  @observable week: number = 3
 
   consoleTab: ITab = {
     key: 'console',
@@ -66,6 +66,7 @@ export default class InterpreterStore {
   private _request$: Subject<IRequest> = new Subject<IRequest>()
 
   constructor(private _document: rs.IDocument<rs.documents.ISourceCode>) {
+    this.week = (<any> _document.meta).week || this.week
     this.context = _document.volatile.context || {}
     this.createRequestFromDocument()
     this.createServer()
@@ -188,6 +189,7 @@ export default class InterpreterStore {
 
   private handleError(err: ISnapshotError) {
     // Find snapshots
+    console.log(err)
     const found = this.snapshots.some(s => {
       let same = s.snapshot === err.snapshot
       if (same) {
@@ -225,7 +227,7 @@ export default class InterpreterStore {
             globals: this._document.volatile.globals || [],
             context: this._document.volatile.context || {},
             code: document.data.value,
-            week: 3
+            week: this.week
           })
         }
         return Promise.resolve()

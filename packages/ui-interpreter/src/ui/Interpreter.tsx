@@ -48,15 +48,13 @@ function Interpreter({ component }: Props) {
     }
     return <TabPane key={tab.key} eventKey={tab.key}>{content}</TabPane>
   })
+  // E const tabs = <Nav bsStyle='tabs'> { tabs }</Nav>
   return (
     <TabContainer defaultActiveKey={store.consoleTab.key}
                   activeKey={store.activeTab.key}
                   generateChildId={uuid.v4}
                   onSelect={onSelect}>
       <div className='clearfix'>
-        <Nav bsStyle='tabs'>
-          { tabs }
-        </Nav>
         <TabContent>
           { panes }
         </TabContent>

@@ -55,6 +55,8 @@ function SnapshotResult({ snapshotData, store }: IProps) {
   const valueStyle = {
     margin: 0,
     color: 'white',
+    paddingTop: '4px',
+    paddingBottom: '4px',
     paddingLeft: '10px',
     fontSize: '12px',
     backgroundColor: '#17181A',

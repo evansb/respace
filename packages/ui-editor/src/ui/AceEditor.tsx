@@ -16,6 +16,7 @@ export default class AceEditor extends React.Component<Props, void> {
 
   componentDidMount() {
     this._editor = ace.edit(findDOMNode(this) as HTMLElement)
+    this._editor.setOptions({ useWorker: false })
     const store = this.props.component.state
     store.setEditor(this._editor)
   }

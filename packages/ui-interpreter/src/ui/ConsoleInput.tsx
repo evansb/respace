@@ -8,6 +8,8 @@ export interface IConsoleInputProps { store: Store }
 function ConsoleInput({ store }: IConsoleInputProps) {
   const editorStyle = {
     overflow: 'auto',
+    paddingTop: '4px',
+    paddingBottom: '4px',
     width: '100%',
     height: '100px'
   }

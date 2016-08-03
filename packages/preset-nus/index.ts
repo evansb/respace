@@ -3,6 +3,7 @@ import GoldenLayout from '@respace/layout-golden'
 import DocumentTree from '@respace/ui-document-tree'
 import Editor from '@respace/ui-editor'
 import Interpreter from '@respace/ui-interpreter'
+import Comments from '@respace/ui-comments'
 import Canvas from './Canvas'
 import '@respace/theme-dark'
 
@@ -70,7 +71,24 @@ window.onload = () => {
       },
       data: {
         template: 'function bar() { return 3; }',
-        value: 'function foo() { return 2; }'
+        value: 'function foo() { return 2; }',
+        annotations: {
+          one: {
+            createdAt: new Date(),
+            posterName: 'Evan Sebastian',
+            posterRole: 'Avenger',
+            profileUrl: 'https://www.facebook.com/sbsevn',
+            profilePicture: 'http://placekitten.com/200/300',
+            value: 'Hello how are you'
+          },
+          two: {
+            createdAt: new Date(),
+            posterName: 'Some Dude',
+            profileUrl: 'https://www.facebook.com/sbsevn',
+            profilePicture: 'http://placekitten.com/200/300',
+            value: 'Write comment *in* **markdown**'
+          }
+        }
       },
       handlers: [ saveHandler, submitHandler ],
       volatile: {
@@ -93,7 +111,7 @@ window.onload = () => {
   ]
 
   const workspace = Workspace.create({
-    components: [DocumentTree, Editor, Interpreter, Canvas],
+    components: [DocumentTree, Editor, Interpreter, Canvas, Comments],
     documents: testDocuments,
     layoutEngine: GoldenLayout
   })

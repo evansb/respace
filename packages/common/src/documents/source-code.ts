@@ -23,7 +23,23 @@ export const SourceCodeSchema: tv4.JsonSchema = {
   required: ['value']
 }
 
+export interface IAnnotation {
+  createdAt: Date
+  posterName: string
+  posterRole?: string
+  profilePicture?: string
+  profileUrl?: string
+  line?: number
+  lineEnd?: number
+  column?: number
+  columnEnd?: number
+  value: string
+}
+
 export interface ISourceCode {
   template: string
   value: string
+  annotations: {
+    [id: string]: IAnnotation
+  }
 }

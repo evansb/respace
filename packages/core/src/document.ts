@@ -15,6 +15,7 @@ export class Document<D> implements rs.IDocument<D> {
     this.volatile = document.volatile || {}
     extendObservable(this.meta, document.meta || {})
     this.data = observable(document.data)
+    console.log(document.data)
     if (document.handlers instanceof Array) {
       this._handlers = document.handlers
     }
