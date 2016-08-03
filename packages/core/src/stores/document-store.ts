@@ -30,10 +30,9 @@ export default class DocumentStore implements rs.IDocumentStore {
   }
 
   start() {
-    this._initialDocuments.forEach((document) => {
-      this.addDocument(document)
-    })
-    return Promise.resolve()
+    return Promise.all([
+      this._initialDocuments.map(d => this.addDocument(d))
+    ])
   }
 
   async rehydrate(storage: rs.IStorage) {
@@ -44,11 +43,11 @@ export default class DocumentStore implements rs.IDocumentStore {
     })
   }
 
-  addDocument(documentJSON: rs.AnyDocumentJSON) {
+  async addDocument(documentJSON: rs.AnyDocumentJSON) {
     const _document = this.assignID(documentJSON)
     const document = new Document(_document)
     this._documents.set(document.meta.id, document)
-    document.rehydrate(this._storage.createStorage(document.meta.id))
+    await document.rehydrate(this._storage.createStorage(document.meta.id))
     return document
   }
 
