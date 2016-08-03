@@ -62,7 +62,8 @@ function SnapshotResult({ snapshotData, store }: IProps) {
   }
   let valueType = 'Error'
   const value = snapshot.done && snapshot.value && (
-    <pre style={valueStyle}>{printValueToString(snapshot.value)}</pre>
+    <pre style={valueStyle}>{printValueToString(snapshot.value,
+      store.context)}</pre>
   )
   let errorsView: JSX.Element | undefined
   if (errors.length > 0) {

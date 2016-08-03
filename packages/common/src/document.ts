@@ -16,6 +16,7 @@ export interface IDocumentJSON<T> {
   meta: IDocumentMeta
   data: T
   handlers?: DocumentHandler<T>[]
+  volatile?: any
 }
 
 export interface IDocument<T> extends IDocumentJSON<T> {

@@ -4,6 +4,7 @@ import { observable, computed, toJS,
 
 export class Document<D> implements rs.IDocument<D> {
   readonly type: string
+  volatile: any
   @observable meta: rs.IDocumentMeta = { id: 'error' }
   @observable data: D
 
@@ -11,6 +12,7 @@ export class Document<D> implements rs.IDocument<D> {
 
   constructor(document: rs.IDocumentJSON<D>) {
     this.type = document.type
+    this.volatile = document.volatile || {}
     extendObservable(this.meta, document.meta || {})
     this.data = observable(document.data)
     if (document.handlers instanceof Array) {

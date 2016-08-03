@@ -33,6 +33,8 @@ export class SnapshotData {
 }
 
 export default class InterpreterStore {
+  context: any
+
   // Console toolbar
   toolbarHeight = '20px'
 
@@ -64,6 +66,7 @@ export default class InterpreterStore {
   private _request$: Subject<IRequest> = new Subject<IRequest>()
 
   constructor(private _document: rs.IDocument<rs.documents.ISourceCode>) {
+    this.context = _document.volatile.context || {}
     this.createRequestFromDocument()
     this.createServer()
     this.setupTabs()
@@ -126,10 +129,22 @@ export default class InterpreterStore {
     const parentData: SnapshotData = this.snapshots[this.snapshots.length - 1]
     const parent = parentData && parentData.snapshot
     if (parent) {
-      this._request$.next({ code, week: parent.week, parent })
+      this._request$.next({
+        code,
+        globals: parent.globals,
+        context: parent.context,
+        week: parent.week,
+        parent
+      })
     } else {
       const newParent = new Snapshot({ code: ';' })
-      this._request$.next({ code, week: this.week, parent: newParent })
+      this._request$.next({
+        globals: this._document.volatile.globals || [],
+        context: this._document.volatile.context || {},
+        code,
+        week: this.week,
+        parent: newParent
+      })
     }
   }
 
@@ -206,7 +221,12 @@ export default class InterpreterStore {
       this._document.addHandler((action, document) => {
         if (action === 'run') {
           this.clearAll()
-          observer.next({ code: document.data.value, week: 3 })
+          observer.next({
+            globals: this._document.volatile.globals || [],
+            context: this._document.volatile.context || {},
+            code: document.data.value,
+            week: 3
+          })
         }
         return Promise.resolve()
       })
