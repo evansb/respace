@@ -25,9 +25,9 @@ class CanvasView extends React.Component<Props, { size: number }> {
   }
 
   handleIncrease = () => {
-    if (this.state.size < 512) {
+    if (this.state.size < 1024) {
       this.setState({
-        size: this.state.size + 20
+        size: this.state.size * 2
       })
     }
   }
@@ -35,7 +35,7 @@ class CanvasView extends React.Component<Props, { size: number }> {
   handleDecrease = () => {
     if (this.state.size > 64) {
       this.setState({
-        size: this.state.size - 20
+        size: this.state.size / 2
       })
     }
   }
