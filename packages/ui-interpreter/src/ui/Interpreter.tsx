@@ -18,7 +18,7 @@ function Interpreter({ component }: Props) {
   const tabs = store.tabs.map((tab) => {
     if (tab === store.consoleTab) {
       return (
-        <NavItem eventKey={tab.key}>
+        <NavItem key={tab.key} eventKey={tab.key}>
           { tab.title }
         </NavItem>
       )

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
 import Store from '../store'
-import { Button } from 'react-bootstrap'
+import { Button, Checkbox, Col, Row } from 'react-bootstrap'
 
 function Toolbar({ store }: { store: Store }) {
   const style = {
@@ -9,10 +9,25 @@ function Toolbar({ store }: { store: Store }) {
     backgroundColor: '#17181A',
     padding: '5px'
   }
+  const handleCheckbox = () => {
+    store.isAutorunEnabled = !store.isAutorunEnabled
+  }
+  const checkboxStyle = {
+    marginLeft: '10px',
+    marginRight: '10px'
+  }
   return (
-    <div style={style}>
-      <Button bsStyle='danger'>Clear</Button>
-    </div>
+    <Row style={style}>
+      <Col xs={6}>
+        <Checkbox inline style={checkboxStyle}
+            onChange={handleCheckbox} checked={store.isAutorunEnabled}>
+          Autorun
+        </Checkbox>
+      </Col>
+      <Col xs={6} style={{textAlign: 'right'}}>
+        <Button bsStyle='danger'>Clear</Button>
+      </Col>
+    </Row>
   )
 }
 

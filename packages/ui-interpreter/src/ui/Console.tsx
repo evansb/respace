@@ -7,10 +7,11 @@ import Toolbar from './Toolbar'
 
 function Console({ store }: { store: Store }) {
   const style = {
-    position: 'relative'
+    position: 'relative',
+    overflow: 'auto'
   }
-  const snapshots = store.snapshots.map(s =>
-    <Snapshot snapshot={s} store={store} />
+  const snapshots = store.snapshots.map((s, idx) =>
+    <Snapshot key={`snapshot-${idx}`} snapshotData={s} store={store} />
   )
   return (
     <div style={style}>

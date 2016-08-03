@@ -1,15 +1,17 @@
 import * as rs from '@respace/common'
 import * as uuid from 'uuid'
 import { createServer, ISnapshotError,
-  createRequestStream, IRequest, Snapshot,
-  printValueToString, printErrorToString } from 'the-source'
+  createRequestStream, IRequest, Snapshot  } from 'the-source'
 import { Observable } from 'rxjs/Observable'
 import { Subject } from 'rxjs/Subject'
 import { Subscription } from 'rxjs/Subscription'
-import 'rxjs/add/operator/map'
-import 'rxjs/add/operator/share'
 import { observable, action, computed, autorun,
   transaction, ObservableMap } from 'mobx'
+
+import 'rxjs/add/operator/map'
+import 'rxjs/add/operator/share'
+import 'brace/mode/javascript'
+import 'brace/theme/tomorrow_night'
 
 export interface ITab {
   key: string
@@ -26,21 +28,22 @@ export default class InterpreterStore {
   // Console toolbar
   toolbarHeight = '20px'
 
-  // Console Input
-  @observable consoleInput = {
-    leftPadding: '5px',
-    rightPadding: '5px',
-    height: '100px',
-    theme: 'ace/theme/tomorrow_night',
+  // Shared Editor config
+  @observable editor = {
+    theme: 'tomorrow_night',
     mode: 'javascript',
     fontSize: 12,
     showPrintMargin: true,
     printMarginColumn: 80
   }
 
+  @observable isAutorunEnabled = false
+
   // Tabbing
   @observable snapshots: ISnapshotData[] = []
   @observable activeTab: ITab
+
+  @observable week: number
 
   consoleTab: ITab = {
     key: 'console',
@@ -50,7 +53,6 @@ export default class InterpreterStore {
   private _tabs: ObservableMap<ITab> = new ObservableMap<ITab>()
   private _subscriptions: Subscription[] = []
   private _request$: Subject<IRequest> = new Subject<IRequest>()
-  private _editor: AceAjax.Editor
 
   constructor(private _document: rs.IDocument<rs.documents.ISourceCode>) {
     this.createRequestFromDocument()
@@ -87,24 +89,28 @@ export default class InterpreterStore {
     this._tabs.set(key, { key, title, snapshotID })
   }
 
-  setEditor(editor: AceAjax.Editor) {
-    this._editor = editor
-    this._editor.$blockScrolling = 1000
-    this._editor.getSession().setValue('')
+  addCode(code: string) {
+    const parent: Snapshot = this.snapshots[0] && this.snapshots[0].snapshot
+    if (parent) {
+      this._request$.next({ code, week: parent.week, parent })
+    } else {
+      this._request$.next({ code, week: this.week })
+    }
+  }
+
+  setupEditor(editor: AceAjax.Editor) {
+    editor.$blockScrolling = 1000
     autorun(() => {
-      this._editor.setTheme(this.consoleInput.theme)
+      editor.setTheme(`ace/theme/${this.editor.theme}`)
     })
     autorun(() => {
-      this._editor.getSession().setMode(`ace/mode/${this.consoleInput.mode}`)
+      editor.getSession().setMode(`ace/mode/${this.editor.mode}`)
     })
     autorun(() => {
-      this._editor.getSession().setMode(`ace/mode/${this.consoleInput.mode}`)
+      editor.setShowPrintMargin(this.editor.showPrintMargin)
     })
     autorun(() => {
-      this._editor.setShowPrintMargin(this.consoleInput.showPrintMargin)
-    })
-    autorun(() => {
-      this._editor.setPrintMarginColumn(this.consoleInput.printMarginColumn)
+      editor.setPrintMarginColumn(this.editor.printMarginColumn)
     })
   }
 
@@ -113,8 +119,12 @@ export default class InterpreterStore {
   }
 
   private handleNewSnapshot(snapshot: Snapshot) {
-    console.log(printValueToString(snapshot.value))
-    return
+    transaction(() => {
+      if (!this.isAutorunEnabled) {
+        this.snapshots = []
+      }
+      this.snapshots.push({ snapshot, errors: [] })
+    })
   }
 
   private handleChildSnapshot(snapshot: Snapshot) {
@@ -137,7 +147,6 @@ export default class InterpreterStore {
   }
 
   private handleError(err: ISnapshotError) {
-    console.log(printErrorToString(err))
     return
   }
 
