@@ -15,9 +15,22 @@ function ConsoleInput({ store }: IConsoleInputProps) {
     textAlign: 'center',
     color: '#A2A4AA'
   }
+  const editorDidMount = (editor: AceAjax.Editor) => {
+    editor.commands.addCommand({
+      name: 'run',
+      bindKey: {
+        win: 'Shift-Enter',
+        mac: 'Shift-Enter'
+      },
+      exec: (editor: AceAjax.Editor) => {
+        store.addCode(editor.getValue())
+        editor.setValue('')
+      }
+    })
+  }
   return (
-    <div style={{ position: 'relative', marginTop: '10px' }}>
-      <Editor style={editorStyle} store={store} />
+    <div style={{ position: 'relative' }}>
+      <Editor style={editorStyle} store={store} didMount={editorDidMount} />
       <div style={infoStyle}>
         <small>Press Shift+Enter to evaluate</small>
       </div>

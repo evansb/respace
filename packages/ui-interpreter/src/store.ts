@@ -1,7 +1,7 @@
 import * as rs from '@respace/common'
 import * as uuid from 'uuid'
 import { createServer, ISnapshotError,
-  createRequestStream, IRequest, Snapshot  } from 'the-source'
+  createRequestStream, IRequest, Snapshot } from 'the-source'
 import { Observable } from 'rxjs/Observable'
 import { Subject } from 'rxjs/Subject'
 import { Subscription } from 'rxjs/Subscription'
@@ -19,9 +19,17 @@ export interface ITab {
   snapshotID?: string
 }
 
-export interface ISnapshotData {
-  snapshot: Snapshot,
-  errors: ISnapshotError[]
+export class SnapshotData {
+  @observable errors: ISnapshotError[] = []
+
+  constructor(public snapshot: Snapshot,
+              errors?: ISnapshotError[]) {
+    if (errors instanceof Array) {
+      errors.forEach(e => {
+        this.errors.push(e)
+      })
+    }
+  }
 }
 
 export default class InterpreterStore {
@@ -34,13 +42,14 @@ export default class InterpreterStore {
     mode: 'javascript',
     fontSize: 12,
     showPrintMargin: true,
+    showLineNumber: true,
     printMarginColumn: 80
   }
 
   @observable isAutorunEnabled = false
 
   // Tabbing
-  @observable snapshots: ISnapshotData[] = []
+  @observable snapshots: SnapshotData[] = []
   @observable activeTab: ITab
 
   @observable week: number
@@ -89,17 +98,32 @@ export default class InterpreterStore {
     this._tabs.set(key, { key, title, snapshotID })
   }
 
+  @action('interp:clear')
+  clear() {
+    transaction(() => {
+      while (this.snapshots.length > 0) {
+        this.snapshots.pop()
+      }
+    })
+  }
+
   addCode(code: string) {
-    const parent: Snapshot = this.snapshots[0] && this.snapshots[0].snapshot
+    const parentData: SnapshotData = this.snapshots[this.snapshots.length - 1]
+    const parent = parentData && parentData.snapshot
     if (parent) {
       this._request$.next({ code, week: parent.week, parent })
     } else {
-      this._request$.next({ code, week: this.week })
+      const newParent = new Snapshot({ code: ';' })
+      this._request$.next({ code, week: this.week, parent: newParent })
     }
   }
 
   setupEditor(editor: AceAjax.Editor) {
     editor.$blockScrolling = 1000
+    editor.setOption('useWorker', false);
+    autorun(() => {
+      editor.renderer.setShowGutter(this.editor.showLineNumber)
+    })
     autorun(() => {
       editor.setTheme(`ace/theme/${this.editor.theme}`)
     })
@@ -118,25 +142,11 @@ export default class InterpreterStore {
     this._subscriptions.forEach(s => s.unsubscribe())
   }
 
-  private handleNewSnapshot(snapshot: Snapshot) {
-    transaction(() => {
-      if (!this.isAutorunEnabled) {
-        this.snapshots = []
-      }
-      this.snapshots.push({ snapshot, errors: [] })
-    })
-  }
-
-  private handleChildSnapshot(snapshot: Snapshot) {
-    return
-  }
-
   private handleSnapshot(snapshot: Snapshot) {
-    if (!snapshot.parent) {
-      return this.handleNewSnapshot(snapshot)
-    } else {
-      return this.handleChildSnapshot(snapshot)
-    }
+    transaction(() => {
+      const data = new SnapshotData(snapshot)
+      this.snapshots.push(data)
+    })
   }
 
   private setupTabs() {
@@ -147,7 +157,19 @@ export default class InterpreterStore {
   }
 
   private handleError(err: ISnapshotError) {
-    return
+    // Find snapshots
+    const found = this.snapshots.some(s => {
+      let same = s.snapshot === err.snapshot
+      if (same) {
+        if (!(s.errors.find(e => e.message === err.message))) {
+          s.errors.push(err)
+        }
+      }
+      return same
+    })
+    if (!found && err.snapshot) {
+      this.snapshots.push(new SnapshotData(err.snapshot, [err]))
+    }
   }
 
   private createServer() {
@@ -168,6 +190,7 @@ export default class InterpreterStore {
     const run$: Observable<IRequest> = Observable.create(observer => {
       this._document.addHandler((action, document) => {
         if (action === 'run') {
+          this.clear()
           observer.next({ code: document.data.value, week: 3 })
         }
         return Promise.resolve()

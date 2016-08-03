@@ -7,26 +7,30 @@ function Toolbar({ store }: { store: Store }) {
   const style = {
     position: 'relative',
     backgroundColor: '#17181A',
-    padding: '5px'
+    padding: '5px',
+    marginTop: '1px'
   }
-  const handleCheckbox = () => {
-    store.isAutorunEnabled = !store.isAutorunEnabled
+
+  const handleLineNumberToggle = () => {
+    store.editor.showLineNumber = !store.editor.showLineNumber
   }
+
   const checkboxStyle = {
-    marginLeft: '10px',
     marginRight: '10px'
   }
   return (
     <Row style={style}>
       <Col xs={6}>
         <Checkbox inline style={checkboxStyle}
-            onChange={handleCheckbox} checked={store.isAutorunEnabled}>
-          Autorun
+            onChange={handleLineNumberToggle}
+            checked={store.editor.showLineNumber}>
+          Line Numbers
         </Checkbox>
       </Col>
       <Col xs={6} style={{textAlign: 'right'}}>
-        <Button bsStyle='danger'>Clear</Button>
+        <Button onClick={() => store.clear()} bsStyle='danger'>Clear</Button>
       </Col>
+
     </Row>
   )
 }

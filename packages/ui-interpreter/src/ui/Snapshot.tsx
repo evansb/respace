@@ -1,37 +1,33 @@
 import * as React from 'react'
-import Store, { ISnapshotData } from '../store'
-import { Snapshot } from 'the-source'
+import Store, { SnapshotData } from '../store'
 import SnapshotResult from './SnapshotResult'
 import Editor from './Editor'
 
 export interface ISnapshotProps {
-  snapshot: Snapshot
+  snapshotData: SnapshotData
   store: Store
 }
 
-function ChildSnapshot({ store, snapshot }: ISnapshotProps) {
-  const editorStyle = { width: '100%' }
+function SnapshotView({ store, snapshotData }: ISnapshotProps) {
   const editorDidMount = (editor) => {
-    editor.setValue(snapshot.code)
-    editor.setOptions({ maxLines: 30, dragEnabled: false })
-    editor.setReadOnly(true)
+    editor.setValue(snapshotData.snapshot.code)
+    editor.setOptions({
+      maxLines: 30,
+      readOnly: true,
+      highlightActiveLine: false,
+      highlightGutterLine: false
+    })
+    editor.renderer.$cursorLayer.element.style.opacity = 0
+    editor.clearSelection()
+    editor.blur()
   }
   return (
     <div>
-      <Editor store={store} didMount={editorDidMount} />
-      <div style={editorStyle} ref='editor'></div>
-      <SnapshotResult {...this.props} />
+      { snapshotData.snapshot.parent &&
+          <Editor store={store} didMount={editorDidMount} /> }
+      <SnapshotResult store={store} snapshotData={snapshotData} />
     </div>
   )
-}
-
-function SnapshotView(props: { store: Store, snapshotData: ISnapshotData }) {
-  const snapshot = props.snapshotData.snapshot
-  if (snapshot && !snapshot.parent) {
-    return <SnapshotResult snapshot={snapshot} store={props.store} />
-  } else {
-    return <ChildSnapshot snapshot={snapshot} store={props.store} />
-  }
 }
 
 export default SnapshotView
