@@ -5,9 +5,9 @@ const WebpackDevServer = require('webpack-dev-server')
 const webpack = require('webpack')
 const createWebpackConfig = require('../webpack')
 
-module.exports = (bundleDir) => {
+module.exports = (bundleDir, template) => {
   process.env.NODE_ENV = 'development'
-  const webpackConfig = createWebpackConfig(bundleDir)
+  const webpackConfig = createWebpackConfig(bundleDir, template)
   const compiler = webpack(webpackConfig)
   new WebpackDevServer(compiler, {
     hot: true,

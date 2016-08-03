@@ -99,10 +99,25 @@ export default class InterpreterStore {
   }
 
   @action('interp:clear')
-  clear() {
+  clearAll() {
     transaction(() => {
       while (this.snapshots.length > 0) {
         this.snapshots.pop()
+      }
+    })
+  }
+
+  @action('interp:clearNew')
+  clearNew() {
+    transaction(() => {
+      let idx = this.snapshots.length - 1
+      while (this.snapshots.length > 0) {
+        if (this.snapshots[idx].snapshot.parent) {
+          this.snapshots.pop()
+        } else {
+          break
+        }
+        idx--
       }
     })
   }
@@ -190,7 +205,7 @@ export default class InterpreterStore {
     const run$: Observable<IRequest> = Observable.create(observer => {
       this._document.addHandler((action, document) => {
         if (action === 'run') {
-          this.clear()
+          this.clearAll()
           observer.next({ code: document.data.value, week: 3 })
         }
         return Promise.resolve()

@@ -26,9 +26,11 @@ function Toolbar({ store }: { store: Store }) {
             checked={store.editor.showLineNumber}>
           Line Numbers
         </Checkbox>
+
       </Col>
       <Col xs={6} style={{textAlign: 'right'}}>
-        <Button onClick={() => store.clear()} bsStyle='danger'>Clear</Button>
+        <Button onClick={() => store.clearNew()}>Clear New</Button>
+        <Button onClick={() => store.clearAll()}>Clear All</Button>
       </Col>
 
     </Row>

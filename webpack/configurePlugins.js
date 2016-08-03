@@ -3,6 +3,9 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = (webpackConfig, config) => {
+  console.log(config.template)
+  const template = config.template || path.join(__dirname, 'template.html')
+
   webpackConfig.plugins = [
     new webpack.DefinePlugin({
       'process.env': {
@@ -15,7 +18,7 @@ module.exports = (webpackConfig, config) => {
 
   webpackConfig.plugins.push(
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, 'template.html'),
+      template,
       hash: false,
       filename: 'index.html',
       inject: 'body'

@@ -5,8 +5,8 @@ const configurePlugins = require('./configurePlugins')
 const configureLoaders = require('./configureLoaders')
 const createConfig = require('./createConfig')
 
-module.exports = (bundleDir) => {
-  const config = createConfig(bundleDir)
+module.exports = (bundleDir, template) => {
+  const config = createConfig(bundleDir, template)
   const projectDir = path.resolve(__dirname, '..')
   const webpackConfig = {
     context: projectDir,

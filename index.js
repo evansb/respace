@@ -9,9 +9,9 @@ const buildAll = require('./scripts/build-all')
 
 program
   .usage('(bundle|serve|build) [dir]')
-  .arguments('<cmd> [dir]')
+  .arguments('<cmd> [dir] [template]')
   .version(require('./package.json').version)
-  .action((cmd, presetDir) => {
+  .action((cmd, presetDir, template) => {
     if (cmd === 'build-all') {
       buildAll()
     } else {
@@ -23,7 +23,7 @@ program
       if (cmd === 'bundle') {
         bundle(presetDir)
       } else if (cmd === 'serve') {
-        serve(presetDir)
+        serve(presetDir, template)
       } else if (cmd === 'build') {
         buildComponent(presetDir)
       } else {
