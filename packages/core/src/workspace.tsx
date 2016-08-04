@@ -93,7 +93,11 @@ export class Workspace {
   }
 
   async configureSession() {
-    const sessionKey = window.location.href + '_session'
+    let href = location.href.replace(location.hash, '')
+    if (href.endsWith('#')) {
+      href = href.substr(0, href.length - 1)
+    }
+    const sessionKey = href + '_session'
     localforage.config({
       name: 'respace'
     })
