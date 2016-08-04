@@ -22,6 +22,7 @@ const RevertIcon = require('react-icons/fa/ban').default
 const SubmitIcon = require('react-icons/fa/check').default
 const ZoomInIcon = require('react-icons/fa/plus').default
 const ZoomOutIcon = require('react-icons/fa/minus').default
+const AnnotateIcon = require('react-icons/fa/pencil').default
 
 function Toolbar({ component }: Props) {
   const store = component.state
@@ -64,6 +65,13 @@ function Toolbar({ component }: Props) {
   const zoomOutButton = (
     <Button onClick={() => store.decreaseFontSize()}>
       <ZoomOutIcon />
+    </Button>
+  )
+
+  const annotateButton = (
+    <Button bsSize='small'>
+      <AnnotateIcon style={{ marginRight: '5px' }}/>
+      <b>Annotate</b>
     </Button>
   )
 

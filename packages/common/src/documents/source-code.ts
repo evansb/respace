@@ -38,6 +38,7 @@ export interface IAnnotation {
 
 export interface ISourceCode {
   template: string
+  description: string
   value: string
   annotations: {
     [id: string]: IAnnotation

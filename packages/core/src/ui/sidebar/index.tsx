@@ -3,8 +3,6 @@ import { observer } from 'mobx-react'
 import { IUIStore, IDocumentStore, ILayoutStore } from '@respace/common'
 import { Button, ButtonGroup } from 'react-bootstrap'
 import FaExpand from 'react-icons/fa/expand'
-import FaCogs from 'react-icons/fa/cogs'
-import FaInfo from 'react-icons/fa/info-circle'
 import ComponentPicker from './component-picker'
 import { addTooltip } from '../util'
 
@@ -26,15 +24,6 @@ const Sidebar = ({ documentStore, uiStore, layoutStore }: ISidebarProps) => {
   const header = (
     <ButtonGroup>
       { addTooltip(toggleSidebarButton, 'Toggle Sidebar', true, 'bottom') }
-      { uiStore.isSidebarToggled &&
-        <Button onClick={handleExpand} bsStyle='info'>
-          <FaCogs />
-        </Button> }
-      { uiStore.isSidebarToggled &&
-        <Button onClick={handleExpand} bsStyle='default'>
-          <FaInfo />
-        </Button>
-      }
     </ButtonGroup>
   )
 

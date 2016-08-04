@@ -17,9 +17,9 @@ const placeholder =
   + 'user_placeholder.png'
 
 function Comment({ annotation, isNew, store }: IProps) {
-  const MediaLeft = Media.Left
-  const MediaBody = Media.Body
-  const MediaHeading = Media.Heading
+  const MediaLeft = Media.Left as any
+  const MediaBody = Media.Body as any
+  const MediaHeading = Media.Heading as any
   const src = annotation.profilePicture || placeholder
   const style = {
     backgroundColor: '#25272F',
@@ -57,7 +57,7 @@ function Comment({ annotation, isNew, store }: IProps) {
     if (store.isEditMode) {
       newComment = <TextArea
         placeholder='Add a comment...'
-        defaultValue={store.newAnnotation.value}
+        value={store.newAnnotation.value}
         onChange={e => store.newCommentChange(e.target.value)}
         style={textareaStyle} rows={3} />
     } else {
@@ -74,9 +74,9 @@ function Comment({ annotation, isNew, store }: IProps) {
             onClick={() => { store.isEditMode = !store.isEditMode }}>
             { store.isEditMode ? 'Preview' : 'Edit' }
           </Button>
-          <Button
-            onClick={() => { store.addAnnotation() }}
-              bsStyle='success'>Post</Button>
+          <Button onClick={() => { store.addAnnotation() }} bsStyle='success'>
+            Post
+          </Button>
         </div>
       </MediaBody>
     )

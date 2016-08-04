@@ -30,10 +30,10 @@ export default class AceEditor extends React.Component<Props, void> {
     const style = {
       position: 'absolute',
       left: '0px',
+      right: '0px',
       overflow: 'auto',
       top: store.toolbarHeight,
       bottom: store.statusBarHeight,
-      width: '100%'
     }
     return <div style={style}></div>
   }

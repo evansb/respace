@@ -2,8 +2,8 @@ import * as React from 'react'
 import { printValueToString } from 'the-source'
 import Store, { SnapshotData } from '../store'
 import { observer } from 'mobx-react'
-import { printErrorToString, ISnapshotError } from 'the-source'
-import { Tab, DropdownButton, MenuItem, Button } from 'react-bootstrap'
+import { printErrorToString, ISnapshotError, unbox } from 'the-source'
+import { Tab, Button } from 'react-bootstrap'
 
 export interface IProps {
   snapshotData: SnapshotData
@@ -48,9 +48,8 @@ function SnapshotResult({ snapshotData, store }: IProps) {
   const paneStyle = { position: 'relative' }
   const dropdownStyle = {
     position: 'absolute',
-    textAlign: 'right',
     top: '0px',
-    right: '0px'
+    right: '10px'
   }
   const valueStyle = {
     margin: 0,
@@ -74,14 +73,14 @@ function SnapshotResult({ snapshotData, store }: IProps) {
       <ErrorView key={idx} error={e} style={errorStyle} />)
   }
   if (snapshot.done && snapshot.value) {
-    valueType = snapshot.value.type
+    if (snapshot.value.type === 'foreign') {
+      valueType =
+        (typeof unbox(snapshot.value, snapshot.context)) + ' (foreign)'
+    } else {
+      valueType = snapshot.value.type
+    }
   }
-  const selectButton = (
-    <DropdownButton title={valueType} bsStyle='link' id='result'>
-      <MenuItem eventKey='raw'>Raw</MenuItem>
-      <MenuItem eventKey='special'>Special</MenuItem>
-    </DropdownButton>
-  )
+  const selectButton = <a>{valueType}</a>
   return (
     <Container defaultActiveKey='raw' id='result'>
       <Content animation>

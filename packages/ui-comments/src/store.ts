@@ -37,7 +37,7 @@ class CommentStore {
         }
       }
     }
-    this.change$.debounceTime(100).subscribe((value) => {
+    this.change$.debounceTime(10).subscribe((value) => {
       this.newAnnotation.value = value
     })
   }
@@ -62,10 +62,7 @@ class CommentStore {
     this.document.data.annotations[key] = annotation
     await this.document.dispatch('save')
     await this.document.dispatch('annotationAdded')
-    transaction(() => {
-      this.newAnnotation.value = ''
-      this.newAnnotation.createdAt = new Date()
-    })
+    this.newAnnotation.value = ''
   }
 }
 
