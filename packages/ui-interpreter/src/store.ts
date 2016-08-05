@@ -48,7 +48,11 @@ export default class InterpreterStore {
     printMarginColumn: 80
   }
 
+  inputEditor: AceAjax.Editor
+  inputEditorValue: string = ''
+
   @observable isAutorunEnabled = false
+  @observable isControlsEnabled = false
 
   // Tabbing
   @observable snapshots: SnapshotData[] = []
@@ -126,6 +130,12 @@ export default class InterpreterStore {
     })
   }
 
+  addCodeFromInput() {
+    if (this.inputEditor) {
+      this.addCode(this.inputEditor.getValue())
+    }
+  }
+
   addCode(code: string) {
     const parentData: SnapshotData = this.snapshots[this.snapshots.length - 1]
     const parent = parentData && parentData.snapshot
@@ -189,7 +199,6 @@ export default class InterpreterStore {
 
   private handleError(err: ISnapshotError) {
     // Find snapshots
-    console.log(err)
     const found = this.snapshots.some(s => {
       let same = s.snapshot === err.snapshot
       if (same) {

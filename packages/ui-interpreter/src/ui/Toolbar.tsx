@@ -15,6 +15,10 @@ function Toolbar({ store }: { store: Store }) {
     store.editor.showLineNumber = !store.editor.showLineNumber
   }
 
+  const handleControlsToggle = () => {
+    store.isControlsEnabled = !store.isControlsEnabled
+  }
+
   const checkboxStyle = {
     marginRight: '10px'
   }
@@ -26,7 +30,11 @@ function Toolbar({ store }: { store: Store }) {
             checked={store.editor.showLineNumber}>
           Line Numbers
         </Checkbox>
-
+        <Checkbox inline style={checkboxStyle}
+            onChange={handleControlsToggle}
+            checked={store.isControlsEnabled}>
+          Controls
+        </Checkbox>
       </Col>
       <Col xs={6} style={{textAlign: 'right'}}>
         <Button onClick={() => store.clearNew()}>Clear New</Button>

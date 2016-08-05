@@ -21,6 +21,7 @@ export default class Editor extends React.Component<IEditorProps, void> {
   }
 
   componentWillUnmount() {
+    this.props.store.inputEditorValue = this._editor.getValue()
     this._editor.destroy()
   }
 
