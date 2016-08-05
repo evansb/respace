@@ -2,9 +2,10 @@ import * as React from 'react'
 import { observer } from 'mobx-react'
 import { IUIStore, IDocumentStore, ILayoutStore } from '@respace/common'
 import { Button, ButtonGroup } from 'react-bootstrap'
-import FaExpand from 'react-icons/fa/expand'
 import ComponentPicker from './component-picker'
 import { addTooltip } from '../util'
+
+const ToggleIcon = require('react-icons/fa/arrows-h').default
 
 export interface ISidebarProps {
   layoutStore: ILayoutStore,
@@ -17,7 +18,7 @@ const Sidebar = ({ documentStore, uiStore, layoutStore }: ISidebarProps) => {
 
   const toggleSidebarButton = (
     <Button onClick={handleExpand} bsStyle='success'>
-      <FaExpand />
+      <ToggleIcon />
     </Button>
   )
 
