@@ -19,6 +19,7 @@ export default class EditorStore {
   @observable isAutorunEnabled = false
   @observable isRevertConfirmationShown = false
   @observable isSubmitConfirmationShown = false
+  @observable isSubmitted = false
 
   statusBarHeight = 20
   toolbarHeight = 30
@@ -26,11 +27,15 @@ export default class EditorStore {
   private _editor: AceAjax.Editor
 
   constructor(private _document: rs.IDocument<rs.documents.ISourceCode>) {
+    this.isSubmitted = _document.volatile.isSubmitted
   }
 
   setEditor(editor: AceAjax.Editor) {
     this._editor = editor
     this.addChangeHandler()
+    if (this.isSubmitted) {
+      this._editor.setReadOnly(true)
+    }
     this._editor.$blockScrolling = 1000
     this._editor.getSession().setValue(this._document.data.value)
     this._document.addHandler((action, document) => {

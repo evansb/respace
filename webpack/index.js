@@ -52,7 +52,9 @@ module.exports = (bundleDir, template) => {
   webpackConfig.output = {
     filename: `${config.name}.min.js`,
     path: config.dist,
-    publicPath: '/'
+    publicPath: '/',
+    libraryTarget: 'var',
+    library: 'RespaceBundle'
   }
 
   configurePlugins(webpackConfig, config)

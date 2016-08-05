@@ -36,6 +36,7 @@ function Toolbar({ component }: Props) {
     backgroundColor: '#17181A',
     height: store.toolbarHeight
   }
+  const commonStyle = store.isSubmitted ? 'disabled': 'default'
   const runButton = (
     <Button onClick={() => store.run() } bsStyle='success'>
       <RunIcon />
@@ -47,13 +48,19 @@ function Toolbar({ component }: Props) {
       <b>SUBMIT</b>
     </Button>
   )
+  const submittedButton = (
+    <Button  bsSize='small' disabled={store.isSubmitted}>
+      <SubmitIcon style={{ marginRight: '5px' }}/>
+      <b>Submitted</b>
+    </Button>
+  )
   const revertButton = (
-    <Button onClick={() => store.revert() }>
+    <Button disabled={store.isSubmitted} onClick={() => store.revert() }>
       <RevertIcon />
    </Button>
   )
   const saveButton = (
-    <Button onClick={() => store.save() }>
+    <Button disabled={store.isSubmitted} onClick={() => store.save() }>
       <SaveIcon />
     </Button>
   )
@@ -91,7 +98,7 @@ function Toolbar({ component }: Props) {
         </ButtonToolbar>
       </Col>
       <Col style={{textAlign: 'right'}} xs={4}>
-        { submitButton }
+        { store.isSubmitted ? submittedButton : submitButton }
       </Col>
     </div>
    )
