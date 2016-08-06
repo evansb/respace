@@ -1,12 +1,11 @@
 import * as React from 'react'
 import * as uuid from 'uuid'
 import * as rs from '@respace/common'
-import { Nav, NavItem, Tab } from 'react-bootstrap'
+import { Tab } from 'react-bootstrap'
 import Console from './Console'
 import Store from '../store'
 import { observer } from 'mobx-react'
 
-const CloseIcon = require('react-icons/md/close').default
 export type Props = rs.IComponentProps<rs.documents.ISourceCode, Store>
 
 function Interpreter({ component }: Props) {
@@ -15,6 +14,7 @@ function Interpreter({ component }: Props) {
   const TabContainer = Tab.Container
   const TabContent = Tab.Content
   const TabPane = Tab.Pane
+  /* TODO
   const tabs = store.tabs.map((tab) => {
     if (tab === store.consoleTab) {
       return (
@@ -39,6 +39,7 @@ function Interpreter({ component }: Props) {
       )
     }
   })
+  */
   const panes = store.tabs.map((tab) => {
     let content
     if (tab === store.consoleTab) {

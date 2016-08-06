@@ -1,17 +1,17 @@
 import * as uuid from 'uuid'
 import * as rs from '@respace/common'
-import { asMap, observable, ObservableMap,
-  action, transaction, computed } from 'mobx'
+import { asMap, observable, ObservableMap, action, computed } from 'mobx'
 import { Subject } from 'rxjs/Subject'
 import 'rxjs/add/operator/debounceTime'
 
+export type IAnnotation = rs.documents.IAnnotation
 export type Document = rs.IComponentProps<rs.documents.ISourceCode, void>
 
 class CommentStore {
 
-  annotations: ObservableMap<rs.documents.IAnnotation>
+  annotations: ObservableMap<IAnnotation>
 
-  newAnnotation: rs.documents.IAnnotation = observable({
+  newAnnotation: IAnnotation = observable({
     posterName: 'Evan Sebastian',
     profileUrl: 'https://www.facebook.com/sbsevn',
     posterRole: 'Avenger',
@@ -46,7 +46,7 @@ class CommentStore {
     this.change$.next(value)
   }
 
-  @computed get allAnnotations() {
+  @computed get allAnnotations(): IAnnotation[] {
     const annotations = this.annotations.values()
       .sort((a, b) => (b as any) - (a as any))
     return annotations
