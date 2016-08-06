@@ -37,7 +37,7 @@ This method of bundling supports TypeScript, ES6, and SCSS.
 ```shell
 $ node -v # We use > 5
 $ npm -v  # We use > 3
-$ npm install lerna typings -g
+$ npm install lerna@^2.0.0-beta typings -g
 $ npm run bootstrap
 $ npm install
 $ npm link
