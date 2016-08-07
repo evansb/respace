@@ -40,7 +40,6 @@ module.exports = (bundleDir, template) => {
   webpackConfig.debug = true
   webpackConfig.entry = {
     [config.name]: baseEntry.concat([
-      'babel-polyfill',
       path.join(config.base, config.pkg['respace:main'] || config.pkg['main'])
     ])
   }
