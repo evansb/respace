@@ -42,6 +42,7 @@ function Comment({ annotation, isNew, store }: IProps) {
     marginLeft: '5px'
   }
   const textareaStyle = {
+    minHeight: '100px',
     fontFamily: 'monospace',
     padding: '10px',
     resize: 'none',
@@ -57,8 +58,8 @@ function Comment({ annotation, isNew, store }: IProps) {
     if (store.isEditMode) {
       newComment = <TextArea
         placeholder='Add a comment...'
-        value={store.newAnnotation.value}
-        onChange={e => store.newCommentChange(e.target.value)}
+        defaultValue={store.newAnnotation.value}
+        onChange={e => { store.newCommentChange(e.target.value) }}
         style={textareaStyle} rows={3} />
     } else {
       newComment = <div dangerouslySetInnerHTML={{
