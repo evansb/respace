@@ -30,7 +30,7 @@ function ComponentItem({ uiStore,
     'item-active': component.isActive
   })
   return (
-    <ListGroupItem href='#' bsClass={classes}>
+    <ListGroupItem bsClass={classes}>
       <Row onClick={handleClick}>
         <Col xs={2}>{ iconWithTooltip }</Col>
         { uiStore.isSidebarToggled &&
