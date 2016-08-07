@@ -6,10 +6,7 @@ import ConsoleInput from './ConsoleInput'
 import Toolbar from './Toolbar'
 
 function Console({ store }: { store: Store }) {
-  const style = {
-    position: 'relative',
-    overflow: 'auto'
-  }
+  const style = { position: 'relative' }
   const snapshots = store.snapshots.map((s, idx) =>
     <Snapshot key={`snapshot-${idx}`} snapshotData={s} store={store} />
   )
