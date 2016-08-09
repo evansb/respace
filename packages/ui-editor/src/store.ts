@@ -20,6 +20,7 @@ export default class EditorStore {
   @observable isRevertConfirmationShown = false
   @observable isSubmitConfirmationShown = false
   @observable isSubmitted = false
+  @observable isGraded = false
 
   statusBarHeight = 20
   toolbarHeight = 30
@@ -28,6 +29,11 @@ export default class EditorStore {
 
   constructor(private _document: rs.IDocument<rs.documents.ISourceCode>) {
     this.isSubmitted = _document.volatile.isSubmitted
+    this.isGraded = _document.volatile.isGraded
+  }
+
+  get isRemote(): boolean {
+    return this._document.volatile.isRemote
   }
 
   setEditor(editor: AceAjax.Editor) {
@@ -54,6 +60,9 @@ export default class EditorStore {
   @action('ui-editor:save')
   async save() {
     this._document.dispatch('save')
+    if (this._document.volatile.isRemote) {
+      this._document.dispatch('saveRemote')
+    }
     this.isDirty = false
   }
 
@@ -62,7 +71,9 @@ export default class EditorStore {
     if (!this.isSubmitConfirmationShown) {
       this.isSubmitConfirmationShown = !this.isSubmitConfirmationShown
     } else {
+      this._document.data.value = this._editor.getValue()
       await this._document.dispatch('submit')
+      this.isSubmitted = true
       this.isSubmitConfirmationShown = false
     }
   }
@@ -72,7 +83,7 @@ export default class EditorStore {
     if (!this.isRevertConfirmationShown) {
       this.isRevertConfirmationShown = !this.isRevertConfirmationShown
     } else {
-      this._editor.getSession().setValue(this._document.data.template)
+      this._editor.getSession().setValue(this._document.volatile.template)
       this._document.data.value = this._document.data.template
       await this._document.dispatch('revert')
       this.isRevertConfirmationShown = false

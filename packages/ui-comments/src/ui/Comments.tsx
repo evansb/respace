@@ -17,10 +17,17 @@ function Comments(props: IProps) {
     paddingLeft: '10px',
     paddingRight: '10px'
   }
+  const newAnnotation = {
+    posterName: store.posterName,
+    posterRole: store.posterRole,
+    profileUrl: store.profileUrl,
+    profilePicture: store.profilePicture,
+    value: store.newAnnotationValue,
+  }
   return (
     <div style={style}>
       {annotations}
-      <Comment isNew annotation={store.newAnnotation} store={store}/>
+      <Comment isNew annotation={newAnnotation} store={store}/>
     </div>
   )
 }

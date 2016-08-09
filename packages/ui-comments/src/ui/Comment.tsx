@@ -12,15 +12,11 @@ export type IProps = {
   store: Store
 }
 
-const placeholder =
-  'https://www.esl101.com/sites/default/files/styles/m_290/public/'
-  + 'user_placeholder.png'
-
 function Comment({ annotation, isNew, store }: IProps) {
   const MediaLeft = Media.Left as any
   const MediaBody = Media.Body as any
   const MediaHeading = Media.Heading as any
-  const src = annotation.profilePicture || placeholder
+  const src = annotation.profilePicture
   const style = {
     backgroundColor: '#25272F',
     paddingTop: '5px',
@@ -50,20 +46,20 @@ function Comment({ annotation, isNew, store }: IProps) {
     color: 'white',
     backgroundColor: '#1D1F21'
   }
-  const label = annotation.posterRole &&
-    <Label style={labelStyle}>{annotation.posterRole}</Label>
+  const label = (annotation.posterRole === 'staff') &&
+    <Label style={labelStyle}>Avenger</Label>
   let body
   if (isNew) {
     let newComment
     if (store.isEditMode) {
       newComment = <TextArea
         placeholder='Add a comment...'
-        defaultValue={store.newAnnotation.value}
+        defaultValue={store.newAnnotationValue}
         onChange={e => { store.newCommentChange(e.target.value) }}
         style={textareaStyle} rows={3} />
     } else {
       newComment = <div dangerouslySetInnerHTML={{
-        __html: marked(store.newAnnotation.value)
+        __html: marked(store.newAnnotationValue)
       }} />
     }
 
@@ -85,7 +81,7 @@ function Comment({ annotation, isNew, store }: IProps) {
     body = (
       <MediaBody style={bodyStyle}>
         <MediaHeading style={headingStyle}>
-          <a href={annotation.profileUrl || '#'}>
+          <a href={annotation.profileUrl || 'javascript:;'}>
             {annotation.posterName}
           </a>
           {label}
@@ -99,7 +95,7 @@ function Comment({ annotation, isNew, store }: IProps) {
   return (
     <Media style={style}>
       <MediaLeft style={imageStyle}>
-        <img width={24} height={24} src={src} />
+        { src && <img width={24} height={24} src={src} /> }
       </MediaLeft>
       { body }
     </Media>

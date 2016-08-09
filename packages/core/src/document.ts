@@ -37,14 +37,14 @@ export class Document<D> implements rs.IDocument<D> {
     }
   }
 
-  async dispatch(action: string) {
+  async dispatch(action: string, args?: any) {
     const snapshot = {
       type: this.type,
       meta: toJS(this.meta),
       data: toJS(this.data) as D
     }
     this._handlers.forEach(async (handler) => {
-      await handler(action, snapshot)
+      await handler(action, snapshot, args)
     })
   }
 

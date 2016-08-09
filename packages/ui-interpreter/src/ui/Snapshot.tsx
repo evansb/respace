@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Store, { SnapshotData } from '../store'
 import SnapshotResult from './SnapshotResult'
-import Editor from './Editor'
+import { Editor } from '@respace/helper-ace'
 
 export interface ISnapshotProps {
   snapshotData: SnapshotData
@@ -10,6 +10,8 @@ export interface ISnapshotProps {
 
 function SnapshotView({ store, snapshotData }: ISnapshotProps) {
   const editorDidMount = (editor) => {
+    store.setupEditor(editor)
+    editor.getSession().setMode('ace/mode/javascript')
     editor.setValue(snapshotData.snapshot.code)
     editor.setOptions({
       maxLines: 30,
@@ -24,7 +26,7 @@ function SnapshotView({ store, snapshotData }: ISnapshotProps) {
   return (
     <div>
       { snapshotData.snapshot.parent &&
-          <Editor store={store} didMount={editorDidMount} /> }
+          <Editor didMount={editorDidMount} /> }
       <SnapshotResult store={store} snapshotData={snapshotData} />
     </div>
   )

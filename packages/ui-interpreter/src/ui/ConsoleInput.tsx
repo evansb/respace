@@ -1,7 +1,7 @@
 import * as React from 'react'
 import Store from '../store'
 import { observer } from 'mobx-react'
-import Editor from './Editor'
+import { Editor } from '@respace/helper-ace'
 import { Button, ButtonGroup } from 'react-bootstrap'
 const RunIcon = require('react-icons/fa/play').default
 
@@ -24,6 +24,8 @@ function ConsoleInput({ store }: IConsoleInputProps) {
       editor.setValue(oldValue)
     }
     store.inputEditor = editor
+    editor.getSession().setMode(`ace/mode/javascript`)
+    editor.setTheme('ace/theme/tomorrow_night')
     editor.commands.addCommand({
       name: 'run',
       bindKey: {
@@ -36,8 +38,12 @@ function ConsoleInput({ store }: IConsoleInputProps) {
       }
     })
   }
-  let editor = <Editor style={editorStyle} store={store}
-    didMount={editorDidMount} />
+  const editorWillUnmount = (editor: AceAjax.Editor) => {
+    store.inputEditorValue = editor.getValue()
+  }
+  let editor = <Editor style={editorStyle}
+                      willUnmount={editorWillUnmount}
+                      didMount={editorDidMount} />
   if (store.isControlsEnabled) {
     editor = (
       <div className='clearfix'>

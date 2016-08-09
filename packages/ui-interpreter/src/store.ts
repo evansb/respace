@@ -49,7 +49,6 @@ export default class InterpreterStore {
   }
 
   inputEditor: AceAjax.Editor
-  inputEditorValue: string = ''
 
   @observable isAutorunEnabled = false
   @observable isControlsEnabled = false
@@ -64,6 +63,8 @@ export default class InterpreterStore {
     key: 'console',
     title: 'Console'
   }
+
+  inputEditorValue = ''
 
   private _tabs: ObservableMap<ITab> = new ObservableMap<ITab>()
   private _subscriptions: Subscription[] = []

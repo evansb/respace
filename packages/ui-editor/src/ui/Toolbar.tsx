@@ -50,7 +50,7 @@ function Toolbar({ component }: Props) {
   const submittedButton = (
     <Button  bsSize='small' disabled={store.isSubmitted}>
       <SubmitIcon style={{ marginRight: '5px' }}/>
-      <b>Submitted</b>
+      <b>{ store.isGraded ? 'Graded' : 'Submitted'}</b>
     </Button>
   )
   const revertButton = (
@@ -97,7 +97,8 @@ function Toolbar({ component }: Props) {
         </ButtonToolbar>
       </Col>
       <Col style={{textAlign: 'right'}} xs={4}>
-        { store.isSubmitted ? submittedButton : submitButton }
+        { store.isSubmitted ? submittedButton :
+            (store.isRemote ? submitButton : null) }
       </Col>
     </div>
    )

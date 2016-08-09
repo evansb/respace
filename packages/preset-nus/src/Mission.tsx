@@ -10,7 +10,7 @@ type Props = rs.IComponentProps<rs.documents.ISourceCode, void>
 function MissionView({ component }: Props) {
   const document = component.document
   const html = {
-    __html: marked(document.data.description)
+    __html: marked(document.volatile.description)
   }
   const style = {
     padding: '10px'
@@ -20,11 +20,12 @@ function MissionView({ component }: Props) {
 
 const Mission: rs.IComponentFactory<rs.documents.ISourceCode, void> = {
   name: 'ui-markdown-view',
-  displayName: 'Mission Briefing',
+  displayName: 'Briefing',
   icon,
   view: MissionView,
   shouldProcessDocument(document: rs.AnyDocument) {
-    return document.type === 'source-code' && document.data.description
+    return document.type === 'source-code' &&
+      (typeof document.volatile.description === 'string')
   },
   initialState(document: rs.IDocument<rs.documents.ISourceCode>) {
     return

@@ -10,7 +10,7 @@ export interface IDocumentMeta {
 }
 
 export type DocumentHandler<T> = (action: string,
-    document: IDocumentJSON<T>) => Promise<{}>
+    document: IDocumentJSON<T>, arg?: any) => Promise<{}>
 
 export interface IDocumentJSON<T> {
   type: string
@@ -25,7 +25,7 @@ export interface IDocument<T> extends IDocumentJSON<T> {
   id: string
   title: string
 
-  dispatch(action: string): Promise<{}>
+  dispatch(action: string, arg?: any): Promise<{}>
   addHandler(callback: DocumentHandler<T>)
 }
 

@@ -11,14 +11,13 @@ class CommentStore {
 
   annotations: ObservableMap<IAnnotation>
 
-  newAnnotation: IAnnotation = observable({
-    posterName: 'Evan Sebastian',
-    profileUrl: 'https://www.facebook.com/sbsevn',
-    posterRole: 'Avenger',
-    profilePicture: 'http://placekitten.com/200/300',
-    value: '',
-    createdAt: new Date()
-  })
+  // User Data
+  posterName = 'You'
+  profileUrl = ''
+  posterRole = 'student'
+  profilePicture: ''
+
+  @observable newAnnotationValue = ''
 
   @observable isEditMode = true
 
@@ -26,11 +25,17 @@ class CommentStore {
 
   constructor(private document: rs.IDocument<rs.documents.ISourceCode>) {
     this.annotations = <any> observable(asMap({}))
-    if (!document.data.annotations) {
-      document.data.annotations = <any> this.annotations
+    if (document.volatile.user) {
+      const user = document.volatile.user
+      this.posterName = user.name || 'You'
+      this.posterRole = user.role || 'normal'
+      this.profilePicture = user.profile_photo.small.url || ''
+    }
+    if (!document.volatile.annotations) {
+      document.volatile.annotations = <any> this.annotations
       document.dispatch('save')
     } else {
-      const annotations = document.data.annotations
+      const annotations = document.volatile.annotations
       for (const key of Object.keys(annotations)) {
         if (annotations.hasOwnProperty(key)) {
           this.annotations.set(key, observable(annotations[key]))
@@ -38,7 +43,7 @@ class CommentStore {
       }
     }
     this.change$.debounceTime(10).subscribe((value) => {
-      this.newAnnotation.value = value
+      this.newAnnotationValue = value
     })
   }
 
@@ -48,21 +53,26 @@ class CommentStore {
 
   @computed get allAnnotations(): IAnnotation[] {
     const annotations = this.annotations.values()
-      .sort((a, b) => (b as any) - (a as any))
+      .sort((a, b) => (b.createdAt as any) - (a.createdAt as any))
     return annotations
   }
 
   @action('comments:add')
   async addAnnotation() {
     const key = uuid.v4()
-    const annotation = Object.assign({}, this.newAnnotation, {
+    const annotation = {
+      posterName: this.posterName,
+      profileUrl: this.profileUrl,
+      posterRole: this.posterRole,
+      value: this.newAnnotationValue,
       createdAt: new Date()
-    })
+    }
     this.annotations.set(key, annotation)
-    this.document.data.annotations[key] = annotation
+    this.document.volatile.annotations[key] = annotation
     await this.document.dispatch('save')
-    await this.document.dispatch('annotationAdded')
-    this.newAnnotation.value = ''
+    await this.document.dispatch('annotationAdded', annotation)
+    this.newAnnotationValue = ''
+    this.isEditMode = true
   }
 }
 

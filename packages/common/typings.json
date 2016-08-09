@@ -1,6 +1,5 @@
 {
   "globalDependencies": {
-    "ace": "registry:dt/ace#0.0.0+20160630235124",
     "classnames": "registry:dt/classnames#0.0.0+20160316155526",
     "jquery": "registry:dt/jquery#1.10.0+20160704162008",
     "lodash": "registry:dt/lodash#3.10.0+20160720001309",

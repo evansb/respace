@@ -22,7 +22,7 @@ function ModifiedStatus_({ component }: Props) {
 }
 
 function StatusBar({ component }: Props) {
-  const ModifiedStatus = observer(ModifiedStatus_)
+  const ModifiedStatus = observer(ModifiedStatus_) // tslint:disable-line
 
   const store = component.state
   const style = {
@@ -38,7 +38,6 @@ function StatusBar({ component }: Props) {
 
   return (
     <div style={style}>
-      <ModifiedStatus {...this.props} />
       <Col xs={4}>{store.mode}</Col>
     </div>
   )
