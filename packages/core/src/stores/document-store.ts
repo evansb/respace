@@ -47,7 +47,7 @@ export default class DocumentStore implements rs.IDocumentStore {
     const _document = this.assignID(documentJSON)
     const document = new Document(_document)
     this._documents.set(document.meta.id, document)
-    if (!_document.volatile.isRemote) {
+    if (!(_document.volatile && _document.volatile.isRemote)) {
       await document.rehydrate(this._storage.createStorage(document.meta.id))
     }
     return document

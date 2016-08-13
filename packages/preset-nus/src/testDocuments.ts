@@ -2,6 +2,9 @@ import createMission2 from './createMission2'
 
 const { globals, context } = createMission2()
 
+context['alert'] = alert
+globals.push('alert')
+
 const saveHandler = function (action, document) {
   if (action === 'save') {
     console.log('Saved!')

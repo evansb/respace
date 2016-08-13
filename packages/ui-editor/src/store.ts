@@ -73,7 +73,6 @@ export default class EditorStore {
     } else {
       this._document.data.value = this._editor.getValue()
       await this._document.dispatch('submit')
-      this.isSubmitted = true
       this.isSubmitConfirmationShown = false
     }
   }

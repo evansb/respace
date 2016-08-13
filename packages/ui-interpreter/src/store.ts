@@ -141,22 +141,18 @@ export default class InterpreterStore {
     const parentData: SnapshotData = this.snapshots[this.snapshots.length - 1]
     const parent = parentData && parentData.snapshot
     if (parent) {
-      this._request$.next({
-        code,
-        globals: parent.globals,
-        context: parent.context,
-        week: parent.week,
-        parent
-      })
+      this._request$.next({ id: uuid.v4(), code, parent })
     } else {
-      const newParent = new Snapshot({ code: ';' })
-      this._request$.next({
-        globals: this._document.volatile.globals || [],
-        context: this._document.volatile.context || {},
-        code,
+      const parent = new Snapshot({
+        id: uuid.v4(),
+        maxCallStack: 1000000,
         week: this.week,
-        parent: newParent
+        code: '',
+        globals: this._document.volatile.globals || [],
+        context: this._document.volatile.context || {}
       })
+      this.snapshots.push({ snapshot: parent, errors: [] })
+      this.addCode(code)
     }
   }
 
@@ -234,10 +230,12 @@ export default class InterpreterStore {
         if (action === 'run') {
           this.clearAll()
           observer.next({
+            id: uuid.v4(),
             globals: this._document.volatile.globals || [],
             context: this._document.volatile.context || {},
+            maxCallStack: 1000000,
             code: document.data.value,
-            week: this.week
+            week: this.week,
           })
         }
         return Promise.resolve()

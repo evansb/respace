@@ -53,7 +53,7 @@ class CommentStore {
 
   @computed get allAnnotations(): IAnnotation[] {
     const annotations = this.annotations.values()
-      .sort((a, b) => (b.createdAt as any) - (a.createdAt as any))
+      .sort((a, b) => (a.createdAt.valueOf()) - (b.createdAt.valueOf()))
     return annotations
   }
 

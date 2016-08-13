@@ -46,8 +46,8 @@ function Comment({ annotation, isNew, store }: IProps) {
     color: 'white',
     backgroundColor: '#1D1F21'
   }
-  const label = (annotation.posterRole === 'staff') &&
-    <Label style={labelStyle}>Avenger</Label>
+  const label = (annotation.posterRole === 'special') &&
+    <Label style={labelStyle}>Staff</Label>
   let body
   if (isNew) {
     let newComment

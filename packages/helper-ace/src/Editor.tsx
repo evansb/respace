@@ -17,6 +17,7 @@ export class Editor extends React.Component<IEditorProps, void> {
 
   componentDidMount() {
     this._editor = ace.edit(findDOMNode(this) as HTMLElement)
+    this._editor.setOptions({ useWorker: false })
     if (typeof this.props.didMount === 'function') {
       this.props.didMount(this._editor)
     }

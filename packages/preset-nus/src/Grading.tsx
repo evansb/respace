@@ -1,6 +1,7 @@
 import $ from 'jquery'
 import * as React from 'react'
 import { findDOMNode } from 'react-dom'
+import { Row } from 'react-bootstrap'
 import * as rs from '@respace/common'
 
 const icon: React.ComponentClass<void> =
@@ -10,10 +11,11 @@ type IGrading = {}
 type Props = rs.IComponentProps<IGrading, void>
 
 class GradingView extends React.Component<Props, void> {
+  refs: { [name: string]: any, form: any }
   $form: JQuery
 
   componentDidMount() {
-    const $this = findDOMNode(this)
+    const $this = findDOMNode(this.refs.form)
     const $form = $('.simple_form.edit_submission').clone()
     $form.find('h2').hide()
     $form.find('h3').hide()
@@ -21,8 +23,11 @@ class GradingView extends React.Component<Props, void> {
     $form.find('.comments').hide()
     $form.find('.panel-danger').hide()
     $form.find('.submission_answers_actable_answer_text').hide()
-    $form.find('input[name="commit"]').hide()
-    $form.find('.statistics table').show()
+    const $stats = $form.find('.statistics table')
+    $stats.show()
+    const $rows = $stats.find('tr')
+    $($rows[$rows.length - 1]).hide()
+    $($rows[$rows.length - 2]).hide()
     $form.contents().filter(
       function() { return this.nodeType === 3 }).remove()
     $form.appendTo($this).css('display', 'block')
@@ -34,7 +39,21 @@ class GradingView extends React.Component<Props, void> {
   }
 
   render() {
-    return <div style={{ position: 'relative', padding: '20px' }}></div>
+    const document = this.props.component.document
+    const assessment = document.volatile.assessment || {}
+    const baseXp = assessment.base_xp
+    return <div>
+      { document.volatile.isSubmitted
+          && !(document.volatile.isGraded) &&
+          <h3 style={{padding: '10px'}} >
+            Your submission has not been graded.
+            Please wait for your Avenger to grade your submission.<br/>
+            Starting Week 2, if your submission is not graded within 24 hours,
+            you may want send a reminder to your avenger
+            </h3> }
+      { baseXp && <Row><h3>Max XP: {baseXp}</h3></Row> }
+      <Row ref='form' style={{ position: 'relative', padding: '20px' }} />
+    </div>
   }
 }
 

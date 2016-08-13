@@ -25,8 +25,7 @@ function SnapshotView({ store, snapshotData }: ISnapshotProps) {
   }
   return (
     <div>
-      { snapshotData.snapshot.parent &&
-          <Editor didMount={editorDidMount} /> }
+      { snapshotData.snapshot.parent && <Editor didMount={editorDidMount} /> }
       <SnapshotResult store={store} snapshotData={snapshotData} />
     </div>
   )

@@ -13,13 +13,12 @@ import './summernotePatch'
 declare const window: any
 
 export function initialize(documents?, extraComponents?) {
-
   const workspace = Workspace.create({
     components: [Editor, Interpreter, Canvas].concat(extraComponents || []),
     documents: documents || testDocuments,
     layoutEngine: GoldenLayout
   })
-
+  console.log(testDocuments)
   let container
   if (container = document.getElementById('root')) {
     workspace.render(container)
@@ -80,7 +79,14 @@ if (window.$) {
         isSubmitted: isSubmitted || isGraded,
         isRemote: true,
         isGraded: isGraded,
-        user
+        user,
+        globals: ['alert'],
+        context: {
+          alert: window.alert
+        },
+        assessment,
+        answer,
+        question
       },
       handlers: [
         function(action, document) {
