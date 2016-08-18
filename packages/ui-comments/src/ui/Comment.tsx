@@ -56,7 +56,8 @@ function Comment({ annotation, isNew, store }: IProps) {
         placeholder='Add a comment...'
         defaultValue={store.newAnnotationValue}
         onChange={e => { store.newCommentChange(e.target.value) }}
-        style={textareaStyle} rows={3} />
+        style={textareaStyle}
+        rows={3} />
     } else {
       newComment = <div dangerouslySetInnerHTML={{
         __html: marked(store.newAnnotationValue)

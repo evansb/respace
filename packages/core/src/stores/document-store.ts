@@ -43,6 +43,10 @@ export default class DocumentStore implements rs.IDocumentStore {
     })
   }
 
+  dispatchAll(event: string, data: any) {
+    this._documents.values().forEach(d => d.dispatch(event, data))
+  }
+
   async addDocument(documentJSON: rs.AnyDocumentJSON) {
     const _document = this.assignID(documentJSON)
     const document = new Document(_document)

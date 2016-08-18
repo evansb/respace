@@ -44,7 +44,7 @@ export class Document<D> implements rs.IDocument<D> {
       data: toJS(this.data) as D
     }
     this._handlers.forEach(async (handler) => {
-      await handler(action, snapshot, args)
+       await handler(action, snapshot, args)
     })
   }
 

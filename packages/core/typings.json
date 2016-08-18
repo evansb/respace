@@ -1,5 +1,6 @@
 {
   "globalDependencies": {
-    "localforage": "registry:dt/localforage#0.0.0+20160629074517"
+    "localforage": "registry:dt/localforage#0.0.0+20160629074517",
+    "react-dropzone": "registry:dt/react-dropzone#0.0.0+20160316171810"
   }
 }

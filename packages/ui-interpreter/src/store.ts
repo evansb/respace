@@ -1,6 +1,6 @@
 import * as rs from '@respace/common'
 import * as uuid from 'uuid'
-import { createServer, ISnapshotError,
+import { createServer, ISnapshotError, printValueToString,
   createRequestStream, IRequest, Snapshot } from 'the-source'
 import { Observable } from 'rxjs/Observable'
 import { Subject } from 'rxjs/Subject'
@@ -21,13 +21,26 @@ export interface ITab {
 
 export class SnapshotData {
   @observable errors: ISnapshotError[] = []
+  @observable valueType: string = ''
+  @observable valueString: string = ''
+  @observable isDone: boolean = false
 
-  constructor(public snapshot: Snapshot,
-              errors?: ISnapshotError[]) {
+  constructor(public snapshot: Snapshot, errors?: ISnapshotError[]) {
+    this.setSnapshot(snapshot)
     if (errors instanceof Array) {
       errors.forEach(e => {
         this.errors.push(e)
       })
+    }
+  }
+
+  @action('snapshot.setValue')
+  setSnapshot(snapshot: Snapshot) {
+    this.isDone = snapshot.done
+    if (this.isDone) {
+      this.valueType = typeof snapshot.value
+      this.valueString = printValueToString(
+        snapshot.value, this.snapshot.context)
     }
   }
 }
@@ -141,17 +154,18 @@ export default class InterpreterStore {
     const parentData: SnapshotData = this.snapshots[this.snapshots.length - 1]
     const parent = parentData && parentData.snapshot
     if (parent) {
-      this._request$.next({ id: uuid.v4(), code, parent })
+      this._request$.next({ id: uuid.v4(), code, parent, week: parent.week })
     } else {
       const parent = new Snapshot({
         id: uuid.v4(),
         maxCallStack: 1000000,
         week: this.week,
         code: '',
-        globals: this._document.volatile.globals || [],
+        globals: (this._document.volatile.globals || []).concat(['Math',
+          'alert']),
         context: this._document.volatile.context || {}
       })
-      this.snapshots.push({ snapshot: parent, errors: [] })
+      this.snapshots.push(new SnapshotData(parent))
       this.addCode(code)
     }
   }
@@ -182,8 +196,15 @@ export default class InterpreterStore {
 
   private handleSnapshot(snapshot: Snapshot) {
     transaction(() => {
-      const data = new SnapshotData(snapshot)
-      this.snapshots.push(data)
+      const found = this.snapshots.some(s => {
+        let same = s.snapshot.id === snapshot.id
+        if (same) { s.snapshot = snapshot; s.setSnapshot(snapshot) }
+        return same
+      })
+      if (!found) {
+        const data = new SnapshotData(snapshot)
+        this.snapshots.push(data)
+      }
     })
   }
 

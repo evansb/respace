@@ -1,9 +1,8 @@
 import createMission2 from './createMission2'
+import createMission3 from './createMission3'
 
-const { globals, context } = createMission2()
-
-context['alert'] = alert
-globals.push('alert')
+const mission2 = createMission2()
+const mission3 = createMission3()
 
 const saveHandler = function (action, document) {
   if (action === 'save') {
@@ -27,8 +26,8 @@ export default [
 {
   type: 'source-code',
   meta: {
-    id: '2D Rune',
-    title: '2D Rune',
+    id: 'Rune 3D',
+    title: 'Rune 3D',
     submitted: false
   },
   data: {
@@ -37,8 +36,25 @@ export default [
   },
   handlers: [ saveHandler, submitHandler ],
   volatile: {
-    context,
-    globals
+    context: window,
+    globals: mission2.globals.concat(['Math', 'alert'])
+  }
+},
+{
+  type: 'source-code',
+  meta: {
+    id: 'Rune 2D',
+    title: 'Rune 2D',
+    submitted: false
+  },
+  data: {
+    template: '',
+    value: '',
+  },
+  handlers: [ saveHandler, submitHandler ],
+  volatile: {
+    context: window,
+    globals: mission3.globals.concat(['Math', 'alert'])
   }
 },
 {
@@ -51,6 +67,10 @@ export default [
   data: {
     template: '',
     value: ''
+  },
+  volatile: {
+    context: window,
+    globals: ['Math', 'alert']
   },
   handlers: [ saveHandler, submitHandler ]
 }

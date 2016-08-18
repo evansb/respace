@@ -8,6 +8,7 @@ import DocumentStore from './stores/document-store'
 import UIStore from './stores/ui-store'
 import App from './ui/app'
 import { createStorage } from './storage'
+import Dropzone from 'react-dropzone'
 
 export interface IWorkspaceInitializer {
   components: rs.AnyComponentFactory[]
@@ -53,10 +54,18 @@ export class Workspace {
           layoutStore: this._layoutStore
         }
         const Redbox = __DEV__ ? require('redbox-react').default : null
+        const dropzoneStyle = {
+          width: '100%',
+          height: '100%',
+          border: 'none'
+        }
         const root = (
-          <AppContainer errorReporter={Redbox}>
-            <App {...appProps} />
-          </AppContainer>
+          <Dropzone style={dropzoneStyle}
+                onDrop={(files) => this.handleDrop(files)} disableClick>
+            <AppContainer errorReporter={Redbox}>
+              <App {...appProps} />
+            </AppContainer>
+          </Dropzone>
         )
         render(root, container, async () => {
           this._uiStore.container = container
@@ -113,6 +122,10 @@ export class Workspace {
     this._storage = localforage.createInstance({
       name: sessionID
     })
+  }
+
+  async handleDrop(files: File[]) {
+    this._documentStore.dispatchAll('drop', files)
   }
 
   private constructor(initializer: IWorkspaceInitializer) {

@@ -20,7 +20,11 @@ class CanvasView extends React.Component<Props, { size: number }> {
 
   componentDidMount() {
     const canvas = findDOMNode(this.refs.canvas) as HTMLCanvasElement
-    window.getReadyWebGLForCanvas('2d', canvas)
+    let runeType
+    if (typeof window.mission_type === 'string') {
+      runeType = (window.mission_type as string).split('_')[1]
+    }
+    window.getReadyWebGLForCanvas(runeType || '2d', canvas)
     window.initRuneBuffer(window.vertices, window.indices);
   }
 
@@ -47,6 +51,8 @@ class CanvasView extends React.Component<Props, { size: number }> {
     }
     const canvasStyle = {
       backgroundColor: 'white',
+      width: this.state.size,
+      height: this.state.size
     }
     return (
       <div>
@@ -55,10 +61,7 @@ class CanvasView extends React.Component<Props, { size: number }> {
           <Button onClick={this.handleDecrease}><Minus /></Button>
         </ButtonGroup>
         <div style={style}>
-          <canvas ref='canvas'
-            style={canvasStyle}
-            width={this.state.size}
-            height={this.state.size} />
+          <canvas ref='canvas' width={512} height={512} style={canvasStyle} />
         </div>
       </div>
     )

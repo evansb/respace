@@ -38,7 +38,7 @@ class CommentStore {
       const annotations = document.volatile.annotations
       for (const key of Object.keys(annotations)) {
         if (annotations.hasOwnProperty(key)) {
-          this.annotations.set(key, observable(annotations[key]))
+          this.annotations.set(key, <any> observable(annotations[key]))
         }
       }
     }

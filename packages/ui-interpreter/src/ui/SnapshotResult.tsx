@@ -1,8 +1,7 @@
 import * as React from 'react'
-import { printValueToString } from 'the-source'
 import Store, { SnapshotData } from '../store'
 import { observer } from 'mobx-react'
-import { printErrorToString, ISnapshotError, unbox } from 'the-source'
+import { printErrorToString, ISnapshotError } from 'the-source'
 import { Tab, Button } from 'react-bootstrap'
 
 export interface IProps {
@@ -31,7 +30,9 @@ class ErrorView extends React.Component<IErrorProps, IErrorState> {
     const { error, style } = this.props
     const lines = printErrorToString(error).split('\n')
     const rest = this.state.detailed ? '\n' + lines.slice(1).join('\n') : ''
-    const showMore = (
+    lines[0] = (error.severity === 'warning' ?
+      'Warning: ' : 'Error: ') + lines[0]
+    const showMore = lines.length > 1 && (
       <Button bsStyle='link' onClick={this.handleClick.bind(this)}>
         { this.state.detailed ? 'Show Less' : 'Show More'}
       </Button>
@@ -40,7 +41,6 @@ class ErrorView extends React.Component<IErrorProps, IErrorState> {
   }
 }
 function SnapshotResult({ snapshotData, store }: IProps) {
-  const snapshot = this.props.snapshotData.snapshot
   const errors = this.props.snapshotData.errors
   const Container = Tab.Container
   const Content = Tab.Content
@@ -61,32 +61,26 @@ function SnapshotResult({ snapshotData, store }: IProps) {
     backgroundColor: '#17181A',
     borderColor: '#1E2124'
   }
-  let valueType = 'Error'
-  const value = snapshot.done && snapshot.value && (
-    <pre style={valueStyle}>{printValueToString(snapshot.value,
-      store.context)}</pre>
+  const valueString = snapshotData.valueString
+  const valueView = snapshotData.isDone && (
+    <pre style={valueStyle}>{valueString}</pre>
   )
   let errorsView: JSX.Element | undefined
   if (errors.length > 0) {
-    const errorStyle = Object.assign({}, valueStyle, { color: 'red' })
-    errorsView = errors.map((e, idx) =>
-      <ErrorView key={idx} error={e} style={errorStyle} />)
+    errorsView = errors.map((e, idx) => {
+      const errorStyle = Object.assign({}, valueStyle, {
+        color: e.severity === 'warning' ? 'yellow' : 'red'
+      })
+      return <ErrorView key={idx} error={e} style={errorStyle} />
+    })
   }
-  if (snapshot.done && snapshot.value) {
-    if (snapshot.value.type === 'foreign') {
-      valueType =
-        (typeof unbox(snapshot.value, snapshot.context)) + ' (foreign)'
-    } else {
-      valueType = snapshot.value.type
-    }
-  }
-  const selectButton = <a>{valueType}</a>
+  const selectButton = <a>{snapshotData.valueType}</a>
   return (
     <Container defaultActiveKey='raw' id='result'>
       <Content animation>
         <Pane style={paneStyle} eventKey='raw'>
-          { value || null }
           { errorsView || null }
+          { valueView || null }
           { !errorsView && <div style={dropdownStyle}>{ selectButton }</div> }
         </Pane>
         <Pane eventKey='special'>

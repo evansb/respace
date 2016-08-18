@@ -1,3 +1,4 @@
+import $ from 'jquery'
 import { Workspace } from '@respace/core'
 import GoldenLayout from '@respace/layout-golden'
 import Editor from '@respace/ui-editor'
@@ -12,20 +13,62 @@ import './summernotePatch'
 
 declare const window: any
 
-export function initialize(documents?, extraComponents?) {
+const baseLib = 'https://source-academy-assets.s3.amazonaws.com/lib'
+
+const isSourceAcademy = /sourceacademy.space/.test(window.location)
+
+async function importForeignCoursemology(title: string) {
+  title = title.toLowerCase().replace(' ', '-')
+  let globals: string[] = []
+  const json = await <any> $.getJSON(`${baseLib}/${title}.json`)
+  if (json.libraries instanceof Array &&
+        (<string[]> json.libraries).every(s => typeof s === 'string')) {
+    await Promise.all(json.libraries.map(g => $.getScript(`${baseLib}/${g}`)))
+  }
+  window.export_symbol = (s, m) => {
+    globals.push(s)
+    if (!window.hasOwnProperty(s)) {
+      window[s] = m
+    }
+  }
+  await <any> $.getScript(`${baseLib}/${title}.js`)
+  return globals
+}
+
+function initializeOfflineZip() {
+  const source = {
+    type: 'source-code',
+    meta: {
+      id: document.title || 'Untitled',
+      title: document.title || 'Untitled',
+      submitted: false
+    },
+    data: {
+      template: '',
+      value: '',
+    },
+    handlers: [],
+    volatile: {
+      context: window,
+      globals: window.GLOBALS
+    }
+  }
+  initialize([source])
+}
+
+export async function initialize(documents?, extraComponents?) {
   const workspace = Workspace.create({
     components: [Editor, Interpreter, Canvas].concat(extraComponents || []),
     documents: documents || testDocuments,
-    layoutEngine: GoldenLayout
+    layoutEngine: GoldenLayout,
   })
-  console.log(testDocuments)
   let container
   if (container = document.getElementById('root')) {
     workspace.render(container)
   }
 }
 
-if (window.$) {
+if (isSourceAcademy) {
   $(document).ready(async function() {
     const $data = $('#submissionData')
     if (!$data.get(0)) { return }
@@ -63,6 +106,8 @@ if (window.$) {
         return true
       })
 
+    const globals: string[] = await importForeignCoursemology(assessment.title)
+
     const source = {
       type: 'source-code',
       meta: {
@@ -80,10 +125,8 @@ if (window.$) {
         isRemote: true,
         isGraded: isGraded,
         user,
-        globals: ['alert'],
-        context: {
-          alert: window.alert
-        },
+        globals: ['alert'].concat(globals),
+        context: window,
         assessment,
         answer,
         question
@@ -128,7 +171,7 @@ if (window.$) {
             }
             try {
               const url = $('.answer-comment-form').attr('data-action')
-              $.post(url, {
+              window.$.post(url, {
                 discussion_post: {
                   text: annotation.value
                 }
@@ -155,6 +198,8 @@ if (window.$) {
      }).appendTo('body')
     initialize([source], extraComponents)
   })
+} else if (window.GLOBALS) {
+  initializeOfflineZip()
 } else {
   initialize()
 }
