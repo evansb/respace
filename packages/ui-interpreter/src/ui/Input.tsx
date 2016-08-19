@@ -1,8 +1,9 @@
 import * as React from 'react'
 import Store from '../store'
+import { autorun } from 'mobx'
 import { observer } from 'mobx-react'
 import { Editor } from '@respace/helper-ace'
-import { Button, ButtonGroup } from 'react-bootstrap'
+import { Button, ButtonGroup, FormControl } from 'react-bootstrap'
 const RunIcon = require('react-icons/fa/play').default
 
 export interface IConsoleInputProps { store: Store }
@@ -26,16 +27,18 @@ function ConsoleInput({ store }: IConsoleInputProps) {
     store.inputEditor = editor
     editor.getSession().setMode(`ace/mode/javascript`)
     editor.setTheme('ace/theme/tomorrow_night')
-    editor.commands.addCommand({
-      name: 'run',
-      bindKey: {
-        win: 'Shift-Enter',
-        mac: 'Shift-Enter'
-      },
-      exec: (editor: AceAjax.Editor) => {
-        store.addCodeFromInput()
-        editor.setValue('')
-      }
+    autorun(() => {
+      editor.commands.addCommand({
+        name: 'run',
+        bindKey: {
+          win: store.executeShortcut,
+          mac: store.executeShortcut
+        },
+        exec: (editor: AceAjax.Editor) => {
+          store.addCodeFromInput()
+          editor.setValue('')
+        }
+      })
     })
   }
   const editorWillUnmount = (editor: AceAjax.Editor) => {
@@ -60,11 +63,40 @@ function ConsoleInput({ store }: IConsoleInputProps) {
       </div>
     )
   }
+
+  const shortcutSelectStyle = {
+    display: 'inline',
+    width: 'auto',
+    padding: '0',
+    fontSize: '1em',
+    border: 'none',
+    borderRadius: '0',
+    height: 'auto',
+    marginLeft: '5px',
+    marginRight: '5px',
+    backgroundColor: 'black',
+    color: 'white'
+  }
+  const shortcutSelect = (
+    <FormControl componentClass='select' placeholder={store.executeShortcut}
+        style={shortcutSelectStyle}
+        onChange={(e) => store.executeShortcut = e.target.value}>
+      {
+        store.availableShortcuts.map((s, idx) => {
+          return <option key={idx} value={s}>{s}</option>
+        })
+      }
+    </FormControl>
+  )
+
   return (
     <div style={{ position: 'relative' }}>
       { editor }
       <div style={infoStyle}>
-        <small>Press Shift+Enter to evaluate.&nbsp;&nbsp;</small>
+        <small>
+          Press {shortcutSelect} to evaluate.&nbsp;&nbsp;
+          Limit {store.timeout}ms/{store.stackSize}&nbsp;&nbsp;
+        </small>
       </div>
     </div>
   )
