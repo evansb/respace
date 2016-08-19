@@ -85,7 +85,7 @@ const Mission: rs.IComponentFactory<rs.documents.ISourceCode, void> = {
   displayName: 'Briefing',
   icon,
   view: MissionView,
-  shouldProcessDocument(document: rs.AnyDocument) {
+  acceptDocument(document: rs.AnyDocument) {
     return document.type === 'source-code' &&
       (typeof document.volatile.description === 'string')
   },

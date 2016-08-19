@@ -80,8 +80,8 @@ export interface IComponentFactory<D, S> {
   sidebarView?: __React.ComponentClass<IComponentProps<D, S>>
   didRegister?()
   didUnregister?()
-  shouldProcessDocument(document: AnyDocument): boolean
-  initialState(document: IDocument<D>): S
+  acceptDocument(document: AnyDocument): boolean
+  createStore(document: IDocument<D>): S
 }
 
 export type AnyComponentFactory = IComponentFactory<any, any>

@@ -62,7 +62,7 @@ const Grading: rs.IComponentFactory<IGrading, void> = {
   displayName: 'Grading',
   icon,
   view: GradingView,
-  shouldProcessDocument(document: rs.AnyDocument) {
+  acceptDocument(document: rs.AnyDocument) {
     return document.type === 'source-code' && document.volatile.isSubmitted
   },
   initialState(document: rs.IDocument<IGrading>) {

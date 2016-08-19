@@ -129,7 +129,7 @@ export default class UIStore implements rs.IUIStore {
 
   onDocumentAdded(document: rs.AnyDocument, isInitial: boolean = false) {
     this._registry.forEach((factory) => {
-      if (factory.shouldProcessDocument(document)) {
+      if (factory.acceptDocument(document)) {
         this.addComponent(factory, document, isInitial)
       }
     })

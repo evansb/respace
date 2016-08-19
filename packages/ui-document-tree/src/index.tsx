@@ -28,7 +28,7 @@ const DocumentTree: rs.IComponentFactory<any, void> = {
   displayName: 'JSON Tree',
   icon,
   view: DocumentTreeView,
-  shouldProcessDocument(document: rs.AnyDocument) {
+  acceptDocument(document: rs.AnyDocument) {
     return true
   },
   initialState(document: rs.AnyDocument) {

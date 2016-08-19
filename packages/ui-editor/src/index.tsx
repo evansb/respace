@@ -11,7 +11,7 @@ const Editor: rs.IComponentFactory<rs.documents.ISourceCode, EditorStore> = {
   displayName: 'Source',
   icon,
   view: EditorView,
-  shouldProcessDocument(document: rs.AnyDocument) {
+  acceptDocument(document: rs.AnyDocument) {
     return document.type === 'source-code'
   },
   initialState(document: rs.IDocument<rs.documents.ISourceCode>) {

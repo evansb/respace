@@ -11,7 +11,7 @@ const Interpreter: rs.IComponentFactory<rs.documents.ISourceCode, Store> = {
   displayName: 'Interpreter',
   icon,
   view: InterpreterView,
-  shouldProcessDocument(document: rs.AnyDocument) {
+  acceptDocument(document: rs.AnyDocument) {
     return document.type === 'source-code'
   },
   initialState(document: rs.IDocument<rs.documents.ISourceCode>) {

@@ -11,7 +11,7 @@ const Comments: rs.IComponentFactory<rs.documents.ISourceCode, Store> = {
   displayName: 'Comments',
   icon,
   view: CommentsView,
-  shouldProcessDocument(document: rs.AnyDocument) {
+  acceptDocument(document: rs.AnyDocument) {
     return document.type === 'source-code'
   },
   initialState(document: rs.IDocument<rs.documents.ISourceCode>) {

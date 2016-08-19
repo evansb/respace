@@ -77,13 +77,13 @@ const Canvas: rs.IComponentFactory<rs.documents.ISourceCode, void> = {
   displayName: 'Canvas',
   icon,
   view: CanvasView,
-  shouldProcessDocument(document: rs.AnyDocument) {
+  acceptDocument(document: rs.AnyDocument) {
     return document.type === 'source-code'
       && window.getReadyWebGLForCanvas
       && document.volatile.context
       && document.volatile.context.show
   },
-  initialState(document: rs.IDocument<rs.documents.ISourceCode>) {
+  createStore(document: rs.IDocument<rs.documents.ISourceCode>) {
     return
   }
 }
