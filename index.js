@@ -4,8 +4,8 @@
 const program = require('commander')
 const bundle = require('./scripts/bundle')
 const serve = require('./scripts/serve')
-const buildComponent = require('./scripts/build')
-const buildAll = require('./scripts/build-all')
+const buildComponent = require('./scripts/buildComponent')
+const buildAll = require('./scripts/buildAll')
 
 program
   .usage('(bundle|serve|build) [dir]')

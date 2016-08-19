@@ -21,8 +21,10 @@ class CanvasView extends React.Component<Props, { size: number }> {
   componentDidMount() {
     const canvas = findDOMNode(this.refs.canvas) as HTMLCanvasElement
     let runeType
-    if (typeof window.mission_type === 'string') {
-      runeType = (window.mission_type as string).split('_')[1]
+    const document = this.props.component.document
+    const missionType = document.volatile.mission_type || window.mission_type
+    if (typeof missionType === 'string') {
+      runeType = (missionType as string).split('_')[1]
     }
     window.getReadyWebGLForCanvas(runeType || '2d', canvas)
     window.initRuneBuffer(window.vertices, window.indices);

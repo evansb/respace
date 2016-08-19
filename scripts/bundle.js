@@ -1,6 +1,7 @@
 'use strict'
 
 const chalk = require('chalk')
+const bundleAnalyzer = require('webpack-bundle-size-analyzer')
 const webpack = require('webpack')
 const createWebpackConfig = require('../webpack')
 
@@ -15,6 +16,7 @@ module.exports = (bundleDir) => {
   console.log(chalk.yellow(`Bundling ${bundleDir}`))
   const webpackConfig = createWebpackConfig(bundleDir)
   const compiler = webpack(webpackConfig)
+
   compiler.run((err, stats) => {
     const jsonStats = stats.toJson()
     console.log(stats.toString(format))
@@ -34,5 +36,9 @@ module.exports = (bundleDir) => {
     } else {
       console.log(chalk.green('All good.'))
     }
+    const depTree = bundleAnalyzer.dependencySizeTree(jsonStats)
+    depTree.forEach(tree => {
+      bundleAnalyzer.printDependencySizeTree(tree)
+    })
   })
 }

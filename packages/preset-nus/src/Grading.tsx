@@ -41,17 +41,17 @@ class GradingView extends React.Component<Props, void> {
   render() {
     const document = this.props.component.document
     const assessment = document.volatile.assessment || {}
-    const baseXp = assessment.base_xp
+    const baseXp = assessment.base_exp
     return <div>
       { document.volatile.isSubmitted
           && !(document.volatile.isGraded) &&
           <h3 style={{padding: '10px'}} >
             Your submission has not been graded.
             Please wait for your Avenger to grade your submission.<br/>
-            Starting Week 2, if your submission is not graded within 24 hours,
+            If your submission is not graded within 24 hours,
             you may want send a reminder to your avenger
             </h3> }
-      { baseXp && <Row><h3>Max XP: {baseXp}</h3></Row> }
+      { baseXp && <h3>Max XP: {baseXp}</h3> }
       <Row ref='form' style={{ position: 'relative', padding: '20px' }} />
     </div>
   }

@@ -15,6 +15,7 @@ export default function () {
   export_symbol('anaglyph', window.anaglyph);
   export_symbol('stereogram', window.stereogram);
   export_symbol('scale', window.scale);
+  export_symbol('scale_independent', window.scale_independent);
   export_symbol('overlay', window.overlay);
   export_symbol('overlay_frac', window.overlay_frac);
   export_symbol('rotate', window.rotate);

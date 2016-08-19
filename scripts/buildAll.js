@@ -2,7 +2,7 @@
 
 const path = require('path')
 const fs = require('fs')
-const buildComponent = require('./build')
+const buildComponent = require('./buildComponent')
 const junk = require('junk')
 
 module.exports = () => {

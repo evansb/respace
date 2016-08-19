@@ -36,8 +36,9 @@ export default [
   },
   handlers: [ saveHandler, submitHandler ],
   volatile: {
+    mission_type: 'rune_3d',
     context: window,
-    globals: mission2.globals.concat(['Math', 'alert'])
+    globals: mission3.globals.concat(['Math', 'alert'])
   }
 },
 {
@@ -48,6 +49,7 @@ export default [
     submitted: false
   },
   data: {
+    mission_type: 'rune_2d',
     template: '',
     value: '',
   },
@@ -55,7 +57,7 @@ export default [
   volatile: {
     // Description: '<pre>\\(1 + x = 3\\)\n\\[1 + x = 3\\]\n</pre>',
     context: window,
-    globals: mission3.globals.concat(['Math', 'alert'])
+    globals: mission2.globals.concat(['Math', 'alert'])
   }
 },
 {
