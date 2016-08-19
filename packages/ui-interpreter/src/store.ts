@@ -38,7 +38,7 @@ export class SnapshotData {
   setSnapshot(snapshot: Snapshot) {
     this.isDone = snapshot.done
     if (this.isDone) {
-      this.valueType = typeof snapshot.value
+      this.valueType = typeof snapshot.value.value
       this.valueString = printValueToString(
         snapshot.value, this.snapshot.context)
     }
@@ -66,6 +66,9 @@ export default class InterpreterStore {
   @observable isAutorunEnabled = false
   @observable isControlsEnabled = false
 
+  timeout: number
+  stackSize: number
+
   // Tabbing
   @observable snapshots: SnapshotData[] = []
   @observable activeTab: ITab
@@ -79,16 +82,42 @@ export default class InterpreterStore {
 
   inputEditorValue = ''
 
+  system: any
+
   private _tabs: ObservableMap<ITab> = new ObservableMap<ITab>()
   private _subscriptions: Subscription[] = []
   private _request$: Subject<IRequest> = new Subject<IRequest>()
 
   constructor(private _document: rs.IDocument<rs.documents.ISourceCode>) {
     this.week = (<any> _document.meta).week || this.week
-    this.context = _document.volatile.context || {}
+    _document.volatile = _document.volatile || {}
+    _document.volatile.context = _document.volatile.context || {}
+    _document.volatile.globals = _document.volatile.globals || []
+    _document.volatile.context.system = this.system
+    _document.volatile.globals.push('system')
     this.createRequestFromDocument()
     this.createServer()
     this.setupTabs()
+
+    this.timeout = 10000
+    this.stackSize = 65536
+    const runtime_limit = {
+      set_stack_size: (stackSize) => {
+        this.stackSize = stackSize
+      },
+      get_stack_size: () => {
+        return this.stackSize
+      },
+      get_timeout: () => {
+        return this.timeout
+      },
+      set_timeout: (timeout) => {
+        console.log(this)
+        this.timeout = timeout
+      }
+    }
+    this.system = { runtime_limit }
+    this.addCode('')
   }
 
   @computed get tabs() {
@@ -123,6 +152,8 @@ export default class InterpreterStore {
   @action('interp:clear')
   clearAll() {
     transaction(() => {
+      this.timeout = 10000
+      this.stackSize = 65536
       while (this.snapshots.length > 0) {
         this.snapshots.pop()
       }
@@ -153,13 +184,17 @@ export default class InterpreterStore {
   addCode(code: string) {
     const parentData: SnapshotData = this.snapshots[this.snapshots.length - 1]
     const parent = parentData && parentData.snapshot
+    this.timeout = 1000;
     if (parent) {
-      this._request$.next({ id: uuid.v4(), code, parent, week: parent.week })
+      this._request$.next({ id: uuid.v4(), code, parent,
+        timeout: this.timeout, maxCallStack: this.stackSize,
+        week: parent.week })
     } else {
       const parent = new Snapshot({
         id: uuid.v4(),
-        maxCallStack: 1000000,
         week: this.week,
+        maxCallStack: this.stackSize,
+        timeout: this.timeout,
         code: '',
         globals: (this._document.volatile.globals || []).concat(['Math',
           'alert']),
@@ -254,7 +289,8 @@ export default class InterpreterStore {
             id: uuid.v4(),
             globals: this._document.volatile.globals || [],
             context: this._document.volatile.context || {},
-            maxCallStack: 1000000,
+            maxCallStack: this.stackSize,
+            timeout: this.timeout,
             code: document.data.value,
             week: this.week,
           })

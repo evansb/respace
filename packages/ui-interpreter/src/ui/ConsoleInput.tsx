@@ -15,8 +15,8 @@ function ConsoleInput({ store }: IConsoleInputProps) {
     height: '100px'
   }
   const infoStyle = {
-    textAlign: 'center',
-    color: '#A2A4AA'
+    color: '#A2A4AA',
+    marginLeft: '10px'
   }
   const editorDidMount = (editor: AceAjax.Editor) => {
     const oldValue = store.inputEditorValue
@@ -64,7 +64,7 @@ function ConsoleInput({ store }: IConsoleInputProps) {
     <div style={{ position: 'relative' }}>
       { editor }
       <div style={infoStyle}>
-        <small>Press Shift+Enter to evaluate</small>
+        <small>Press Shift+Enter to evaluate.&nbsp;&nbsp;</small>
       </div>
     </div>
   )

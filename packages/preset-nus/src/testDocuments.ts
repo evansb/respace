@@ -53,6 +53,7 @@ export default [
   },
   handlers: [ saveHandler, submitHandler ],
   volatile: {
+    // Description: '<pre>\\(1 + x = 3\\)\n\\[1 + x = 3\\]\n</pre>',
     context: window,
     globals: mission3.globals.concat(['Math', 'alert'])
   }

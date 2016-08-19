@@ -20,6 +20,8 @@ const isSourceAcademy = /sourceacademy.space/.test(window.location)
 async function importForeignCoursemology(title: string) {
   title = title.toLowerCase().replace(' ', '-')
   let globals: string[] = []
+  let context: {[name: string]: any} = { alert: window.alert,
+    Math: window.Math }
   const json = await <any> $.getJSON(`${baseLib}/${title}.json`)
   if (json.libraries instanceof Array &&
         (<string[]> json.libraries).every(s => typeof s === 'string')) {
@@ -27,12 +29,10 @@ async function importForeignCoursemology(title: string) {
   }
   window.export_symbol = (s, m) => {
     globals.push(s)
-    if (!window.hasOwnProperty(s)) {
-      window[s] = m
-    }
+    context[s] = m
   }
   await <any> $.getScript(`${baseLib}/${title}.js`)
-  return globals
+  return {globals, context}
 }
 
 function initializeOfflineZip() {
@@ -59,7 +59,7 @@ function initializeOfflineZip() {
 export async function initialize(documents?, extraComponents?) {
   const workspace = Workspace.create({
     components: [Editor, Interpreter, Canvas].concat(extraComponents || []),
-    documents: documents || testDocuments,
+    documents,
     layoutEngine: GoldenLayout,
   })
   let container
@@ -106,7 +106,7 @@ if (isSourceAcademy) {
         return true
       })
 
-    const globals: string[] = await importForeignCoursemology(assessment.title)
+    const {globals, context} = await importForeignCoursemology(assessment.title)
 
     const source = {
       type: 'source-code',
@@ -126,7 +126,7 @@ if (isSourceAcademy) {
         isGraded: isGraded,
         user,
         globals: ['alert'].concat(globals),
-        context: window,
+        context,
         assessment,
         answer,
         question
@@ -201,5 +201,5 @@ if (isSourceAcademy) {
 } else if (window.GLOBALS) {
   initializeOfflineZip()
 } else {
-  initialize()
+  initialize(testDocuments, [Mission])
 }

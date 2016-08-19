@@ -40,7 +40,6 @@ function Toolbar({ store }: { store: Store }) {
         <Button onClick={() => store.clearNew()}>Clear New</Button>
         <Button onClick={() => store.clearAll()}>Clear All</Button>
       </Col>
-
     </Row>
   )
 }

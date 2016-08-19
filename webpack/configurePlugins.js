@@ -3,7 +3,6 @@ const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = (webpackConfig, config) => {
-  console.log(config.template)
   const template = config.template || path.join(__dirname, 'template.html')
 
   webpackConfig.plugins = [
