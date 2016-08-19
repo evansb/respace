@@ -5,19 +5,12 @@ import { createServer, ISnapshotError, printValueToString,
 import { Observable } from 'rxjs/Observable'
 import { Subject } from 'rxjs/Subject'
 import { Subscription } from 'rxjs/Subscription'
-import { observable, action, computed, autorun,
-  transaction, ObservableMap } from 'mobx'
+import { observable, action, autorun } from 'mobx'
 
 import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/share'
 import 'brace/mode/javascript'
 import 'brace/theme/tomorrow_night'
-
-export interface ITab {
-  key: string
-  title: string
-  snapshotID?: string
-}
 
 export class SnapshotData {
   @observable errors: ISnapshotError[] = []
@@ -61,30 +54,17 @@ export default class InterpreterStore {
     printMarginColumn: 80
   }
 
-  inputEditor: AceAjax.Editor
-
+  @observable snapshots: SnapshotData[] = []
+  @observable week: number
   @observable isAutorunEnabled = false
   @observable isControlsEnabled = false
 
+  inputEditor: AceAjax.Editor
   timeout: number
   stackSize: number
-
-  // Tabbing
-  @observable snapshots: SnapshotData[] = []
-  @observable activeTab: ITab
-
-  @observable week: number
-
-  consoleTab: ITab = {
-    key: 'console',
-    title: 'Console'
-  }
-
   inputEditorValue = ''
-
   system: any
 
-  private _tabs: ObservableMap<ITab> = new ObservableMap<ITab>()
   private _subscriptions: Subscription[] = []
   private _request$: Subject<IRequest> = new Subject<IRequest>()
 
@@ -95,9 +75,8 @@ export default class InterpreterStore {
     _document.volatile.context.system = this.system
     _document.volatile.globals.push('system')
     this.week = _document.volatile.week || 3
-    this.createRequestFromDocument()
-    this.createServer()
-    this.setupTabs()
+    this.pipeRunToRequest()
+    this.connectToService()
 
     this.timeout = 10000
     this.stackSize = 65536
@@ -112,66 +91,32 @@ export default class InterpreterStore {
         return this.timeout
       },
       set_timeout: (timeout) => {
-        console.log(this)
         this.timeout = timeout
       }
     }
     this.system = { runtime_limit }
   }
 
-  @computed get tabs() {
-    const ts: ITab[] = []
-    for (const tab of this._tabs.values()) {
-      ts.push(tab)
-    }
-    return ts
-  }
-
-  @action('interp:selectTab')
-  selectTab(key: string) {
-    for (const tab of this._tabs.values()) {
-      if (tab.key === key) {
-        this.activeTab = tab
-        return
-      }
-    }
-  }
-
-  @action('interp:closeTab')
-  closeTab(tab: ITab) {
-    this._tabs.delete(tab.key)
-  }
-
-  @action('interp:addTab')
-  addTab(title: string, snapshotID?: string) {
-    const key = uuid.v4()
-    this._tabs.set(key, { key, title, snapshotID })
-  }
-
-  @action('interp:clear')
+  @action('interpreter.clear')
   clearAll() {
-    transaction(() => {
-      this.timeout = 10000
-      this.stackSize = 65536
-      while (this.snapshots.length > 0) {
-        this.snapshots.pop()
-      }
-    })
+    this.timeout = 10000
+    this.stackSize = 65536
+    while (this.snapshots.length > 0) {
+      this.snapshots.pop()
+    }
   }
 
-  @action('interp:clearNew')
+  @action('interpreter.clearNew')
   clearNew() {
-    transaction(() => {
-      let idx = this.snapshots.length - 1
-      while (this.snapshots.length > 0) {
-        if (this.snapshots[idx].snapshot.parent) {
-          this.snapshots.pop()
-        } else {
-          break
-        }
-        idx--
+    let idx = this.snapshots.length - 1
+    while (this.snapshots.length > 0) {
+      if (this.snapshots[idx].snapshot.parent) {
+        this.snapshots.pop()
+      } else {
+        break
       }
-    })
+      idx--
+    }
   }
 
   addCodeFromInput() {
@@ -181,38 +126,18 @@ export default class InterpreterStore {
   }
 
   addCode(code: string) {
-    const snapshotID = uuid.v4()
-    const parentData: SnapshotData = this.snapshots[this.snapshots.length - 1]
+    const parentData = this.snapshots[this.snapshots.length - 1]
     const parent = parentData && parentData.snapshot
-    const globals = this._document.volatile.globals
-    const context = this._document.volatile.context
-
     if (parent) {
-      this._request$.next({
-        id: snapshotID,
-        code,
-        parent,
-        timeout: this.timeout,
-        maxCallStack: this.stackSize,
-        week: parent.week
-      })
+      this._request$.next(this.createRequest(code, parent))
     } else {
-      this._request$.next({
-        id: snapshotID,
-        code,
-        globals,
-        context,
-        timeout: this.timeout,
-        maxCallStack: this.stackSize,
-        week: this.week
-      })
+      this._request$.next(this.createRequest(''))
       this.addCode(code)
     }
   }
 
   setupEditor(editor: AceAjax.Editor) {
     editor.$blockScrolling = 1000
-    editor.setOption('useWorker', false);
     autorun(() => {
       editor.renderer.setShowGutter(this.editor.showLineNumber)
     })
@@ -235,24 +160,17 @@ export default class InterpreterStore {
   }
 
   private handleSnapshot(snapshot: Snapshot) {
-    transaction(() => {
-      const found = this.snapshots.some(s => {
-        let same = s.snapshot.id === snapshot.id
-        if (same) { s.snapshot = snapshot; s.setSnapshot(snapshot) }
-        return same
-      })
-      if (!found) {
-        const data = new SnapshotData(snapshot)
-        this.snapshots.push(data)
+    const found = this.snapshots.some(s => {
+      let same = s.snapshot.id === snapshot.id
+      if (same) {
+        s.snapshot = snapshot
+        s.setSnapshot(snapshot)
       }
+      return same
     })
-  }
-
-  private setupTabs() {
-    transaction(() => {
-      this.activeTab = this.consoleTab
-      this._tabs.set(this.consoleTab.key, this.consoleTab)
-    })
+    if (!found) {
+      this.snapshots.push(new SnapshotData(snapshot))
+    }
   }
 
   private handleError(err: ISnapshotError) {
@@ -271,7 +189,7 @@ export default class InterpreterStore {
     }
   }
 
-  private createServer() {
+  private connectToService() {
     const request$ = createRequestStream(observer => {
       this._request$.subscribe(i => observer.next(i))
     })
@@ -285,22 +203,31 @@ export default class InterpreterStore {
     })
   }
 
-  private createRequestFromDocument() {
+  private createRequest(code: string, parent?: Snapshot): IRequest {
+    const request: IRequest = {
+      id: uuid.v4(),
+      maxCallStack: this.stackSize,
+      timeout: this.timeout,
+      code,
+      week: this.week,
+    }
+    if (!parent) {
+      request.globals = this._document.volatile.globals
+      request.context = this._document.volatile.context
+    } else {
+      request.parent = parent
+      request.week = parent.week
+    }
+    return request
+  }
+
+  private pipeRunToRequest() {
     const run$: Observable<IRequest> = Observable.create(observer => {
-      this._document.addHandler((action, document) => {
+      this._document.addHandler(async (action, document) => {
         if (action === 'run') {
           this.clearAll()
-          observer.next({
-            id: uuid.v4(),
-            globals: this._document.volatile.globals || [],
-            context: this._document.volatile.context || {},
-            maxCallStack: this.stackSize,
-            timeout: this.timeout,
-            code: document.data.value,
-            week: this.week,
-          })
+          observer.next(this.createRequest(document.data.value))
         }
-        return Promise.resolve()
       })
     })
     run$.share().subscribe(r => this._request$.next(r))
