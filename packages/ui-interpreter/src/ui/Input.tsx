@@ -25,8 +25,7 @@ function ConsoleInput({ store }: IConsoleInputProps) {
       editor.setValue(oldValue)
     }
     store.inputEditor = editor
-    editor.getSession().setMode(`ace/mode/javascript`)
-    editor.setTheme('ace/theme/tomorrow_night')
+    store.setupEditor(editor)
     autorun(() => {
       editor.commands.addCommand({
         name: 'run',
