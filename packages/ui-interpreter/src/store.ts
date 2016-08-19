@@ -73,7 +73,7 @@ export default class InterpreterStore {
   @observable snapshots: SnapshotData[] = []
   @observable activeTab: ITab
 
-  @observable week: number = 3
+  @observable week: number
 
   consoleTab: ITab = {
     key: 'console',
@@ -89,12 +89,12 @@ export default class InterpreterStore {
   private _request$: Subject<IRequest> = new Subject<IRequest>()
 
   constructor(private _document: rs.IDocument<rs.documents.ISourceCode>) {
-    this.week = (<any> _document.meta).week || this.week
     _document.volatile = _document.volatile || {}
     _document.volatile.context = _document.volatile.context || {}
     _document.volatile.globals = _document.volatile.globals || []
     _document.volatile.context.system = this.system
     _document.volatile.globals.push('system')
+    this.week = _document.volatile.week || 3
     this.createRequestFromDocument()
     this.createServer()
     this.setupTabs()
@@ -117,7 +117,6 @@ export default class InterpreterStore {
       }
     }
     this.system = { runtime_limit }
-    this.addCode('')
   }
 
   @computed get tabs() {
@@ -182,25 +181,31 @@ export default class InterpreterStore {
   }
 
   addCode(code: string) {
+    const snapshotID = uuid.v4()
     const parentData: SnapshotData = this.snapshots[this.snapshots.length - 1]
     const parent = parentData && parentData.snapshot
-    this.timeout = 1000;
+    const globals = this._document.volatile.globals
+    const context = this._document.volatile.context
+
     if (parent) {
-      this._request$.next({ id: uuid.v4(), code, parent,
-        timeout: this.timeout, maxCallStack: this.stackSize,
-        week: parent.week })
-    } else {
-      const parent = new Snapshot({
-        id: uuid.v4(),
-        week: this.week,
-        maxCallStack: this.stackSize,
+      this._request$.next({
+        id: snapshotID,
+        code,
+        parent,
         timeout: this.timeout,
-        code: '',
-        globals: (this._document.volatile.globals || []).concat(['Math',
-          'alert']),
-        context: this._document.volatile.context || {}
+        maxCallStack: this.stackSize,
+        week: parent.week
       })
-      this.snapshots.push(new SnapshotData(parent))
+    } else {
+      this._request$.next({
+        id: snapshotID,
+        code,
+        globals,
+        context,
+        timeout: this.timeout,
+        maxCallStack: this.stackSize,
+        week: this.week
+      })
       this.addCode(code)
     }
   }

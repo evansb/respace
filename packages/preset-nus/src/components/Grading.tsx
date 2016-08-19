@@ -1,14 +1,12 @@
-import $ from 'jquery'
 import * as React from 'react'
 import { findDOMNode } from 'react-dom'
 import { Row } from 'react-bootstrap'
 import * as rs from '@respace/common'
+import GradingIcon from 'react-icons/fa/map'
 
-const icon: React.ComponentClass<void> =
-  require('react-icons/fa/map').default
+declare const $: JQueryStatic
 
-type IGrading = {}
-type Props = rs.IComponentProps<IGrading, void>
+type Props = rs.IComponentProps<{}, void>
 
 class GradingView extends React.Component<Props, void> {
   refs: { [name: string]: any, form: any }
@@ -57,15 +55,15 @@ class GradingView extends React.Component<Props, void> {
   }
 }
 
-const Grading: rs.IComponentFactory<IGrading, void> = {
+const Grading: rs.IComponentFactory<{}, void> = {
   name: 'ui-grading',
   displayName: 'Grading',
-  icon,
+  icon: GradingIcon,
   view: GradingView,
   acceptDocument(document: rs.AnyDocument) {
     return document.type === 'source-code' && document.volatile.isSubmitted
   },
-  initialState(document: rs.IDocument<IGrading>) {
+  createStore(document: rs.IDocument<{}>) {
     return
   }
 }

@@ -89,7 +89,7 @@ const Mission: rs.IComponentFactory<rs.documents.ISourceCode, void> = {
     return document.type === 'source-code' &&
       (typeof document.volatile.description === 'string')
   },
-  initialState(document: rs.IDocument<rs.documents.ISourceCode>) {
+  createStore(document: rs.IDocument<rs.documents.ISourceCode>) {
     return
   }
 }

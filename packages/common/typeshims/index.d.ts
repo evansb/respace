@@ -5,3 +5,9 @@ declare module 'uuid' {
   }
   export = _uuid
 }
+
+declare module 'react-icons/*' {
+  import React from 'react'
+  const reactClass: React.ComponentClass<void>
+  export default reactClass
+}

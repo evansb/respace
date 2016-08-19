@@ -14,7 +14,7 @@ const Comments: rs.IComponentFactory<rs.documents.ISourceCode, Store> = {
   acceptDocument(document: rs.AnyDocument) {
     return document.type === 'source-code'
   },
-  initialState(document: rs.IDocument<rs.documents.ISourceCode>) {
+  createStore(document: rs.IDocument<rs.documents.ISourceCode>) {
     return new Store(document)
   }
 }

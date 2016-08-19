@@ -31,7 +31,7 @@ const DocumentTree: rs.IComponentFactory<any, void> = {
   acceptDocument(document: rs.AnyDocument) {
     return true
   },
-  initialState(document: rs.AnyDocument) {
+  createStore(document: rs.AnyDocument) {
     return {}
   }
 }

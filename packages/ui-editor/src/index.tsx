@@ -14,7 +14,7 @@ const Editor: rs.IComponentFactory<rs.documents.ISourceCode, EditorStore> = {
   acceptDocument(document: rs.AnyDocument) {
     return document.type === 'source-code'
   },
-  initialState(document: rs.IDocument<rs.documents.ISourceCode>) {
+  createStore(document: rs.IDocument<rs.documents.ISourceCode>) {
     return new EditorStore(document)
   }
 }
