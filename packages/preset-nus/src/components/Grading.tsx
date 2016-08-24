@@ -6,7 +6,26 @@ import GradingIcon from 'react-icons/fa/map'
 
 declare const $: JQueryStatic
 
-type Props = rs.IComponentProps<{}, void>
+type Props = rs.IComponentProps<GradingModel, void>
+
+interface IGrading {
+  assessment: any
+  isSubmitted: boolean
+  isGraded: boolean
+}
+
+export class GradingModel extends rs.Document<IGrading, any> {
+  get assessment() {
+    return this.data.assessment
+  }
+  get isSubmitted() {
+    return this.data.isSubmitted
+  }
+
+  get isGraded() {
+    return this.data.isGraded
+  }
+}
 
 class GradingView extends React.Component<Props, void> {
   refs: { [name: string]: any, form: any }
@@ -38,11 +57,10 @@ class GradingView extends React.Component<Props, void> {
 
   render() {
     const document = this.props.component.document
-    const assessment = document.volatile.assessment || {}
+    const assessment = document.assessment || {}
     const baseXp = assessment.base_exp
     return <div>
-      { document.volatile.isSubmitted
-          && !(document.volatile.isGraded) &&
+      { document.isSubmitted && !(document.isGraded) &&
           <h3 style={{padding: '10px'}} >
             Your submission has not been graded.
             Please wait for your Avenger to grade your submission.<br/>
@@ -55,15 +73,17 @@ class GradingView extends React.Component<Props, void> {
   }
 }
 
-const Grading: rs.IComponentFactory<{}, void> = {
-  name: 'ui-grading',
-  displayName: 'Grading',
-  icon: GradingIcon,
-  view: GradingView,
+class Grading extends rs.ComponentFactory<any, void> {
+  name = 'ui-grading'
+  displayName = 'Grading'
+  icon = GradingIcon
+  view = GradingView
+
   acceptDocument(document: rs.AnyDocument) {
-    return document.type === 'source-code' && document.volatile.isSubmitted
-  },
-  createStore(document: rs.IDocument<{}>) {
+    return document.type === 'grading'
+  }
+
+  createStore(document) {
     return
   }
 }

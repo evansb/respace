@@ -6,7 +6,7 @@ import { Editor } from '@respace/helper-ace'
 import { Button, ButtonGroup, FormControl } from 'react-bootstrap'
 const RunIcon = require('react-icons/fa/play').default
 
-export interface IConsoleInputProps { store: Store }
+export interface IConsoleInputProps { store: Store<any, any> }
 
 function ConsoleInput({ store }: IConsoleInputProps) {
   const editorStyle = {
@@ -29,13 +29,22 @@ function ConsoleInput({ store }: IConsoleInputProps) {
     autorun(() => {
       editor.commands.addCommand({
         name: 'run',
-        bindKey: {
-          win: store.executeShortcut,
-          mac: store.executeShortcut
-        },
+        bindKey: store.executeShortcut,
         exec: (editor: AceAjax.Editor) => {
           store.addCodeFromInput()
           editor.setValue('')
+        }
+      })
+      editor.commands.addCommand({
+        name: 'cycleHistory',
+        bindKey: 'Up',
+        exec: (editor: AceAjax.Editor) => {
+          const pos = editor.getCursorPosition()
+          if (pos.row === 0) {
+            store.cycleHistory()
+          } else {
+            editor.navigateUp()
+          }
         }
       })
     })
@@ -79,7 +88,7 @@ function ConsoleInput({ store }: IConsoleInputProps) {
   const shortcutSelect = (
     <FormControl componentClass='select' placeholder={store.executeShortcut}
         style={shortcutSelectStyle}
-        onChange={(e) => store.executeShortcut = e.target.value}>
+        onChange={(e) => store.executeShortcut = (e.target as any).value}>
       {
         store.availableShortcuts.map((s, idx) => {
           return <option key={idx} value={s}>{s}</option>
@@ -94,7 +103,6 @@ function ConsoleInput({ store }: IConsoleInputProps) {
       <div style={infoStyle}>
         <small>
           Press {shortcutSelect} to evaluate.&nbsp;&nbsp;
-          Limit {store.timeout}ms/{store.stackSize}&nbsp;&nbsp;
         </small>
       </div>
     </div>

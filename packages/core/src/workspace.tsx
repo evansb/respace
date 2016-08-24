@@ -1,104 +1,43 @@
 import * as uuid from 'uuid'
 import * as React from 'react'
-import localforage from 'localforage'
 import * as rs from '@respace/common'
+import Dropzone from 'react-dropzone'
+import localforage from 'localforage'
 import { AppContainer } from 'react-hot-loader'
 import { render } from 'react-dom'
+import MainLayout from './ui/main-layout'
+import LayoutStore from './stores/layout-store'
 import DocumentStore from './stores/document-store'
 import UIStore from './stores/ui-store'
 import App from './ui/app'
 import { createStorage } from './storage'
-import Dropzone from 'react-dropzone'
 
 export interface IWorkspaceInitializer {
   components: rs.AnyComponentFactory[]
-  documents: rs.AnyDocumentJSON[]
-  layoutEngine: rs.ILayoutEngine
+  documents: rs.AnyDocument[]
 }
 
 export class Workspace {
-  private readonly _layoutView: React.ComponentClass<any>
-  private readonly _layoutStore: rs.ILayoutStore
+  private readonly _layoutStore: LayoutStore
   private readonly _documentStore: DocumentStore
   private readonly _uiStore: UIStore
   private _storage: LocalForage
   private _sessionID: string
 
-  static create(initializer: IWorkspaceInitializer) {
-    initializer.components = initializer.components || []
-    initializer.documents = initializer.documents || []
-    return new Workspace(initializer)
-  }
-
-  use(...factories: rs.AnyComponentFactory[]) {
-    factories.forEach(factory => {
-      this._uiStore.registerFactory(factory)
-    })
-  }
-
-  addDocument(...documents: rs.AnyDocument[]) {
-    documents.forEach(document => {
-      this._documentStore.addDocument(document)
-    })
+  static create(init: IWorkspaceInitializer) {
+    init.components = init.components || []
+    init.documents = init.documents || []
+    return new Workspace(init)
   }
 
   async render(container: HTMLElement) {
-    return new Promise((resolve, reject) => {
-      const renderApp = (App) => {
-        const appProps = {
-          uiStore: this._uiStore,
-          documentStore: this._documentStore,
-          layoutManager: React.createElement(this._layoutView, {
-            layoutStore: this._layoutStore
-          }),
-          layoutStore: this._layoutStore
-        }
-        const Redbox = __DEV__ ? require('redbox-react').default : null
-        const dropzoneStyle = {
-          width: '100%',
-          height: '100%',
-          border: 'none'
-        }
-        const root = (
-          <Dropzone style={dropzoneStyle}
-                onDrop={(files) => this.handleDrop(files)} disableClick>
-            <AppContainer errorReporter={Redbox}>
-              <App {...appProps} />
-            </AppContainer>
-          </Dropzone>
-        )
-        render(root, container, async () => {
-          this._uiStore.container = container
-          await this.configureSession()
-
-          const documentStorage = createStorage(this._storage, 'document')
-          const uiStorage = createStorage(this._storage, 'ui')
-          const layoutStorage = createStorage(this._storage, 'layout')
-
-          await this._documentStore.rehydrate(documentStorage)
-          await this._uiStore.rehydrate(uiStorage)
-          await this._layoutStore.rehydrate(layoutStorage)
-
-          await this._uiStore.start(this._documentStore)
-          await this._documentStore.start()
-          await this._layoutStore.start(this._uiStore)
-
-          resolve()
-        })
-      }
-
-      try {
-        renderApp(App)
-        if (module.hot) {
-          module.hot.accept('./ui/app', () => {
-            const NewApp = require('./ui/app').default
-            renderApp(NewApp)
-          })
-        }
-      } catch (e) {
-        reject(e)
-      }
-    })
+    await this.renderApp(container)
+    if (module.hot) {
+      module.hot.accept('./ui/app', () => {
+        const NewApp = require('./ui/app').default
+        this.renderApp(container, NewApp)
+      })
+    }
   }
 
   async configureSession() {
@@ -106,7 +45,10 @@ export class Workspace {
     if (href.endsWith('#')) {
       href = href.substr(0, href.length - 1)
     }
-    const sessionKey = href + '_session'
+    const version: string[] = require('../package.json').version.split('.')
+    version.pop()
+    const majorVersion = version.join('.')
+    const sessionKey = `${href}.${majorVersion}.session`
     localforage.config({
       name: 'respace'
     })
@@ -125,12 +67,69 @@ export class Workspace {
   }
 
   async handleDrop(files: File[]) {
-    this._documentStore.dispatchAll('drop', files)
+    this._documentStore.publish({
+      type: 'drop',
+      payload: files
+    })
+  }
+
+  private createAppProps() {
+    return {
+      uiStore: this._uiStore,
+      documentStore: this._documentStore,
+      layoutManager: <MainLayout layoutStore={this._layoutStore} />,
+      layoutStore: this._layoutStore
+    }
+  }
+
+  private async renderApp(container: HTMLElement, AppView = App) {
+    const appProps = this.createAppProps()
+    const Redbox = __DEV__ ? require('redbox-react').default : null
+    const dropzoneStyle = {
+      width: '100%',
+      height: '100%',
+      border: 'none'
+    }
+    const application = (
+      <Dropzone style={dropzoneStyle}
+            onDrop={(files) => this.handleDrop(files)} disableClick>
+        <AppContainer errorReporter={Redbox}>
+          <AppView {...appProps} />
+        </AppContainer>
+      </Dropzone>
+    )
+    await new Promise((resolve, reject) => {
+      try {
+        render(application, container, async () => {
+          this._uiStore.container = container
+          await this.afterAppRender()
+          resolve()
+        })
+      } catch (e) {
+        reject(e)
+      }
+    })
+  }
+
+  private async afterAppRender() {
+    await this.configureSession()
+
+    const documentStorage = createStorage(this._storage, 'document')
+    const uiStorage = createStorage(this._storage, 'ui')
+    const layoutStorage = createStorage(this._storage, 'layout')
+
+    await this._uiStore.rehydrate(uiStorage)
+    await this._layoutStore.rehydrate(layoutStorage)
+
+    await this._uiStore.start(this._documentStore)
+    await this._documentStore.start()
+    await this._layoutStore.start(this._uiStore)
+
+    await this._documentStore.rehydrate(documentStorage)
   }
 
   private constructor(initializer: IWorkspaceInitializer) {
-    this._layoutStore = initializer.layoutEngine.createStore()
-    this._layoutView = initializer.layoutEngine.view
+    this._layoutStore = new LayoutStore()
     this._documentStore = new DocumentStore(initializer.documents)
     this._uiStore = new UIStore(initializer.components)
   }

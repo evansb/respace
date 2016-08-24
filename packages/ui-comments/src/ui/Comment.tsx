@@ -8,7 +8,7 @@ import marked from 'marked'
 
 export type IProps = {
   isNew: boolean
-  annotation: rs.documents.IAnnotation
+  annotation: rs.IAnnotation
   store: Store
 }
 
@@ -16,7 +16,7 @@ function Comment({ annotation, isNew, store }: IProps) {
   const MediaLeft = Media.Left as any
   const MediaBody = Media.Body as any
   const MediaHeading = Media.Heading as any
-  const src = annotation.profilePicture
+  const src = annotation.author.profilePicture
   const style = {
     backgroundColor: '#25272F',
     paddingTop: '5px',
@@ -46,7 +46,7 @@ function Comment({ annotation, isNew, store }: IProps) {
     color: 'white',
     backgroundColor: '#1D1F21'
   }
-  const label = (annotation.posterRole === 'special') &&
+  const label = (annotation.author.role === 'special') &&
     <Label style={labelStyle}>Staff</Label>
   let body
   if (isNew) {
@@ -82,8 +82,8 @@ function Comment({ annotation, isNew, store }: IProps) {
     body = (
       <MediaBody style={bodyStyle}>
         <MediaHeading style={headingStyle}>
-          <a href={annotation.profileUrl || 'javascript:;'}>
-            {annotation.posterName}
+          <a href={annotation.author.profileUrl || 'javascript:;'}>
+            {annotation.author.name}
           </a>
           {label}
         </MediaHeading>

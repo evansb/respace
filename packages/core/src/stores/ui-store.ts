@@ -1,15 +1,17 @@
 import { Subscription } from 'rxjs/Subscription'
 import { Observable } from 'rxjs/Observable'
+import { Subject } from 'rxjs/Subject'
 import { ObservableMap, map, observable, computed, action } from 'mobx'
+
 import 'rxjs/add/observable/fromEvent'
 import 'rxjs/add/observable/combineLatest'
 import 'rxjs/add/observable/interval'
 import 'rxjs/add/operator/debounceTime'
 import 'rxjs/add/operator/startWith'
-
 import * as rs from '@respace/common'
 import { Component } from '../component'
 import wrapComponent from './wrapComponent'
+import DocumentStore from './document-store'
 
 export default class UIStore implements rs.IUIStore {
   SIDEBAR_MIN_WIDTH: number = 29
@@ -20,14 +22,14 @@ export default class UIStore implements rs.IUIStore {
   @observable isSidebarToggled: boolean = true
 
   public container: HTMLElement
-  private _events$: Observable<rs.events.UIEvent>
+  private _events$: Subject<rs.IAction<any>>
   private _components: ObservableMap<rs.AnyComponent>
   private _sidebarComponents: ObservableMap<rs.AnyComponent>
   private _subscription: Subscription[] = []
   private _disposables: any[] = []
   private _registry: Map<string, rs.AnyComponentFactory>
   private _started: boolean = false
-  private _documentStore: rs.IDocumentStore
+  private _documentStore: DocumentStore
   private _storage: rs.IStorage
 
   constructor(initialFactories: rs.AnyComponentFactory[]) {
@@ -90,20 +92,29 @@ export default class UIStore implements rs.IUIStore {
     return this._registry.get(name)
   }
 
-  @action('ui:fitToContainer')
+  @action('ui.fitToContainer')
   fitToContainer() {
     this.appWidth = this.container.offsetWidth
     this.appHeight = this.container.offsetHeight
   }
 
-  @action('ui:toggleSidebar')
+  @action('ui.toggleSidebar')
   async toggleSidebar() {
     this.isSidebarToggled = !this.isSidebarToggled
     await this._storage.put('isSidebarToggled', this.isSidebarToggled)
   }
 
-  subscribe(cb: (e: rs.events.UIEvent) => any): Subscription {
-    return this._events$.subscribe(cb)
+  publish(action: rs.IAction<any>) {
+    this._events$.next(action)
+  }
+
+  subscribe(handler: rs.ActionHandler<any>) {
+    return this._events$.subscribe((e) => {
+      const reply = handler(e)
+      if (reply) {
+        reply.subscribe((r) => this._events$.next(r))
+      }
+    })
   }
 
   async rehydrate(storage: rs.IStorage) {
@@ -112,19 +123,15 @@ export default class UIStore implements rs.IUIStore {
       this.isSidebarToggled)
   }
 
-  start(documentStore: rs.IDocumentStore) {
-    return new Promise((resolve, reject) => {
-      if (this._started) { resolve() }
-      this._documentStore = documentStore
-      this._events$ = Observable.create((observer) => {
-        this.startEmittingViewModelsEvents(observer)
-      })
-      this.startListeningDocumentStore()
-      this.startListeningToDimensionChange()
-      this._started = true
-      this.fitToContainer()
-      resolve()
-    })
+  start(documentStore: DocumentStore) {
+    if (this._started) { return }
+    this._documentStore = documentStore
+    this._events$ = new Subject<any>()
+    this.startEmittingViewModelsEvents()
+    this.startListeningDocumentStore()
+    this.startListeningToDimensionChange()
+    this._started = true
+    this.fitToContainer()
   }
 
   onDocumentAdded(document: rs.AnyDocument, isInitial: boolean = false) {
@@ -154,14 +161,14 @@ export default class UIStore implements rs.IUIStore {
     }))
   }
 
-  private startEmittingViewModelsEvents(observer) {
+  private startEmittingViewModelsEvents() {
     this._disposables.push(this._components.observe((changes) => {
       switch (changes.type) {
         case 'add':
-          observer.next(new rs.events.ComponentAdded(
-            changes.name,
-            changes.newValue
-          ))
+          this._events$.next({
+            type: 'componentCreated',
+            payload: changes.newValue
+          })
           break
         default:
       }
@@ -169,17 +176,20 @@ export default class UIStore implements rs.IUIStore {
   }
 
   private startListeningDocumentStore() {
-    this._subscription.push(this._documentStore.subscribe((e) => {
-      if (e instanceof rs.events.DocumentAdded) {
-        const document = e.document
+    const documentCreatedHandler: rs.ActionHandler<any> = (e) => {
+      if (e.type === 'documentCreated') {
+        const document = e.payload
         this.onDocumentAdded(document)
       }
-    }))
+      return undefined
+    }
+    const subscription = this._documentStore.subscribe(documentCreatedHandler)
+    this._subscription.push(subscription)
   }
 
-  private async addComponent<D, S>(
-    factory: rs.IComponentFactory<D, S>,
-    document: rs.IDocument<D>,
+  private async addComponent<D extends rs.AnyDocument, S>(
+    factory: rs.ComponentFactory<D, S>,
+    document: D,
     isInitial: boolean
   ) {
     const id = document.meta.id + '.' + factory.name
@@ -189,7 +199,7 @@ export default class UIStore implements rs.IUIStore {
       factory.name,
       'Untitled',
       factory.displayName,
-      document as rs.IDocument<D>,
+      document,
       factory.createStore(document)
     )
 
@@ -197,8 +207,6 @@ export default class UIStore implements rs.IUIStore {
 
     if (factory.view) {
       this._components.set(id, component)
-    } else if (factory.sidebarView) {
-      this._sidebarComponents.set(id, component)
     }
   }
 }

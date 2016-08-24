@@ -16,7 +16,7 @@ interface ICoursemologyWindowWithCanvas extends Window {
 
 declare var window: ICoursemologyWindowWithCanvas
 
-export type Props = rs.IComponentProps<rs.documents.ISourceCode, void>
+export type Props = rs.IComponentProps<rs.SourceCode, void>
 
 class CanvasView extends React.Component<Props, { size: number }> {
   refs: { [index: string]: any, canvas: any }
@@ -31,11 +31,13 @@ class CanvasView extends React.Component<Props, { size: number }> {
   componentDidMount() {
     const canvas = findDOMNode(this.refs.canvas) as HTMLCanvasElement
     const document = this.props.component.document
-    const missionType = document.volatile.mission_type || window.mission_type
+    const missionType = document.language || window.mission_type
     const runeType: string = (typeof missionType === 'string') &&
       (missionType as string).split('_')[1]
     window.getReadyWebGLForCanvas(runeType || '2d', canvas)
-    window.initRuneBuffer(window.vertices, window.indices);
+    if (runeType !== 'curve') {
+      window.initRuneBuffer(window.vertices, window.indices)
+    }
   }
 
   handleIncrease = () => {
@@ -77,18 +79,21 @@ class CanvasView extends React.Component<Props, { size: number }> {
   }
 }
 
-const Canvas: rs.IComponentFactory<rs.documents.ISourceCode, void> = {
-  name: 'ui-canvas',
-  displayName: 'Canvas',
-  icon: CanvasIcon,
-  view: CanvasView,
+class Canvas extends rs.ComponentFactory<rs.SourceCode, void> {
+  name = 'ui-canvas'
+  displayName = 'Canvas'
+  icon = CanvasIcon
+  view = CanvasView
+
   acceptDocument(document: rs.AnyDocument) {
+    const language = (document as rs.SourceCode).language
     return document.type === 'source-code'
-      && window.getReadyWebGLForCanvas
-      && document.volatile.context
-      && document.volatile.context.show
-  },
-  createStore(document: rs.IDocument<rs.documents.ISourceCode>) {
+      && (!!window.getReadyWebGLForCanvas)
+      && (!!language)
+      && (language.split('_')[0] === 'rune')
+  }
+
+  createStore(document: rs.SourceCode) {
     return
   }
 }

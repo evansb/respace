@@ -1,91 +1,67 @@
-import { AnyDocument, IDocument } from './document'
-import { IStorage } from './storage'
-import * as events from './events'
+import React from 'react'
+import { IPubSub } from './action'
+import { AnyDocument, Document } from './document'
 
-export interface IStore<E> {
-  rehydrate(storage: IStorage): Promise<{}>
-  subscribe(callback: (event: E) => any)
-}
-
-export interface IDocumentStore extends IStore<events.DocumentEvent> {
-  start(): Promise<void>
-  destroy()
-}
-
-export interface ILayoutEngine {
-  createStore: () => ILayoutStore
-  view: __React.ComponentClass<any>
-}
-
-export interface IUIStore extends IStore<events.UIEvent> {
-  // Constants
-  SIDEBAR_MAX_WIDTH: number
-  SIDEBAR_MIN_WIDTH: number
-
-  // Dimension
-  appWidth: number
-  appHeight: number
-  mainContentWidth: number
-  sidebarWidth: number
-
-  // Sidebar
-  isSidebarToggled: boolean
-
-  // Business Logic
-  factories: AnyComponentFactory[]
-  components: AnyComponent[]
-  sidebarComponents: AnyComponent[]
-
-  toggleSidebar(): void
-  registerFactory(factory: AnyComponentFactory)
-  start(documentStore: IDocumentStore): Promise<{}>
-  getComponent(id: string): AnyComponent | undefined
-  getFactory(name: string): AnyComponentFactory | undefined
-  destroy()
-}
-
-export interface ILayoutStore {
-  start(uiStore: IUIStore): Promise<{}>
-  rehydrate(storage: IStorage): Promise<{}>
-  addComponent(component: AnyComponent): void
-  destroy()
-}
-
-export interface IComponent<D, S> {
+/**
+ * Concrete component created by [[ComponentFactory]]
+ */
+export interface IComponent<D extends Document<any, any>, S> {
   id: string
   isActive: boolean
-  width: number
-  height: number
   container: Element
   name: string
   displayName: string
-  document: IDocument<D>
-  state: S
-
-  updateSize()
+  document: D
+  store: S
 }
 
-export interface IComponentProps<D, S> {
+/**
+ * Props passed to component view
+ */
+export interface IComponentProps<D extends Document<any, any>, S> {
   id: string
   component: IComponent<D, S>
-  uiStore: IUIStore
+  uiStore: IPubSub<any>
 }
 
-export interface IComponentFactory<D, S> {
+/**
+ * Component extension points
+ */
+export type ComponentExtensions<D extends Document<any, any>> = {
+  [name: string]: ComponentFactory<D, any>
+}
+
+/**
+ * Component view
+ */
+export type ComponentView<D extends Document<any, any>, S> =
+    React.ComponentClass<IComponentProps<D, S>>
+  | React.StatelessComponent<IComponentProps<D, S>>
+
+/**
+ * Creates component
+ */
+export abstract class ComponentFactory<D extends Document<any, any>, S> {
   name: string
+  view: ComponentView<D, S>
+  icon: __React.ComponentClass<void>
   displayName: string
-  icon?: __React.ComponentClass<void>
-  view?: __React.ComponentClass<IComponentProps<D, S>>
-    |  __React.StatelessComponent<IComponentProps<D, S>>
-  sidebarView?: __React.ComponentClass<IComponentProps<D, S>>
-  didRegister?()
-  didUnregister?()
-  acceptDocument(document: AnyDocument): boolean
-  createStore(document: IDocument<D>): S
+
+  constructor(public extensions: ComponentExtensions<D> = {}) {
+  }
+
+  didRegister() {
+    return
+  }
+  didUnregister() {
+    return
+  }
+
+  abstract acceptDocument(document: AnyDocument): boolean
+  abstract createStore(document: D): S
 }
 
-export type AnyComponentFactory = IComponentFactory<any, any>
-
+// Handy type aliases
+export type AnyComponentFactory = ComponentFactory<any, any>
 export type AnyComponentProps = IComponentProps<any, any>
-
 export type AnyComponent = IComponent<any, any>

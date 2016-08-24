@@ -1,16 +1,17 @@
 import * as React from 'react'
 import { observer } from 'mobx-react'
-import { IUIStore, IDocumentStore, ILayoutStore } from '@respace/common'
 import { Button, ButtonGroup } from 'react-bootstrap'
 import ComponentPicker from './component-picker'
 import { addTooltip } from '../util'
-
-const ToggleIcon = require('react-icons/fa/arrows-h').default
+import UIStore from '../../stores/ui-store'
+import DocumentStore from '../../stores/document-store'
+import LayoutStore from '../../stores/layout-store'
+import ToggleIcon from 'react-icons/fa/arrows-h'
 
 export interface ISidebarProps {
-  layoutStore: ILayoutStore,
-  documentStore: IDocumentStore,
-  uiStore: IUIStore
+  layoutStore: LayoutStore,
+  documentStore: DocumentStore,
+  uiStore: UIStore
 }
 
 const Sidebar = ({ documentStore, uiStore, layoutStore }: ISidebarProps) => {

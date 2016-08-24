@@ -1,59 +1,56 @@
 import { ObservableMap, map } from 'mobx'
 import * as uuid from 'uuid'
-import { Subscription } from 'rxjs/Subscription'
-import { Observable } from 'rxjs/Observable'
-import { Document } from '../document'
+import { Subject } from 'rxjs/Subject'
 import * as rs from '@respace/common'
 
-export default class DocumentStore implements rs.IDocumentStore {
-  private _events$: Observable<rs.events.DocumentEvent>
+export default class DocumentStore {
+  private _events$: Subject<rs.IAction<any>>
   private _documents: ObservableMap<rs.AnyDocument> = map<rs.AnyDocument>()
   private _storage: rs.IStorage
 
-  constructor(private _initialDocuments: rs.AnyDocumentJSON[]) {
-    this._events$ = Observable.create((observer) => {
-      this._documents.observe((changes) => {
-        switch (changes.type) {
-          case 'add':
-            observer.next(new rs.events.DocumentAdded(changes.newValue))
-            break
-          case 'update':
-            observer.next(new rs.events.DocumentChanged(changes.newValue))
-            break
-          case 'delete':
-            observer.next(new rs.events.DocumentRemoved(changes.newValue))
-            break
-          default:
-        }
-      })
+  constructor(private _initialDocuments: rs.AnyDocument[]) {
+    this._events$ = new Subject<any>()
+    this._documents.observe((changes) => {
+      switch (changes.type) {
+        case 'add':
+          this._events$.next({
+            type: 'documentCreated',
+            payload: changes.newValue
+          })
+          break
+        default:
+      }
     })
   }
 
-  start() {
-    return Promise.all([
-      this._initialDocuments.map(d => this.addDocument(d))
-    ])
+  async start() {
+    await this._initialDocuments.map(d => this.addDocument(d))
   }
 
   async rehydrate(storage: rs.IStorage) {
     this._storage = storage
-    await this._documents.forEach(async (document) => {
-      const id = document.meta.id
-      this._documents.set(id, await storage.get(id, document))
+    await Promise.all(this._documents.values().map((document) => {
+      document.setStorage(this._storage.createStorage(document.id))
+      return document.rehydrate()
+    }))
+  }
+
+  publish(action: rs.IAction<any>) {
+    this._documents.values().forEach(d => d.publish(action))
+  }
+
+  subscribe(handler: rs.ActionHandler<any>) {
+    return this._events$.subscribe((e) => {
+      const reply = handler(e)
+      if (reply) {
+        reply.subscribe((r) => this._events$.next(r))
+      }
     })
   }
 
-  dispatchAll(event: string, data: any) {
-    this._documents.values().forEach(d => d.dispatch(event, data))
-  }
-
-  async addDocument(documentJSON: rs.AnyDocumentJSON) {
-    const _document = this.assignID(documentJSON)
-    const document = new Document(_document)
+  async addDocument(document: rs.AnyDocument) {
+    this.assignID(document)
     this._documents.set(document.meta.id, document)
-    if (!(_document.volatile && _document.volatile.isRemote)) {
-      await document.rehydrate(this._storage.createStorage(document.meta.id))
-    }
     return document
   }
 
@@ -63,20 +60,10 @@ export default class DocumentStore implements rs.IDocumentStore {
     }
   }
 
-  destroy() { // tslint:disable-line
-  }
-
-  subscribe(cb: (e: rs.events.DocumentEvent) => any): Subscription {
-    return this._events$.subscribe(cb)
-  }
-
-  private assignID(document: rs.AnyDocumentJSON): rs.AnyDocumentJSON {
-    if (document.meta.id) {
-      return document
-    } else {
+  private assignID(document: rs.AnyDocument) {
+    if (!document.meta.id) {
       const id = uuid.v4()
       document.meta.id = id
-      return document
     }
   }
 }

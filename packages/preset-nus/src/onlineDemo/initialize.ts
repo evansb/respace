@@ -2,35 +2,27 @@ import initializeRespace from '../initialize'
 import loadLibraries from '../loadLibraries'
 
 function createSourceWeek(week: number) {
-  const id = `source-week-${week}`
-  const title = `Source Week ${week}`
   return {
-    type: 'source-code',
-    meta: { id, title },
-    data: { template: '', value: '' },
-    volatile: { week },
-    handlers: []
+    template: '',
+    value: '',
+    language: `source-week-${week}`,
+    title: `Source Week ${week}`,
+    context: <{[name: string]: any}> {},
+    globals: <string[]> []
   }
 }
 
-async function createSpecial(missionName: string, displayName: string,
-                             week: number) {
-  const id = missionName
-  const title = displayName
-  const { globals, context } = await loadLibraries(missionName)
-  return {
-    type: 'source-code',
-    meta: { id, title },
-    data: { template: '', value: '' },
-    volatile: { week, globals, context }
-  }
+async function createSpecial(language: string, missionTitle: string,
+                             title: string, week: number) {
+  const { globals, context } = await loadLibraries(missionTitle)
+  return { title, template: '', value: '', language, globals, context }
 }
 
 export default async function initialize() {
-  const documents = [
+  const sourceCodes = [
     createSourceWeek(3),
-    await createSpecial('Mission 2', 'Rune 2D', 3),
-    await createSpecial('Mission 3', 'Rune 3D', 3)
+    createSourceWeek(4),
+    await createSpecial('rune_curve', 'Mission 4', 'Curve', 3),
   ]
-  initializeRespace(documents)
+  initializeRespace(sourceCodes)
 }

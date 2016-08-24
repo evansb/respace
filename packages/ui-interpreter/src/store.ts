@@ -1,50 +1,12 @@
 import * as rs from '@respace/common'
 import * as uuid from 'uuid'
-import { createServer, ISnapshotError, printValueToString,
-  createRequestStream, IRequest, Snapshot } from 'the-source'
-import { Observable } from 'rxjs/Observable'
-import { Subject } from 'rxjs/Subject'
-import { Subscription } from 'rxjs/Subscription'
 import { observable, action, autorun, transaction } from 'mobx'
+import { ILanguageService, ISnapshot, ISnapshotError,
+  SnapshotRequest } from './language-service'
+import SnapshotData from './snapshot-data'
 
-import 'rxjs/add/operator/map'
-import 'rxjs/add/operator/share'
-import 'brace/mode/javascript'
-import 'brace/theme/tomorrow_night'
-
-const DEFAULT_TIMEOUT = 10000
-const DEFAULT_STACK_SIZE = 65536
-
-export class SnapshotData {
-  @observable errors: ISnapshotError[] = []
-  @observable valueType: string = ''
-  @observable valueString: string = ''
-  @observable isDone: boolean = false
-  @observable showCode = true
-  @observable showValue = true
-
-  constructor(public snapshot: Snapshot, errors?: ISnapshotError[]) {
-    this.setSnapshot(snapshot)
-    if (errors instanceof Array) {
-      errors.forEach(e => {
-        this.errors.push(e)
-      })
-    }
-  }
-
-  @action('snapshot.setValue')
-  setSnapshot(snapshot: Snapshot) {
-    this.snapshot = snapshot
-    this.isDone = snapshot.done
-    if (this.isDone) {
-      this.valueType = typeof snapshot.value.value
-      this.valueString = printValueToString(
-        snapshot.value, this.snapshot.context)
-    }
-  }
-}
-
-export default class InterpreterStore {
+export default class InterpreterStore<T extends ISnapshot,
+                                      E extends ISnapshotError<T>> {
   context: any
 
   // Console toolbar
@@ -60,12 +22,9 @@ export default class InterpreterStore {
     printMarginColumn: 80
   }
 
-  @observable snapshots: SnapshotData[] = []
-  @observable week: number
+  @observable snapshots: SnapshotData<T, E>[] = []
   @observable isAutorunEnabled = false
   @observable isControlsEnabled = false
-  @observable timeout: number = DEFAULT_TIMEOUT
-  @observable stackSize: number = DEFAULT_STACK_SIZE
   @observable executeShortcut = 'Shift-Enter'
 
   availableShortcuts = [
@@ -78,31 +37,28 @@ export default class InterpreterStore {
   inputEditor: AceAjax.Editor
   inputEditorValue = ''
 
-  private _subscriptions: Subscription[] = []
-  private _request$: Subject<IRequest> = new Subject<IRequest>()
+  private _hideCode: {[id: string]: boolean} = {}
+  private _cycleHistoryN = 0
 
-  constructor(private _document: rs.IDocument<rs.documents.ISourceCode>) {
-    _document.volatile = _document.volatile || {}
-    _document.volatile.context = _document.volatile.context || {}
-    _document.volatile.globals = _document.volatile.globals || []
-    this.week = _document.volatile.week || 3
+  constructor(private _document: rs.SourceCode,
+              private _service: ILanguageService<T, E>) {
     this.pipeRunToRequest()
     this.connectToService()
-    this.injectSystemToRuntime()
   }
 
   @action('interpreter.clear')
   clearAll() {
-    this.timeout = DEFAULT_TIMEOUT
-    this.stackSize = DEFAULT_STACK_SIZE
+    this._hideCode = {}
     while (this.snapshots.length > 0) {
       this.snapshots.pop()
     }
+    this._cycleHistoryN = 0
   }
 
   @action('interpreter.clearNew')
   clearNew() {
     let idx = this.snapshots.length - 1
+    this._cycleHistoryN = 1
     while (this.snapshots.length > 0) {
       if (this.snapshots[idx].snapshot.parent) {
         this.snapshots.pop()
@@ -124,13 +80,20 @@ export default class InterpreterStore {
     const parentData = this.snapshots[this.snapshots.length - 1]
     const parent = parentData && parentData.snapshot
     if (parent) {
-      this._request$.next(this.createRequest(code, parent))
+      this._service.publish(this.createRequest(code, parent))
     } else {
-      this._request$.next(this.createRequest(''))
-      this.snapshots[0].showCode = false
-      this.snapshots[0].showValue = false
-      console.log(this.snapshots)
-      this.addCode(code)
+      this._service.publish(this.createRequest(code))
+    }
+  }
+
+  cycleHistory() {
+    const snapshotData = this.snapshots[this._cycleHistoryN]
+    if (snapshotData && snapshotData.isCodeShown) {
+      this.inputEditor.setValue(snapshotData.snapshot.code)
+      this._cycleHistoryN--
+      if (this._cycleHistoryN < 0) {
+        this._cycleHistoryN = this.snapshots.length - 1
+      }
     }
   }
 
@@ -153,100 +116,74 @@ export default class InterpreterStore {
     })
   }
 
-  destroy() {
-    this._subscriptions.forEach(s => s.unsubscribe())
-  }
-
-  private handleSnapshot(snapshot: Snapshot) {
-    const found = this.snapshots.some(s => {
-      let same = s.snapshot.id === snapshot.id
+  private handleSnapshot(snapshot: T) {
+    this.snapshots.some(s => {
+      let same = s.id === snapshot.id
       if (same) {
         s.setSnapshot(snapshot)
       }
       return same
     })
-    if (!found) {
-      this.snapshots.push(new SnapshotData(snapshot))
-    }
   }
 
-  private handleError(err: ISnapshotError) {
-    // Find snapshots
-    const found = this.snapshots.some(s => {
-      let same = s.snapshot === err.snapshot
+  private handleError(err: E) {
+    this.snapshots.some(s => {
+      let same = s.id === err.snapshot.id
       if (same && !(s.errors.find(e => e.message === err.message))) {
+        s.setSnapshot(err.snapshot)
         s.errors.push(err)
       }
       return same
     })
-    if (!found && err.snapshot) {
-      this.snapshots.push(new SnapshotData(err.snapshot, [err]))
-    }
+  }
+
+  private handleLog(log: string) {
+    this.snapshots[this.snapshots.length - 1].logs.push(log)
   }
 
   private connectToService() {
-    const request$ = createRequestStream(observer => {
-      this._request$.subscribe(i => observer.next(i))
-    })
-    createServer(<any> request$).subscribe(s => {
-      if (s instanceof Snapshot) {
-        this.handleSnapshot(<Snapshot> s)
-      } else {
-        this.handleError(<ISnapshotError> s)
+    this._service.subscribe(s => {
+      if (s.type === 'snapshotReply') {
+        this.handleSnapshot(<T> s.payload)
+      } else if (s.type === 'snapshotError') {
+        this.handleError(<E> s.payload)
       }
+      return undefined
+    })
+    this._service.outputSink.subscribe(value => {
+      this.handleLog(value)
     })
   }
 
-  private createRequest(code: string, parent?: Snapshot): IRequest {
-    const request: IRequest = {
-      id: uuid.v4(),
-      maxCallStack: this.stackSize,
-      timeout: this.timeout,
-      code,
-      week: this.week,
+  private createRequest(code: string, parent?: T,
+                        showCode: boolean = true): SnapshotRequest<T> {
+    const id = uuid.v4()
+    if (!showCode) {
+      this._hideCode[id] = true
     }
-    if (!parent) {
-      request.globals = this._document.volatile.globals
-      request.context = this._document.volatile.context
-    } else {
-      request.parent = parent
-      request.week = parent.week
+    const request: SnapshotRequest<T> = {
+      type: 'snapshotRequest',
+      payload: <T> ({ id, done: false, code, })
     }
+    if (parent) {
+      request.payload.parent = parent
+    }
+    let data = new SnapshotData(id, code, this._service)
+    data.isCodeShown = !this._hideCode[id]
+    this.snapshots.push(data)
+    this._cycleHistoryN = (this.snapshots.length - 1)
     return request
   }
 
-  private injectSystemToRuntime() {
-    const runtime_limit = {
-      set_stack_size: (stackSize) => {
-        this.stackSize = stackSize
-      },
-      get_stack_size: () => {
-        return this.stackSize
-      },
-      get_timeout: () => {
-        return this.timeout
-      },
-      set_timeout: (timeout) => {
-        this.timeout = timeout
-      }
-    }
-    const system = { runtime_limit }
-    this._document.volatile.context.system = system
-    this._document.volatile.globals.push('system')
-  }
-
   private pipeRunToRequest() {
-    const run$: Observable<IRequest> = Observable.create(observer => {
-      this._document.addHandler(async (action, document) => {
-        if (action === 'run') {
-          this.clearAll()
-          transaction(() => {
-            observer.next(this.createRequest(document.data.value))
-            this.snapshots[0].showCode = false
-          })
-        }
-      })
+    this._document.subscribe(action => {
+      if (action.type === 'run') {
+        this.clearAll()
+        const request = this.createRequest(
+          this._document.value, undefined, false)
+        this._service.publish(request)
+      }
+      return undefined
     })
-    run$.share().subscribe(r => this._request$.next(r))
   }
 }

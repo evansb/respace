@@ -1,14 +1,14 @@
 import * as React from 'react'
-import { ILayoutStore } from '@respace/common'
 import { observer } from 'mobx-react'
 import DocumentStore from '../stores/document-store'
 import UIStore from '../stores/ui-store'
+import LayoutStore from '../stores/layout-store'
 import Sidebar from './sidebar'
 import Content from './content'
 
 export interface IAppProps {
   layoutManager: React.ReactElement<any>
-  layoutStore: ILayoutStore,
+  layoutStore: LayoutStore,
   documentStore: DocumentStore,
   uiStore: UIStore
 }
@@ -16,7 +16,6 @@ export interface IAppProps {
 export class App extends React.Component<IAppProps, void> {
 
   componentWillUnmount() {
-    this.props.documentStore.destroy()
     this.props.uiStore.destroy()
   }
 

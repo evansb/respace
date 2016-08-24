@@ -1,13 +1,15 @@
 import $ from 'jquery'
+import { Subject } from 'rxjs/Subject'
 import { Observable } from 'rxjs/Observable'
 import GoldenLayout from 'golden-layout'
 import { autorun } from 'mobx'
+import UIStore from './ui-store'
 
 import 'rxjs/add/operator/debounceTime'
 import 'golden-layout/src/css/goldenlayout-base.css'
 
 import * as rs from '@respace/common'
-import createConfig from './config'
+import createConfig from './layout-config'
 
 type FindComponentResult = {
   isNew: boolean
@@ -15,9 +17,10 @@ type FindComponentResult = {
   item?: GoldenLayout.ContentItem
 }
 
-export default class GoldenLayoutStore implements rs.ILayoutStore {
+export default class GoldenLayoutStore {
   public container: HTMLElement
-  private _uiStore: rs.IUIStore
+  private _events$ = new Subject<rs.IAction<any>>()
+  private _uiStore: UIStore
   private _layout: GoldenLayout
   private _storage: rs.IStorage
   private _itemConfig: Map<string, GoldenLayout.ReactComponentConfig>
@@ -27,7 +30,7 @@ export default class GoldenLayoutStore implements rs.ILayoutStore {
     this._itemConfig = new Map<string, GoldenLayout.ReactComponentConfig>()
   }
 
-  start(uiStore: rs.IUIStore) {
+  start(uiStore: UIStore) {
     return new Promise((resolve, reject) => {
       try {
         this._uiStore = uiStore
@@ -41,16 +44,20 @@ export default class GoldenLayoutStore implements rs.ILayoutStore {
           this.addItemDestroyedHandler()
           this.addContentResizeHandler()
           resolve()
+          this._events$.next({ type: 'layoutInitialised' })
         })
 
         this._layout.on('stateChanged', () => {
           if (this._layout.isInitialised) {
+            /*
             this._uiStore.components.forEach((component) => {
               if (component.isActive) {
                 component.updateSize()
               }
             })
+            */
             this._storage.put('config', this._layout.toConfig())
+            this._events$.next({ type: 'layoutChanged' })
           }
         })
 

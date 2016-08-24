@@ -5,7 +5,7 @@ import { ButtonToolbar, ButtonGroup, Button, Col,
   OverlayTrigger, Tooltip } from 'react-bootstrap'
 import EditorStore from '../store'
 
-export type Props = rs.IComponentProps<rs.documents.ISourceCode, EditorStore>
+export type Props = rs.IComponentProps<rs.SourceCode, EditorStore>
 
 function addTooltip(element: any, tooltip: string): React.ReactElement<any> {
   const tooltipEl = <Tooltip id='tooltip'>{tooltip}</Tooltip>
@@ -19,13 +19,13 @@ function addTooltip(element: any, tooltip: string): React.ReactElement<any> {
 const RunIcon = require('react-icons/fa/play').default
 const SaveIcon = require('react-icons/fa/floppy-o').default
 const RevertIcon = require('react-icons/fa/ban').default
-const SubmitIcon = require('react-icons/fa/check').default
 const ZoomInIcon = require('react-icons/fa/plus').default
 const ZoomOutIcon = require('react-icons/fa/minus').default
 // TODO const AnnotateIcon = require('react-icons/fa/pencil').default
 
 function Toolbar({ component }: Props) {
-  const store = component.state
+  const store = component.store
+  const isReadOnly = store.sourceCode.isReadOnly
   const style = {
     position: 'absolute',
     top: '0px',
@@ -41,25 +41,13 @@ function Toolbar({ component }: Props) {
       <RunIcon />
     </Button>
   )
-  const submitButton = (
-    <Button onClick={() => store.submit() } bsSize='small' bsStyle='primary'>
-      <SubmitIcon style={{ marginRight: '5px' }}/>
-      <b>SUBMIT</b>
-    </Button>
-  )
-  const submittedButton = (
-    <Button  bsSize='small' disabled={store.isSubmitted}>
-      <SubmitIcon style={{ marginRight: '5px' }}/>
-      <b>{ store.isGraded ? 'Graded' : 'Submitted'}</b>
-    </Button>
-  )
   const revertButton = (
-    <Button disabled={store.isSubmitted} onClick={() => store.revert() }>
+    <Button disabled={isReadOnly} onClick={() => store.revert() }>
       <RevertIcon />
    </Button>
   )
   const saveButton = (
-    <Button disabled={store.isSubmitted} onClick={() => store.save() }>
+    <Button disabled={isReadOnly} onClick={() => store.save() }>
       <SaveIcon />
     </Button>
   )
@@ -73,14 +61,6 @@ function Toolbar({ component }: Props) {
       <ZoomOutIcon />
     </Button>
   )
-/*
-  TODO const annotateButton = (
-    <Button bsSize='small'>
-      <AnnotateIcon style={{ marginRight: '5px' }}/>
-      <b>Annotate</b>
-    </Button>
-  )
-*/
   return (
     <div style={style}>
       <Col xs={8}>
@@ -97,8 +77,6 @@ function Toolbar({ component }: Props) {
         </ButtonToolbar>
       </Col>
       <Col style={{textAlign: 'right'}} xs={4}>
-        { store.isSubmitted ? submittedButton :
-            (store.isRemote ? submitButton : null) }
       </Col>
     </div>
    )

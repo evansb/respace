@@ -5,11 +5,13 @@ import { Row, Col, ListGroupItem } from 'react-bootstrap'
 import FaCode from 'react-icons/fa/code'
 import classnames from 'classnames'
 import { addTooltip } from '../util'
+import UIStore from '../../stores/ui-store'
+import LayoutStore from '../../stores/layout-store'
 
 export interface IComponentItemProps {
-  uiStore: rs.IUIStore
+  uiStore: UIStore
   component: rs.AnyComponent
-  layoutStore: rs.ILayoutStore
+  layoutStore: LayoutStore
 }
 
 function ComponentItem({ uiStore,

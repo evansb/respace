@@ -25,6 +25,7 @@ module.exports = (bundleDir, template) => {
     'react',
     'react-dom',
     'react-bootstrap',
+    'rxjs',
     'mobx',
     'mobx-react'
   ]
@@ -49,7 +50,7 @@ module.exports = (bundleDir, template) => {
   }
 
   webpackConfig.output = {
-    filename: `${config.name}.min.js`,
+    filename: `${config.name}.bundle.min.js`,
     path: config.dist,
     publicPath: '/',
     libraryTarget: 'var',

@@ -1,11 +1,42 @@
 /// <reference path='../typeshims/index.d.ts' />
 /// <reference path='../typings/index.d.ts' />
-import * as documents from './documents'
-import * as events from './events'
 
-export * from './document'
-export * from './component'
-export * from './storage'
+export {
+  IAction,
+  IPubSub,
+  AnyAction,
+  ActionHandler
+} from './action'
 
-export { documents, events }
+export {
+  IDocumentMeta,
+  IDocumentJSON,
+  Document,
+  DocumentAction,
+  AnyDocument,
+  AnyDocumentJSON
+} from './document'
 
+export {
+  IComponent,
+  IComponentProps,
+  ComponentExtensions,
+  ComponentView,
+  ComponentFactory,
+  AnyComponentFactory,
+  AnyComponentProps,
+  AnyComponent
+} from './component'
+
+export {
+  IStorage
+} from './storage'
+
+export {
+  IUIStore,
+} from './store'
+
+export { Annotations, IAnnotation, IAnnotations } from './documents/annotation'
+export { User, IUser } from './documents/user'
+export { SourceCode, ISourceCode,
+  Actions as SourceCodeActions } from './documents/source-code'

@@ -2,13 +2,13 @@ import * as React from 'react'
 import { findDOMNode } from 'react-dom'
 import 'rxjs/add/operator/debounceTime'
 import 'golden-layout/src/css/goldenlayout-base.css'
-import GoldenLayoutStore from './store'
+import LayoutStore from '../stores/layout-store'
 
 export interface IProps {
-  layoutStore: GoldenLayoutStore
+  layoutStore: LayoutStore
 }
 
-class GoldenLayoutWrapper extends React.Component<IProps, void> {
+export default class MainLayout extends React.Component<IProps, void> {
 
   shouldComponentUpdate() {
     return false
@@ -29,5 +29,3 @@ class GoldenLayoutWrapper extends React.Component<IProps, void> {
     return <div style={style}></div>
   }
 }
-
-export default GoldenLayoutWrapper

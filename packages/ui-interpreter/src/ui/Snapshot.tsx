@@ -1,11 +1,12 @@
 import * as React from 'react'
-import Store, { SnapshotData } from '../store'
+import Store from '../store'
+import SnapshotData from '../snapshot-data'
 import SnapshotResult from './SnapshotResult'
 import { Editor } from '@respace/helper-ace'
 
 export interface ISnapshotProps {
-  snapshotData: SnapshotData
-  store: Store
+  snapshotData: SnapshotData<any, any>
+  store: Store<any, any>
 }
 
 function SnapshotView({ store, snapshotData }: ISnapshotProps) {
@@ -25,8 +26,8 @@ function SnapshotView({ store, snapshotData }: ISnapshotProps) {
   }
   return (
     <div>
-      { snapshotData.showCode && <Editor didMount={editorDidMount} /> }
-      { snapshotData.showValue &&
+      { snapshotData.isCodeShown && <Editor didMount={editorDidMount} /> }
+      { snapshotData.isValueShown &&
           <SnapshotResult store={store} snapshotData={snapshotData} /> }
     </div>
   )

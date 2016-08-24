@@ -4,10 +4,10 @@ import Store from '../store'
 import Comment from './Comment'
 import { observer } from 'mobx-react'
 
-export type IProps = rs.IComponentProps<rs.documents.ISourceCode, Store>
+export type IProps = rs.IComponentProps<rs.SourceCode, Store>
 
 function Comments(props: IProps) {
-  const store: Store = props.component.state
+  const store: Store = props.component.store
   const annotations = store.allAnnotations
     .map((a, idx) => {
       return <Comment key={idx} isNew={false} annotation={a} store={store}/>

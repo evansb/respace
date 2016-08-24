@@ -7,10 +7,10 @@ import { Col } from 'react-bootstrap'
 const ModifiedIcon = require('react-icons/fa/exclamation').default
 const SavedIcon = require('react-icons/fa/check').default
 
-export type Props = rs.IComponentProps<rs.documents.ISourceCode, EditorStore>
+export type Props = rs.IComponentProps<rs.SourceCode, EditorStore>
 
 function ModifiedStatus_({ component }: Props) {
-  const store = component.state
+  const store = component.store
   const iconStyle = { marginRight: '5px' }
   const Icon = store.isDirty ? ModifiedIcon : SavedIcon
   return (
@@ -24,7 +24,7 @@ function ModifiedStatus_({ component }: Props) {
 function StatusBar({ component }: Props) {
   const ModifiedStatus = observer(ModifiedStatus_) // tslint:disable-line
 
-  const store = component.state
+  const store = component.store
   const style = {
     position: 'absolute',
     paddingTop: '2px',
@@ -38,7 +38,10 @@ function StatusBar({ component }: Props) {
 
   return (
     <div style={style}>
-      <Col xs={4}>{store.mode}</Col>
+      <Col xs={4}>{store.sourceCode.language}</Col>
+      <Col xs={8} style={{ textAlign: 'right' }}>
+        <ModifiedStatus {...this.props} />
+      </Col>
     </div>
   )
 }

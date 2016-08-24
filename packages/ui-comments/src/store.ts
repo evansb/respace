@@ -1,15 +1,11 @@
-import * as uuid from 'uuid'
 import * as rs from '@respace/common'
-import { asMap, observable, ObservableMap, action, computed } from 'mobx'
+import { observable, action, computed } from 'mobx'
 import { Subject } from 'rxjs/Subject'
 import 'rxjs/add/operator/debounceTime'
 
-export type IAnnotation = rs.documents.IAnnotation
-export type Document = rs.IComponentProps<rs.documents.ISourceCode, void>
+export type Document = rs.IComponentProps<rs.Annotations, void>
 
 class CommentStore {
-
-  annotations: ObservableMap<IAnnotation>
 
   // User Data
   posterName = 'You'
@@ -18,30 +14,11 @@ class CommentStore {
   profilePicture: ''
 
   @observable newAnnotationValue = ''
-
   @observable isEditMode = true
 
   private change$: Subject<string> = new Subject<string>()
 
-  constructor(private document: rs.IDocument<rs.documents.ISourceCode>) {
-    this.annotations = <any> observable(asMap({}))
-    if (document.volatile.user) {
-      const user = document.volatile.user
-      this.posterName = user.name || 'You'
-      this.posterRole = user.role || 'normal'
-      this.profilePicture = user.profile_photo.small.url || ''
-    }
-    if (!document.volatile.annotations) {
-      document.volatile.annotations = <any> this.annotations
-      document.dispatch('save')
-    } else {
-      const annotations = document.volatile.annotations
-      for (const key of Object.keys(annotations)) {
-        if (annotations.hasOwnProperty(key)) {
-          this.annotations.set(key, <any> observable(annotations[key]))
-        }
-      }
-    }
+  constructor(private annotations: rs.Annotations) {
     this.change$.debounceTime(10).subscribe((value) => {
       this.newAnnotationValue = value
     })
@@ -51,26 +28,15 @@ class CommentStore {
     this.change$.next(value)
   }
 
-  @computed get allAnnotations(): IAnnotation[] {
-    const annotations = this.annotations.values()
+  @computed get allAnnotations() {
+    const annotations = this.annotations.all
       .sort((a, b) => (a.createdAt.valueOf()) - (b.createdAt.valueOf()))
     return annotations
   }
 
-  @action('comments:add')
+  @action('annotations.add')
   async addAnnotation() {
-    const key = uuid.v4()
-    const annotation = {
-      posterName: this.posterName,
-      profileUrl: this.profileUrl,
-      posterRole: this.posterRole,
-      value: this.newAnnotationValue,
-      createdAt: new Date()
-    }
-    this.annotations.set(key, annotation)
-    this.document.volatile.annotations[key] = annotation
-    await this.document.dispatch('save')
-    await this.document.dispatch('annotationAdded', annotation)
+    this.annotations.create(this.newAnnotationValue)
     this.newAnnotationValue = ''
     this.isEditMode = true
   }

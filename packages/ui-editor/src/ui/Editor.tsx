@@ -6,12 +6,11 @@ import EditorStore from '../store'
 import Toolbar from './Toolbar'
 import StatusBar from './StatusBar'
 import RevertDialog from './RevertDialog'
-import SubmitDialog from './SubmitDialog'
 
-export type Props = rs.IComponentProps<rs.documents.ISourceCode, EditorStore>
+export type Props = rs.IComponentProps<rs.SourceCode, EditorStore>
 
 export default function Editor(props: Props) {
-  const store = props.component.state
+  const store = props.component.store
   const editorProps = {
     style: {
       position: 'absolute',
@@ -22,9 +21,30 @@ export default function Editor(props: Props) {
       bottom: store.statusBarHeight,
     },
     didMount(editor: AceAjax.Editor) {
+      editor.commands.addCommand({
+        name: 'run',
+        bindKey: {
+          win: 'Ctrl-r',
+          mac: 'Cmd-r'
+        },
+        exec: (editor: AceAjax.Editor) => {
+          store.run()
+        }
+      })
+      editor.commands.addCommand({
+        name: 'save',
+        bindKey: {
+          win: 'Ctrl-s',
+          mac: 'Cmd-s'
+        },
+        exec: (editor: AceAjax.Editor) => {
+          store.save()
+        }
+      })
+      /*
       const document = props.component.document
-      document.addHandler(async function(action, document, files = []) {
-       if (action !== 'drop') { return }
+      document.subscribe(function(action, document, files = []) {
+       if (action.type !== 'drop') { return }
        const file: File = files[0]
        if (file && file.type === 'text/javascript') {
          const xhr = new XMLHttpRequest()
@@ -40,6 +60,7 @@ export default function Editor(props: Props) {
          xhr.send()
        }
       })
+      */
       editor.setOptions({ useWorker: false })
       store.setEditor(editor)
     }
@@ -49,8 +70,7 @@ export default function Editor(props: Props) {
       <Toolbar {...props} />
       { React.createElement(observer(AceEditor), editorProps) }
       <StatusBar {...props} />
-      <RevertDialog store={props.component.state} />
-      <SubmitDialog store={props.component.state} />
+      <RevertDialog store={props.component.store} />
     </div>
   )
 }

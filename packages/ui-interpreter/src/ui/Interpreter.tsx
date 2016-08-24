@@ -6,11 +6,11 @@ import SnapshotView from './Snapshot'
 import Input from './Input'
 import Toolbar from './Toolbar'
 
-export type Props = rs.IComponentProps<rs.documents.ISourceCode, Store>
+export type Props = rs.IComponentProps<rs.SourceCode, Store<any, any>>
 
 function Interpreter(props: Props) {
   const style = { position: 'relative' }
-  const store = props.component.state
+  const store = props.component.store
   const snapshots = store.snapshots.map((s, idx) =>
     <SnapshotView key={`snapshot-${idx}`} snapshotData={s} store={store} />
   )

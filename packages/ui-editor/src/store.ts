@@ -1,5 +1,5 @@
 import * as rs from '@respace/common'
-import { observable, autorun, transaction, action } from 'mobx'
+import { observable, autorun, action } from 'mobx'
 import { Observable } from 'rxjs/Observable'
 
 import 'rxjs/add/observable/fromEvent'
@@ -18,38 +18,27 @@ export default class EditorStore {
   @observable isDirty = false
   @observable isAutorunEnabled = false
   @observable isRevertConfirmationShown = false
-  @observable isSubmitConfirmationShown = false
-  @observable isSubmitted = false
-  @observable isGraded = false
 
   statusBarHeight = 20
   toolbarHeight = 30
 
   private _editor: AceAjax.Editor
 
-  constructor(private _document: rs.IDocument<rs.documents.ISourceCode>) {
-    this.isSubmitted = _document.volatile.isSubmitted
-    this.isGraded = _document.volatile.isGraded
-  }
-
-  get isRemote(): boolean {
-    return this._document.volatile.isRemote
+  constructor(public sourceCode: rs.SourceCode) {
+    this.sourceCode.subscribe(a => {
+      if (a.type === 'rehydrated' && this._editor) {
+        this._editor.setValue(sourceCode.value)
+        this.isDirty = false
+      }
+      return undefined
+    })
   }
 
   setEditor(editor: AceAjax.Editor) {
     this._editor = editor
     this.addChangeHandler()
-    if (this.isSubmitted) {
-      this._editor.setReadOnly(true)
-    }
     this._editor.$blockScrolling = 1000
-    this._editor.getSession().setValue(this._document.data.value)
-    this._document.addHandler((action, document) => {
-      if (action === 'loaded') {
-        this._editor.getSession().setValue(document.data.value)
-      }
-      return Promise.resolve()
-    })
+    this._editor.getSession().setValue(this.sourceCode.value)
     autorun(() => { this._editor.setTheme(this.theme) })
     autorun(() => { this._editor.setFontSize(this.fontSize + 'px') })
     autorun(() => { this._editor.getSession().setMode(`ace/mode/${this.mode}`)})
@@ -58,54 +47,45 @@ export default class EditorStore {
   }
 
   @action('ui-editor:save')
-  async save() {
-    this._document.dispatch('save')
-    if (this._document.volatile.isRemote) {
-      this._document.dispatch('saveRemote')
-    }
+  save() {
+    this.sourceCode.publish(<rs.SourceCodeActions.Save> {
+      type: 'save',
+      payload: this._editor.getValue()
+    })
     this.isDirty = false
   }
 
-  @action('ui-editor:submit')
-  async submit() {
-    if (!this.isSubmitConfirmationShown) {
-      this.isSubmitConfirmationShown = !this.isSubmitConfirmationShown
-    } else {
-      this._document.data.value = this._editor.getValue()
-      await this._document.dispatch('submit')
-      this.isSubmitConfirmationShown = false
-    }
-  }
-
-  @action('ui-editor:revert')
-  async revert() {
+  @action('editor:revert')
+  revert() {
     if (!this.isRevertConfirmationShown) {
       this.isRevertConfirmationShown = !this.isRevertConfirmationShown
     } else {
-      this._editor.getSession().setValue(this._document.volatile.template)
-      this._document.data.value = this._document.data.template
-      await this._document.dispatch('revert')
+      this._editor.getSession().setValue(this.sourceCode.template)
+      this.sourceCode.publish({ type: 'revert' })
       this.isRevertConfirmationShown = false
     }
   }
 
-  @action('ui-editor:increaseFontSize')
+  @action('editor.increaseFontSize')
   increaseFontSize() {
     if (this.fontSize <= (this.MAX_FONT_SIZE - 2)) {
       this.fontSize += 2
     }
   }
 
-  @action('ui-editor:decreaseFontSize')
+  @action('editor.decreaseFontSize')
   decreaseFontSize() {
     if (this.fontSize >= (this.MIN_FONT_SIZE + 2)) {
       this.fontSize -= 2
     }
   }
 
-  @action('ui-editor:run')
-  async run() {
-    await this._document.dispatch('run')
+  @action('editor.run')
+  run() {
+    this.sourceCode.publish(<rs.SourceCodeActions.Run> {
+      type: 'run',
+      payload: this._editor.getValue()
+    })
   }
 
   private addChangeHandler() {
@@ -113,10 +93,8 @@ export default class EditorStore {
     Observable.fromEvent(<any> session, 'change')
       .debounceTime(100)
       .subscribe(() => {
-        transaction(() => {
-          this.isDirty = true
-          this._document.data.value = session.getValue()
-        })
+        this.isDirty = true
+        this.sourceCode.setValue(this._editor.getValue())
       })
   }
 }

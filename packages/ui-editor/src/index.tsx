@@ -1,20 +1,18 @@
 /// <reference path='../typings/index.d.ts' />
-import * as React from 'react'
 import * as rs from '@respace/common'
 import EditorView from './ui/Editor'
 import EditorStore from './store'
+import EditorIcon from 'react-icons/fa/code'
 
-const icon: React.ComponentClass<void> = require('react-icons/fa/code').default
-
-const Editor: rs.IComponentFactory<rs.documents.ISourceCode, EditorStore> = {
-  name: 'ui-editor',
-  displayName: 'Source',
-  icon,
-  view: EditorView,
+class Editor extends rs.ComponentFactory<rs.SourceCode, EditorStore> {
+  name = 'ui-editor'
+  displayName = 'Source'
+  icon = EditorIcon
+  view = EditorView
   acceptDocument(document: rs.AnyDocument) {
     return document.type === 'source-code'
-  },
-  createStore(document: rs.IDocument<rs.documents.ISourceCode>) {
+  }
+  createStore(document: rs.SourceCode) {
     return new EditorStore(document)
   }
 }

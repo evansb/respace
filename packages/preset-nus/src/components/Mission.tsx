@@ -1,18 +1,25 @@
 import * as React from 'react'
 import * as rs from '@respace/common'
+import MissionIcon from 'react-icons/fa/map'
 import marked from 'marked'
 import $ from 'jquery'
 
 declare var MathJax: any
 declare var window: any
-declare var scale_independent: any
-
-const icon: React.ComponentClass<void> =
-  require('react-icons/fa/map').default
 
 const MATHJAX_URL = 'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML' // tslint:disable-line
 
-type Props = rs.IComponentProps<rs.documents.ISourceCode, void>
+type Props = rs.IComponentProps<MissionDescription, void>
+
+interface IMissionDescription {
+  description: string
+}
+
+export class MissionDescription extends rs.Document<IMissionDescription, any> {
+  get description() {
+    return this.data.description
+  }
+}
 
 class MissionView extends React.Component<Props, { html: string}> {
   constructor(props, context) {
@@ -35,7 +42,7 @@ class MissionView extends React.Component<Props, { html: string}> {
       if (!window.MathJax) { return }
       const buffer =
         $('<div id="mathjax-buffer" style="display:none">').appendTo('body')
-      buffer.text($(document.volatile.description).text())
+      buffer.text($(document.description).text())
       MathJax.Hub.Config({
           tex2jax: { inlineMath: [['\\[', '\\]'], ['\\(', '\\)']] },
           asciimath2jax: {
@@ -57,7 +64,7 @@ class MissionView extends React.Component<Props, { html: string}> {
         }
      ])
     }
-    const html = marked($(document.volatile.description).text(), {
+    const html = marked($(document.description).text(), {
        gfm: true,
        tables: true,
        sanitize: false,
@@ -80,16 +87,15 @@ class MissionView extends React.Component<Props, { html: string}> {
   }
 }
 
-const Mission: rs.IComponentFactory<rs.documents.ISourceCode, void> = {
-  name: 'ui-markdown-view',
-  displayName: 'Briefing',
-  icon,
-  view: MissionView,
+class Mission extends rs.ComponentFactory<MissionDescription, void> {
+  name = 'ui-markdown-view'
+  displayName = 'Briefing'
+  icon = MissionIcon
+  view = MissionView
   acceptDocument(document: rs.AnyDocument) {
-    return document.type === 'source-code' &&
-      (typeof document.volatile.description === 'string')
-  },
-  createStore(document: rs.IDocument<rs.documents.ISourceCode>) {
+    return document.type === 'mission'
+  }
+  createStore(document) {
     return
   }
 }

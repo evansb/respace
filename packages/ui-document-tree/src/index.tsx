@@ -7,8 +7,7 @@ import * as React from 'react'
 import * as rs from '@respace/common'
 import JSONTree from 'react-json-tree'
 import { Row, Grid } from 'react-bootstrap'
-
-const icon: React.ComponentClass<void> = require('react-icons/fa/tree').default
+import DocumentTreeIcon from 'react-icons/fa/tree'
 
 class DocumentTreeView extends React.Component<rs.AnyComponentProps, void> {
   render() {
@@ -23,14 +22,14 @@ class DocumentTreeView extends React.Component<rs.AnyComponentProps, void> {
   }
 }
 
-const DocumentTree: rs.IComponentFactory<any, void> = {
-  name: 'ui-document-tree',
-  displayName: 'JSON Tree',
-  icon,
-  view: DocumentTreeView,
+class DocumentTree extends rs.ComponentFactory<any, void> {
+  name = 'ui-document-tree'
+  displayName = 'JSON Tree'
+  icon = DocumentTreeIcon
+  view = DocumentTreeView
   acceptDocument(document: rs.AnyDocument) {
     return true
-  },
+  }
   createStore(document: rs.AnyDocument) {
     return {}
   }

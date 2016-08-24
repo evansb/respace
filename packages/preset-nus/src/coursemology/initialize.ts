@@ -1,8 +1,11 @@
+import * as rs from '@respace/common'
 import Comments from '@respace/ui-comments'
-import Mission from '../components/Mission'
-import Grading from '../components/Grading'
+import Mission, { MissionDescription } from '../components/Mission'
+import Grading, { GradingModel } from '../components/Grading'
 import initializeRespace from '../initialize'
 import loadLibraries from '../loadLibraries'
+
+declare var window: any
 
 const SUBMISSION_DATA_ID = '#submissionData'
 const CODE = 'textarea.text.optional.form-control'
@@ -127,44 +130,72 @@ export default function initialize() {
 
     addLinks()
 
-    const { user, answers,
-      assessment, submission, questions } = $.parseJSON($data.text())
+    const { answers, assessment,
+      submission, questions, user } = $.parseJSON($data.text())
     const isGraded = submission.workflow_state === 'graded'
     const isSubmitted = submission.workflow_state === 'submitted'
     const answer = answers[0]
     const question = questions[0]
-    const annotations = loadAnnotations()
 
     const { globals, context } = await loadLibraries(assessment.title)
 
-    const meta = {
-      id: submission.id,
-      title: assessment.title
+    const sourceCode = {
+      value: answer.answer.text || question.description,
+      template: question.description,
+      language: window.mission_type || 'source-week-3',
+      title: assessment.title,
+      globals,
+      context
     }
 
-    const data = { value: answer.answer_text || question.description }
-    const source = {
-      type: 'source-code',
-      meta,
-      data,
-      volatile: {
-        annotations,
-        template: question.description,
-        description: assessment.description,
-        isSubmitted: isSubmitted || isGraded,
-        isRemote: true,
-        isGraded: isGraded,
-        user,
-        globals: ['alert'].concat(globals),
-        context,
-        assessment,
-        answer,
-        question
+    const mission = new MissionDescription({
+      type: 'mission',
+      meta: {
+        id: submission.id + '-mission',
+        title: assessment.title,
+        group: assessment.title
       },
-      handlers: [handle]
-    }
-    const extraComponents = [Comments, Grading, Mission]
-    initializeRespace([source], extraComponents)
+      data: { description: assessment.description }
+    })
+
+    const grading = new GradingModel({
+      type: 'grading',
+      meta: {
+        id: submission.id + '-grading',
+        title: assessment.title,
+        group: assessment.title
+      },
+      data: {
+        assessment,
+        isSubmitted: isSubmitted || isGraded,
+        isGraded
+      }
+    })
+
+    const annotations = new rs.Annotations({
+      type: 'annotations',
+      meta: {
+        id: submission.id + '-annotations',
+        title: assessment.title,
+        group: assessment.title
+      },
+      data: {
+        annotations: loadAnnotations()
+      }
+    })
+
+    annotations.author = new rs.User({
+      name: user.name,
+      profilePicture: user.profile_photo.medium.url
+    })
+
+    const extraComponents = [
+      new Comments,
+      new Grading,
+      new Mission
+    ]
+    initializeRespace([sourceCode], [annotations, grading, mission],
+      extraComponents)
   })
 }
 

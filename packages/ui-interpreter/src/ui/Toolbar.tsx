@@ -3,7 +3,7 @@ import { observer } from 'mobx-react'
 import Store from '../store'
 import { Button, Checkbox, Col, Row } from 'react-bootstrap'
 
-function Toolbar({ store }: { store: Store }) {
+function Toolbar({ store }: { store: Store<any, any> }) {
   const style = {
     position: 'relative',
     backgroundColor: '#17181A',
