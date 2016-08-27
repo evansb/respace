@@ -9,11 +9,12 @@ import '@respace/theme-dark'
 
 export default function initialize(
   sourceCodes: {
-    title: string,
-    value: string,
-    template: string,
-    language: string,
-    globals: string[],
+    title: string
+    value: string
+    template: string
+    language: string
+    globals: string[]
+    handlers?: rs.ActionHandler<rs.SourceCodeActions.All>[]
     context: any
   }[],
   extraDocuments: rs.AnyDocument[] = [],
@@ -40,6 +41,9 @@ export default function initialize(
       const code = new rs.SourceCode(sc.value, sc.template,
         sc.language, sc.title)
       code.id = sc.title
+      if (sc.handlers instanceof Array) {
+        sc.handlers.forEach(h => { code.subscribe(h) })
+      }
       return code
     }))
   const workspace = Workspace.create({ components, documents })

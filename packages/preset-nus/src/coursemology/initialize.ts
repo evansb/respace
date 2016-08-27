@@ -86,39 +86,23 @@ function loadAnnotations() {
   return annotations
 }
 
-async function handle(action, document, payload) {
-  return new Promise((resolve, reject) => {
-    const $code = $(CODE)
-    const $saveButton = $(SAVE_BUTTON)
-    const $submitButton = $(SUBMIT_BUTTON)
-    const code = document.data.value
-    switch (action) {
-      case 'saveRemote':
-        $code.text(code)
-        $saveButton.click()
-        resolve()
-        break
-
-      case 'submit':
-        $code.text(code)
-        $submitButton.click()
-        resolve()
-        break
-
-      case 'annotationAdded':
-        const url = $('.answer-comment-form').attr('data-action')
-        $.post(url, { discussion_post: { text: payload.value } })
-          .then((data, status) => {
-            if (status === '200') {
-              resolve()
-            } else {
-              reject()
-            }
-          })
-        break
-      default: resolve()
-    }
-  })
+const handler: rs.ActionHandler<rs.SourceCodeActions.All> = (action) => {
+  const code = (<rs.SourceCodeActions.Save> action).payload
+  const $saveButton = $(SAVE_BUTTON)
+  const $submitButton = $(SUBMIT_BUTTON)
+  const $code = $(CODE)
+  switch (action.type) {
+    case 'save':
+      $code.text(code)
+      $saveButton.click()
+      break
+    case 'submit':
+      $code.text(code)
+      $submitButton.click()
+      break
+    default: return undefined
+  }
+  return undefined
 }
 
 export default function initialize() {
@@ -144,6 +128,7 @@ export default function initialize() {
       language: window.mission_type || 'source-week-3',
       title: assessment.title,
       globals,
+      handlers: [handler],
       context
     }
 
