@@ -22,9 +22,9 @@ function initializeComponents(element) {
   initializeSummernote(element)
 }
 
-const summernote =
+const summernoteURL =
   'https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.2/summernote.js'
 
-$.getScript(summernote, () => {
+$.getScript(summernoteURL, () => {
   initializeComponents(document)
 })
