@@ -50,7 +50,7 @@ module.exports = (bundleDir, template) => {
   }
 
   webpackConfig.output = {
-    filename: `${config.name}.bundle.min.js`,
+    filename: `${config.name}.min.js`,
     path: config.dist,
     publicPath: '/',
     libraryTarget: 'var',

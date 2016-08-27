@@ -38,11 +38,20 @@ class MissionView extends React.Component<Props, { html: string}> {
     renderer.table = function(header, body) {
       return `<table class="table">${header}${body}</table>`
     }
+    renderer.code = function(code) {
+      const result = `<pre><code>${code
+        .replace('&lt;', '<')
+        .replace('&gt;', '>')
+        .replace('&quot;', '"')
+        .replace('&#39;', '\'')}</code></pre>`
+      return result
+    }
     const callback = () => {
       if (!window.MathJax) { return }
+      const description: string = $(document.description).text()
       const buffer =
         $('<div id="mathjax-buffer" style="display:none">').appendTo('body')
-      buffer.text($(document.description).text())
+      buffer.text(description)
       MathJax.Hub.Config({
           tex2jax: { inlineMath: [['\\[', '\\]'], ['\\(', '\\)']] },
           asciimath2jax: {
@@ -71,7 +80,7 @@ class MissionView extends React.Component<Props, { html: string}> {
        renderer
     })
     this.setState({ html })
-    if (!window.MathJax && !window.mission_type) {
+    if (!window.MathJax) {
       $.getScript(MATHJAX_URL, callback)
     } else {
       callback()

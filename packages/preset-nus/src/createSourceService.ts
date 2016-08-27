@@ -3,7 +3,6 @@ import { Snapshot, ISnapshotError, printErrorToString, createServer, IRequest,
   printValueToString } from 'the-source'
 import { Subject } from 'rxjs/Subject'
 import { service } from '@respace/ui-interpreter'
-import { observable } from 'mobx'
 
 import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/share'
@@ -12,7 +11,7 @@ function weekOfLanguage(language: string): number {
   if (/source-week/.test(language)) {
     return parseInt(language.split('-')[2], 10)
   } else if (/rune/.test(language)) {
-    return 3
+    return 4
   } else {
     return 3
   }
@@ -73,6 +72,13 @@ export default function createSourceService(init: {
         if (!parent) {
           request.globals = init.globals
           request.context = init.context
+          const oldConsoleLog = console.log
+
+          window.console.log = (str) => {
+            oldConsoleLog(str)
+            outputSink$.next(str)
+          }
+
           if (week >= 4) {
             request.globals.push('display')
             request.context.display = (value) => {
@@ -84,6 +90,7 @@ export default function createSourceService(init: {
               }
               outputSink$.next(str)
             }
+            window['display'] = request.context.display
           }
           const globals = request.globals || []
           system.get_globals = () => {

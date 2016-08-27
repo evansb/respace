@@ -193,7 +193,8 @@ export default function initialize() {
 
     const extraComponents: rs.AnyComponentFactory[] = [
       new Comments,
-      new Mission
+      new Mission,
+      new Grading
     ]
 
     const extraDocuments: rs.AnyDocument[] = [mission, annotations]
@@ -213,7 +214,6 @@ export default function initialize() {
         }
       })
       extraDocuments.push(grading)
-      extraComponents.push(new Grading)
     }
 
     let toolbarButton

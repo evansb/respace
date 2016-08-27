@@ -49,14 +49,21 @@ export default async function loadLibraries(missionTitle: string) {
   console.log(`Mission: ${missionTitle}`)
   let globals: string[] = []
   let context: {[name: string]: any} = {}
-  const json: { libraries: string[] } = await getMetadata(missionTitle)
-  if (isValidLibrary(json)) {
-    await Promise.all(json.libraries.map(getScript))
+  try {
+    const json: { libraries: string[] } = await getMetadata(missionTitle)
+    if (isValidLibrary(json)) {
+      await Promise.all(json.libraries.map(getScript))
+    }
+  } catch (e) {
+    console.log('Metadata not found, assuming bundled library')
   }
+
   window.export_symbol = (s, m) => {
     globals.push(s)
     context[s] = m
   }
+
   await getScript(missionTitle + '.js')
+
   return { globals, context }
 }
