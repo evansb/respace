@@ -49,7 +49,7 @@ function addLinkToSpaceship() {
   const $spaceship = $(`
     <a class="btn btn-primary"
        href="https://sourceacademy.space/courses/5/assessments">
-      Spaceship
+      Close Source IDE
     </a>`
   )
   $spaceship.css({
@@ -122,7 +122,6 @@ async function handle(action, document, payload) {
 }
 
 export default function initialize() {
-  require('./summernotePatch')
 
   $(document).ready(async function() {
     const $data = $(SUBMISSION_DATA_ID)
