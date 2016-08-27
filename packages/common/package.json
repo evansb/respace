@@ -1,6 +1,8 @@
 {
   "name": "@respace/common",
   "description": "Common utilities for creating widgets",
+  "repository": "https://github.com/respace-js/respace",
+  "license": "MIT",
   "version": "0.0.0",
   "main": "es5/index.js",
   "jsnext:main": "es6/index.js",

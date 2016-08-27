@@ -1,9 +1,10 @@
 {
   "name": "@respace/core",
   "author": "Evan Sebastian",
+  "repository": "https://github.com/respace-js/respace",
+  "license": "MIT",
   "description": "Core component of respace that ties everything together",
   "version": "0.0.0",
-  "browser": "dist/respace.min.js",
   "main": "es5/index.js",
   "jsnext:main": "es6/index.js",
   "respace:main": "src/index.tsx",

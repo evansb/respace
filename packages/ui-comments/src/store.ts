@@ -46,7 +46,6 @@ class CommentStore {
   }
 
   setCommentEditor(editor: AceAjax.Editor) {
-    editor.session.setMode('ace/mode/markdown')
     editor.setOption('showGutter', false)
     editor.on('change', () => {
       this.newAnnotationValue = editor.getValue()

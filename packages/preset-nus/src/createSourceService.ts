@@ -72,13 +72,6 @@ export default function createSourceService(init: {
         if (!parent) {
           request.globals = init.globals
           request.context = init.context
-          const oldConsoleLog = console.log
-
-          window.console.log = (str) => {
-            oldConsoleLog(str)
-            outputSink$.next(str)
-          }
-
           if (week >= 4) {
             request.globals.push('display')
             request.context.display = (value) => {
