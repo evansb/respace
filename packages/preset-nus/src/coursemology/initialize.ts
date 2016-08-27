@@ -79,15 +79,21 @@ function loadAnnotations() {
       const posterName = $this.find('h5 a').text()
       const profileUrl = $this.find('h5 a').attr('href')
       const id = $(this).attr('data-post-id')
+      const author: rs.IUser = {
+        name: posterName,
+        profileUrl
+      }
       annotations[id] = {
-        id, createdAt, posterName, profileUrl, value
+        id, createdAt,
+        author,
+        value
       }
       return true
     })
   return annotations
 }
 
-const handler: rs.ActionHandler<rs.SourceCodeActions.All> = (action) => {
+const codeHandler: rs.ActionHandler<rs.SourceCodeActions.All> = (action) => {
   const code = (<rs.SourceCodeActions.Save> action).payload
   const $saveButton = $(SAVE_BUTTON)
   const $submitButton = $(SUBMIT_BUTTON)
@@ -105,6 +111,27 @@ const handler: rs.ActionHandler<rs.SourceCodeActions.All> = (action) => {
   }
   return undefined
 }
+
+
+const annotationHandler: rs.ActionHandler<rs.AnnotationActions.All> =
+  (action) => {
+    const url = $('.answer-comment-form').attr('data-action')
+    const $comment = $('textarea.comment')
+    const annotation = (<rs.AnnotationActions.Create> action).payload
+    switch (action.type) {
+      case 'create':
+        $comment.text(annotation.value)
+        $.post(url, {
+          discussion_post: {
+            text: annotation.value
+          }
+        })
+        break
+      default: return undefined
+    }
+    return undefined
+  }
+
 
 export default function initialize() {
   require('./summernotePatch')
@@ -131,7 +158,7 @@ export default function initialize() {
       title: assessment.title,
       readonly: isGraded || isSubmitted,
       globals,
-      handlers: [handler],
+      handlers: [codeHandler],
       context
     }
 
@@ -161,6 +188,8 @@ export default function initialize() {
       name: user.name,
       profilePicture: user.profile_photo.medium.url
     })
+
+    annotations.subscribe(annotationHandler)
 
     const extraComponents: rs.AnyComponentFactory[] = [
       new Comments,

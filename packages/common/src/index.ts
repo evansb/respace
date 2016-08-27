@@ -37,7 +37,8 @@ export {
   IUIStore,
 } from './store'
 
-export { Annotations, IAnnotation, IAnnotations } from './documents/annotation'
+export { Annotations, IAnnotation, IAnnotations,
+  Actions as AnnotationActions } from './documents/annotation'
 export { User, IUser } from './documents/user'
 export { SourceCode, ISourceCode,
   Actions as SourceCodeActions } from './documents/source-code'

@@ -16,6 +16,7 @@ class CommentStore {
   @observable newAnnotationValue = ''
   @observable isEditMode = true
 
+  private _editor: AceAjax.Editor
   private change$: Subject<string> = new Subject<string>()
 
   constructor(private annotations: rs.Annotations) {
@@ -35,10 +36,22 @@ class CommentStore {
   }
 
   @action('annotations.add')
-  async addAnnotation() {
+  addAnnotation() {
     this.annotations.create(this.newAnnotationValue)
     this.newAnnotationValue = ''
+    if (this._editor) {
+      this._editor.setValue('')
+    }
     this.isEditMode = true
+  }
+
+  setCommentEditor(editor: AceAjax.Editor) {
+    editor.session.setMode('ace/mode/markdown')
+    editor.setOption('showGutter', false)
+    editor.on('change', () => {
+      this.newAnnotationValue = editor.getValue()
+    })
+    this._editor = editor
   }
 }
 

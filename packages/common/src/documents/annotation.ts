@@ -19,9 +19,7 @@ export namespace Actions {
   export type All = Create
   export type Create = {
     type: 'create'
-    payload: {
-      value: string
-    }
+    payload: IAnnotation
   }
 }
 
@@ -45,11 +43,13 @@ extends Document<IAnnotations, Actions.All> {
 
   create(value: string) {
     const id = uuid.v4()
-    this._annotations.set(id, {
+    const newAnnotation: IAnnotation = {
       author: this.author,
       createdAt: new Date(),
       value
-    })
+    }
+    this._annotations.set(id, newAnnotation)
+    this.publish(<Actions.Create> { type: 'create', payload: newAnnotation })
   }
 
   @computed get all() {

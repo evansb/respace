@@ -2,6 +2,7 @@ import * as React from 'react'
 import * as rs from '@respace/common'
 import Store from '../store'
 import Comment from './Comment'
+import NewComment from './NewComment'
 import { observer } from 'mobx-react'
 
 export type IProps = rs.IComponentProps<rs.SourceCode, Store>
@@ -15,19 +16,13 @@ function Comments(props: IProps) {
   const style = {
     paddingTop: '10px',
     paddingLeft: '10px',
-    paddingRight: '10px'
-  }
-  const newAnnotation = {
-    posterName: store.posterName,
-    posterRole: store.posterRole,
-    profileUrl: store.profileUrl,
-    profilePicture: store.profilePicture,
-    value: store.newAnnotationValue,
+    paddingRight: '10px',
+    marginBottom: '20px'
   }
   return (
     <div style={style}>
       {annotations}
-      <Comment isNew annotation={newAnnotation} store={store}/>
+      <NewComment store={store}/>
     </div>
   )
 }
