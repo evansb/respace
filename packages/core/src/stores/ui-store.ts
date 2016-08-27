@@ -200,7 +200,8 @@ export default class UIStore implements rs.IUIStore {
       'Untitled',
       factory.displayName,
       document,
-      factory.createStore(document)
+      factory.createStore(document),
+      factory.extensions
     )
 
     await component.rehydrate(storage)

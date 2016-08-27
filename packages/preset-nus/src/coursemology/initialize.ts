@@ -4,6 +4,7 @@ import Mission, { MissionDescription } from '../components/Mission'
 import Grading, { GradingModel } from '../components/Grading'
 import initializeRespace from '../initialize'
 import loadLibraries from '../loadLibraries'
+import { SubmitButton, GradedButton, SubmittedButton } from './extensions'
 
 declare var window: any
 
@@ -106,6 +107,7 @@ const handler: rs.ActionHandler<rs.SourceCodeActions.All> = (action) => {
 }
 
 export default function initialize() {
+  require('./summernotePatch')
 
   $(document).ready(async function() {
     const $data = $(SUBMISSION_DATA_ID)
@@ -127,6 +129,7 @@ export default function initialize() {
       template: question.description,
       language: window.mission_type || 'source-week-3',
       title: assessment.title,
+      readonly: isGraded || isSubmitted,
       globals,
       handlers: [handler],
       context
@@ -184,7 +187,18 @@ export default function initialize() {
       extraComponents.push(new Grading)
     }
 
-    initializeRespace([sourceCode], extraDocuments, extraComponents)
+    let toolbarButton
+    if (isGraded) {
+      toolbarButton = GradedButton
+    } else if (isSubmitted) {
+      toolbarButton = SubmittedButton
+    } else {
+      toolbarButton = SubmitButton
+    }
+
+    initializeRespace([sourceCode], extraDocuments, extraComponents, {
+      toolbar: [toolbarButton]
+    })
   })
 }
 

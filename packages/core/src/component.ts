@@ -1,5 +1,6 @@
 import { autorun, observable, action } from 'mobx'
-import { IComponent, IStorage, AnyDocument } from '@respace/common'
+import { IComponent, IStorage, AnyDocument,
+  ComponentExtensions } from '@respace/common'
 
 export class Component<D extends AnyDocument, S>
 implements IComponent<D, S> {
@@ -16,7 +17,8 @@ implements IComponent<D, S> {
     title: string,
     displayName: string,
     public document: D,
-    public store: S
+    public store: S,
+    public extensions: ComponentExtensions<D, S>
    ) {
     this.displayName = displayName
     this.title = title

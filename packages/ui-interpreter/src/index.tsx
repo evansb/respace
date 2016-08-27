@@ -15,7 +15,7 @@ extends rs.ComponentFactory<rs.SourceCode, Store<L, E>> {
   icon = InterpreterIcon
   view = InterpreterView
 
-  constructor(extensions: rs.ComponentExtensions<rs.SourceCode>,
+  constructor(extensions: rs.ComponentExtensions<rs.SourceCode, Store<L, E>>,
               private _service: ILanguageService<L, E>) {
     super(extensions)
     this.name = `ui-interpreter-${this._service.language}`

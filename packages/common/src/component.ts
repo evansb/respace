@@ -13,6 +13,7 @@ export interface IComponent<D extends Document<any, any>, S> {
   displayName: string
   document: D
   store: S
+  extensions: ComponentExtensions<D, S>
 }
 
 /**
@@ -24,11 +25,14 @@ export interface IComponentProps<D extends Document<any, any>, S> {
   uiStore: IPubSub<any>
 }
 
+export interface ComponentExtensionProps<D, S> { document: D, store: S }
+
 /**
  * Component extension points
  */
-export type ComponentExtensions<D extends Document<any, any>> = {
-  [name: string]: ComponentFactory<D, any>
+export type ComponentExtensions<D extends Document<any, any>, S> = {
+  [name: string]: (React.ComponentClass<ComponentExtensionProps<D, S>>
+    | React.StatelessComponent<ComponentExtensionProps<D, S>>)[]
 }
 
 /**
@@ -47,7 +51,7 @@ export abstract class ComponentFactory<D extends Document<any, any>, S> {
   icon: __React.ComponentClass<void>
   displayName: string
 
-  constructor(public extensions: ComponentExtensions<D> = {}) {
+  constructor(public extensions: ComponentExtensions<D, S> = {}) {
   }
 
   didRegister() {

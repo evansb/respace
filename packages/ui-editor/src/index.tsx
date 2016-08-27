@@ -17,4 +17,6 @@ class Editor extends rs.ComponentFactory<rs.SourceCode, EditorStore> {
   }
 }
 
+export { EditorStore, EditorView }
+
 export default Editor

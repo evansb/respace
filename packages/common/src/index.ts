@@ -21,6 +21,7 @@ export {
   IComponent,
   IComponentProps,
   ComponentExtensions,
+  ComponentExtensionProps,
   ComponentView,
   ComponentFactory,
   AnyComponentFactory,

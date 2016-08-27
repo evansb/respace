@@ -62,6 +62,10 @@ implements IPubSub<DocumentAction<D, P>> {
     this.meta.group = group
   }
 
+  setPersistence(isEnabled: boolean) {
+    this.meta.isPersisted = isEnabled
+  }
+
   publish(action: DocumentAction<D, P>) {
     this.subject.next(action)
   }

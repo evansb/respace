@@ -61,6 +61,12 @@ function Toolbar({ component }: Props) {
       <ZoomOutIcon />
     </Button>
   )
+  const toolbarExtensions = (component.extensions['toolbar'] || []).map(Ext => {
+    return React.createElement(Ext, {
+      document: component.document,
+      store: component.store
+    })
+  })
   return (
     <div style={style}>
       <Col xs={8}>
@@ -77,6 +83,7 @@ function Toolbar({ component }: Props) {
         </ButtonToolbar>
       </Col>
       <Col style={{textAlign: 'right'}} xs={4}>
+           { toolbarExtensions }
       </Col>
     </div>
    )

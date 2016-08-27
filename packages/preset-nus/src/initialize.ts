@@ -1,6 +1,6 @@
 import * as rs from '@respace/common'
 import { Workspace } from '@respace/core'
-import Editor from '@respace/ui-editor'
+import Editor, { EditorStore } from '@respace/ui-editor'
 import Interpreter from '@respace/ui-interpreter'
 import Canvas from './components/Canvas'
 import createSourceService from './createSourceService'
@@ -14,11 +14,14 @@ export default function initialize(
     template: string
     language: string
     globals: string[]
+    readonly?: boolean
+    disablePersistence?: boolean
     handlers?: rs.ActionHandler<rs.SourceCodeActions.All>[]
     context: any
   }[],
   extraDocuments: rs.AnyDocument[] = [],
-  extraComponents: rs.AnyComponentFactory[] = []
+  extraComponents: rs.AnyComponentFactory[] = [],
+  editorExtensions: rs.ComponentExtensions<rs.SourceCode, EditorStore> = {}
 ) {
   const container = document.getElementById('root') || document.body
   const interpreters: rs.AnyComponentFactory[] = sourceCodes.map(sc => {
@@ -30,7 +33,7 @@ export default function initialize(
     return new Interpreter({}, service)
   })
   const basicComponents: rs.ComponentFactory<any, any>[] = [
-    new Editor,
+    new Editor(editorExtensions),
     new Canvas
   ]
   const components = basicComponents
@@ -41,6 +44,12 @@ export default function initialize(
       const code = new rs.SourceCode(sc.value, sc.template,
         sc.language, sc.title)
       code.id = sc.title
+      if (sc.disablePersistence) {
+        code.setPersistence(false)
+      }
+      if (sc.readonly) {
+        code.setReadOnly(true)
+      }
       if (sc.handlers instanceof Array) {
         sc.handlers.forEach(h => { code.subscribe(h) })
       }

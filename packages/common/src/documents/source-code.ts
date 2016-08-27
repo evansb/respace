@@ -70,4 +70,8 @@ export class SourceCode extends Document<ISourceCode, Actions.All> {
   @computed get language() {
     return this.data.language
   }
+
+  setReadOnly(enabled: boolean) {
+    this.data.readOnly = enabled
+  }
 }
