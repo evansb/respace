@@ -140,7 +140,7 @@ export default function initialize() {
     const { globals, context } = await loadLibraries(assessment.title)
 
     const sourceCode = {
-      value: answer.answer.text || question.description,
+      value: answer.answer_text || question.description,
       template: question.description,
       language: window.mission_type || 'source-week-3',
       title: assessment.title,
@@ -156,20 +156,6 @@ export default function initialize() {
         group: assessment.title
       },
       data: { description: assessment.description }
-    })
-
-    const grading = new GradingModel({
-      type: 'grading',
-      meta: {
-        id: submission.id + '-grading',
-        title: assessment.title,
-        group: assessment.title
-      },
-      data: {
-        assessment,
-        isSubmitted: isSubmitted || isGraded,
-        isGraded
-      }
     })
 
     const annotations = new rs.Annotations({
@@ -189,13 +175,32 @@ export default function initialize() {
       profilePicture: user.profile_photo.medium.url
     })
 
-    const extraComponents = [
+    const extraComponents: rs.AnyComponentFactory[] = [
       new Comments,
-      new Grading,
       new Mission
     ]
-    initializeRespace([sourceCode], [annotations, grading, mission],
-      extraComponents)
+
+    const extraDocuments: rs.AnyDocument[] = [mission, annotations]
+
+    if (isSubmitted) {
+      const grading = new GradingModel({
+        type: 'grading',
+        meta: {
+          id: submission.id + '-grading',
+          title: assessment.title,
+          group: assessment.title
+        },
+        data: {
+          assessment,
+          isSubmitted: isSubmitted || isGraded,
+          isGraded
+        }
+      })
+      extraDocuments.push(grading)
+      extraComponents.push(new Grading)
+    }
+
+    initializeRespace([sourceCode], extraDocuments, extraComponents)
   })
 }
 
