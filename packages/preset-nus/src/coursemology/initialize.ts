@@ -199,7 +199,7 @@ export default function initialize() {
 
     const extraDocuments: rs.AnyDocument[] = [mission, annotations]
 
-    if (isSubmitted) {
+    if (isSubmitted || isGraded) {
       const grading = new GradingModel({
         type: 'grading',
         meta: {
