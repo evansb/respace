@@ -1,6 +1,6 @@
 import uuid from 'uuid'
 import { Snapshot, ISnapshotError, printErrorToString, createServer, IRequest,
-  printValueToString } from 'the-source'
+  printValueToString, listToString } from 'the-source'
 import { Subject } from 'rxjs/Subject'
 import { service } from '@respace/ui-interpreter'
 
@@ -12,6 +12,8 @@ function weekOfLanguage(language: string): number {
     return parseInt(language.split('-')[2], 10)
   } else if (/rune/.test(language)) {
     return 4
+  } else if (/rsa/.test(language)) {
+    return 5
   } else {
     return 3
   }
@@ -76,7 +78,9 @@ export default function createSourceService(init: {
             request.globals.push('display')
             request.context.display = (value) => {
               let str: string
-              if (typeof value.toString === 'function') {
+              if (value instanceof Array) {
+                str = listToString(value)
+              } else if (typeof value.toString === 'function') {
                 str = value.toString()
               } else {
                 str = value + ''
@@ -85,6 +89,7 @@ export default function createSourceService(init: {
             }
             window['display'] = request.context.display
           }
+
           const globals = request.globals || []
           system.get_globals = () => {
             let str = ''

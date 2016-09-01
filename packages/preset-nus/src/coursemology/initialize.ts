@@ -4,7 +4,8 @@ import Mission, { MissionDescription } from '../components/Mission'
 import Grading, { GradingModel } from '../components/Grading'
 import initializeRespace from '../initialize'
 import loadLibraries from '../loadLibraries'
-import { SubmitButton, GradedButton, SubmittedButton } from './extensions'
+import { SubmitButton, GradedButton, TokenCounter,
+  SubmittedButton } from './extensions'
 
 declare var window: any
 
@@ -225,8 +226,14 @@ export default function initialize() {
       toolbarButton = SubmitButton
     }
 
+    let statusbarExts: any[] = []
+    if (window.displayTokenCounter) {
+      statusbarExts.push(TokenCounter)
+    }
+
     initializeRespace([sourceCode], extraDocuments, extraComponents, {
-      toolbar: [toolbarButton]
+      toolbar: [toolbarButton],
+      statusbar: statusbarExts
     })
   })
 }

@@ -41,6 +41,11 @@ function StatusBar({ component }: Props) {
       <Col xs={4}>{store.sourceCode.language}</Col>
       <Col xs={8} style={{ textAlign: 'right' }}>
         <ModifiedStatus {...this.props} />
+        { component.extensions['statusbar'] instanceof Array &&
+          component.extensions['statusbar'].map((ext,idx) => {
+          return React.createElement(ext, { key: idx, store,
+            document: component.document })
+        })}
       </Col>
     </div>
   )

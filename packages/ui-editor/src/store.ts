@@ -39,6 +39,7 @@ export default class EditorStore {
     this.addChangeHandler()
     this._editor.$blockScrolling = 1000
     this._editor.getSession().setValue(this.sourceCode.value)
+    this.isDirty = false
     autorun(() => { this._editor.setTheme(this.theme) })
     autorun(() => { this._editor.setFontSize(this.fontSize + 'px') })
     autorun(() => { this._editor.getSession().setMode(`ace/mode/${this.mode}`)})
@@ -86,6 +87,14 @@ export default class EditorStore {
       type: 'run',
       payload: this._editor.getValue()
     })
+  }
+
+  getEditorValue() {
+    return this._editor.getValue()
+  }
+
+  getActiveEditor() {
+    return this._editor
   }
 
   private addChangeHandler() {

@@ -24,7 +24,7 @@ export default class SnapshotData<T extends ISnapshot,
     this.snapshot = snapshot
     this.done = snapshot.done
     if (this.done) {
-      this.valueType = typeof snapshot.value.value
+      this.valueType = snapshot.value.type
       this.valueString = this.service.valueToString(snapshot)
     }
   }

@@ -47,6 +47,10 @@ function isValidLibrary(json: any) {
 export default async function loadLibraries(missionTitle: string) {
   missionTitle = missionTitle.toLowerCase().replace(' ', '-')
   console.log(`Mission: ${missionTitle}`)
+  const missionNumber = parseInt(missionTitle.split('-')[1], 10)
+  if (missionNumber >= 8) {
+    await getScript('list')
+  }
   let globals: string[] = []
   let context: {[name: string]: any} = {}
   try {
