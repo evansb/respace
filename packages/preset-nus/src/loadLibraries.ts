@@ -49,7 +49,7 @@ export default async function loadLibraries(missionTitle: string) {
   console.log(`Mission: ${missionTitle}`)
   const missionNumber = parseInt(missionTitle.split('-')[1], 10)
   if (missionNumber >= 8) {
-    await getScript('list')
+    // await getScript('list')
   }
   let globals: string[] = []
   let context: {[name: string]: any} = {}

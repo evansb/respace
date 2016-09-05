@@ -2,6 +2,7 @@ import * as rs from '@respace/common'
 import Comments from '@respace/ui-comments'
 import Mission, { MissionDescription } from '../components/Mission'
 import Grading, { GradingModel } from '../components/Grading'
+import ListVisualizer from '../components/ListVisualizer'
 import initializeRespace from '../initialize'
 import loadLibraries from '../loadLibraries'
 import { SubmitButton, GradedButton, TokenCounter,
@@ -199,6 +200,10 @@ export default function initialize() {
     ]
 
     const extraDocuments: rs.AnyDocument[] = [mission, annotations]
+
+    if (window.interpreter >= 5) {
+      extraComponents.push(new ListVisualizer)
+    }
 
     if (isSubmitted || isGraded) {
       const grading = new GradingModel({

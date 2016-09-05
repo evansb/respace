@@ -7,6 +7,8 @@ import { service } from '@respace/ui-interpreter'
 import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/share'
 
+declare var window: any
+
 function weekOfLanguage(language: string): number {
   if (/source-week/.test(language)) {
     return parseInt(language.split('-')[2], 10)
@@ -14,6 +16,8 @@ function weekOfLanguage(language: string): number {
     return 4
   } else if (/rsa/.test(language)) {
     return 5
+  } else if (typeof window.interpreter === 'number') {
+    return window.interpreter
   } else {
     return 3
   }
