@@ -29,7 +29,7 @@ class MissionView extends React.Component<Props, { html: string}> {
     }
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     const document = this.props.component.document
     const renderer = new marked.Renderer()
     renderer.image = function(href) {
@@ -46,9 +46,16 @@ class MissionView extends React.Component<Props, { html: string}> {
         .replace('&#39;', '\'')}</code></pre>`
       return result
     }
+    let description: string
+    if (window.missionTitle === 'mission-10') {
+      const base = 'https://source-academy-assets.s3.amazonaws.com/markdown/'
+      const url = base + 'mission-10.md'
+      description = await ($.get(url) as any)
+    } else {
+      description = $(document.description).text()
+    }
     const callback = () => {
       if (!window.MathJax) { return }
-      const description: string = $(document.description).text()
       const buffer =
         $('<div id="mathjax-buffer" style="display:none">').appendTo('body')
       buffer.text(description)
@@ -73,7 +80,8 @@ class MissionView extends React.Component<Props, { html: string}> {
         }
      ])
     }
-    const html = marked($(document.description).text(), {
+
+    const html = marked(description, {
        gfm: true,
        tables: true,
        sanitize: false,

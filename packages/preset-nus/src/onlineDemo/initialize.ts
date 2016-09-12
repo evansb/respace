@@ -23,6 +23,7 @@ export default async function initialize() {
     createSourceWeek(3),
     createSourceWeek(4),
     createSourceWeek(5),
+    createSourceWeek(6),
     await createSpecial('rune_curve', 'Mission 4', 'Curve', 3),
   ]
   initializeRespace(sourceCodes)

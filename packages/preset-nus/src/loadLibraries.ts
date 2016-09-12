@@ -2,6 +2,7 @@ import $ from 'jquery'
 
 declare interface WindowWithExportSymbol extends Window {
   export_symbol: any
+  missionTitle?: string
 }
 
 declare var window: WindowWithExportSymbol
@@ -66,6 +67,8 @@ export default async function loadLibraries(missionTitle: string) {
     globals.push(s)
     context[s] = m
   }
+
+  window.missionTitle = missionTitle
 
   await getScript(missionTitle + '.js')
 

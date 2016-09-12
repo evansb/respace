@@ -84,10 +84,13 @@ class ListVisualizer extends rs.ComponentFactory<rs.SourceCode, void> {
 
   acceptDocument(document: rs.AnyDocument) {
     const language = (document as rs.SourceCode).language
-    return document.type === 'source-code'
-      && (!!language)
+    const onlineIDEWeek5 = (!!language)
       && (/source-week/.test(language))
       && (parseInt(language.split('-')[2], 10) >= 5)
+    const coursemologyWeek5 = (window.interpreter)
+      && window.interpreter >= 5
+    return document.type === 'source-code'
+      && (onlineIDEWeek5 || coursemologyWeek5)
   }
 
   createStore(document: rs.SourceCode) {

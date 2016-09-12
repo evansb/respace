@@ -24,10 +24,11 @@ function weekOfLanguage(language: string): number {
 }
 
 function createRuntimeObject() {
+  const defaultTimeout = parseInt(window.timeout, 10) || 10000
   const runtime_limit = {
     id: uuid.v4(),
     stackSize: 65536,
-    timeout: 10000,
+    timeout: defaultTimeout,
     set_stack_size(stackSize) {
       if (stackSize > 0) {
         this.stackSize = stackSize
