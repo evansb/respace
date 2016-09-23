@@ -24,7 +24,8 @@ export default async function initialize() {
     createSourceWeek(4),
     createSourceWeek(5),
     createSourceWeek(6),
-    await createSpecial('rune_curve', 'Mission 4', 'Curve', 3),
+    await createSpecial('rune_curve', 'Mission 4', 'Curve', 3)
+    // Await createSpecial('sound_tone_matrix', 'Mission 15', 'Tone Matrix', 6),
   ]
   initializeRespace(sourceCodes)
 }

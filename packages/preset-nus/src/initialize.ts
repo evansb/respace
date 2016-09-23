@@ -4,6 +4,7 @@ import Editor, { EditorStore } from '@respace/ui-editor'
 import Interpreter from '@respace/ui-interpreter'
 import Canvas from './components/Canvas'
 import ListVisualizer from './components/ListVisualizer'
+import ToneMatrix from './components/ToneMatrix'
 import createSourceService from './createSourceService'
 
 import '@respace/theme-dark'
@@ -36,7 +37,8 @@ export default function initialize(
   const basicComponents: rs.ComponentFactory<any, any>[] = [
     new Editor(editorExtensions),
     new Canvas,
-    new ListVisualizer
+    new ListVisualizer,
+    new ToneMatrix
   ]
   const components = basicComponents
     .concat(extraComponents)
