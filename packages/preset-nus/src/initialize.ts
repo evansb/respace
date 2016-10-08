@@ -4,6 +4,7 @@ import Editor, { EditorStore } from '@respace/ui-editor'
 import Interpreter from '@respace/ui-interpreter'
 import Canvas from './components/Canvas'
 import ListVisualizer from './components/ListVisualizer'
+import EnvironmentVisualizer from './components/EnvironmentVisualizer'
 import ToneMatrix from './components/ToneMatrix'
 import createSourceService from './createSourceService'
 
@@ -38,6 +39,7 @@ export default function initialize(
     new Editor(editorExtensions),
     new Canvas,
     new ListVisualizer,
+    new EnvironmentVisualizer,
     new ToneMatrix
   ]
   const components = basicComponents
