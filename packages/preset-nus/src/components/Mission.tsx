@@ -7,7 +7,7 @@ import $ from 'jquery'
 declare var MathJax: any
 declare var window: any
 
-const MATHJAX_URL = 'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML' // tslint:disable-line
+const MATHJAX_URL = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML' // tslint:disable-line
 
 type Props = rs.IComponentProps<MissionDescription, void>
 
@@ -21,6 +21,11 @@ export class MissionDescription extends rs.Document<IMissionDescription, any> {
   }
 }
 
+(String.prototype as any).replaceAll = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+};
+
 class MissionView extends React.Component<Props, { html: string}> {
   constructor(props, context) {
     super(props, context)
@@ -33,27 +38,28 @@ class MissionView extends React.Component<Props, { html: string}> {
     const document = this.props.component.document
     const renderer = new marked.Renderer()
     renderer.image = function(href) {
-      return `<img class="img-responsive" src="https://source-academy-assets.s3.amazonaws.com/markdown/${href}"/>` // tslint:disable-line
+      return `<img class="img-responsive" src="http://source-academy-assets.s3.amazonaws.com/markdown/${href}"/>` // tslint:disable-line
     }
     renderer.table = function(header, body) {
       return `<table class="table">${header}${body}</table>`
     }
-    renderer.code = function(code) {
-      const result = `<pre><code>${code
-        .replace('&lt;', '<')
-        .replace('&gt;', '>')
-        .replace('&quot;', '"')
-        .replace('&#39;', '\'')}</code></pre>`
+    renderer.codespan = function(code) {
+      const result = `<code>${(code as any)
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&quot;', '"')
+        .replaceAll('&#39;', '\'')}</code>`
       return result
     }
-    let description: string
-    if (window.missionTitle === 'mission-10') {
-      const base = 'https://source-academy-assets.s3.amazonaws.com/markdown/'
-      const url = base + 'mission-10.md'
-      description = await ($.get(url) as any)
-    } else {
-      description = $(document.description).text()
+    renderer.code = function(code) {
+      const result = `<pre><code>${(code as any)
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&quot;', '"')
+        .replaceAll('&#39;', '\'')}</code></pre>`
+      return result
     }
+    const description: string = $(document.description).text()
     const callback = () => {
       if (!window.MathJax) { return }
       const buffer =
@@ -61,15 +67,13 @@ class MissionView extends React.Component<Props, { html: string}> {
       buffer.text(description)
       MathJax.Hub.Config({
           tex2jax: { inlineMath: [['\\[', '\\]'], ['\\(', '\\)']] },
-          asciimath2jax: {
-            delimiters: [['$', '$']],
-          }
+          asciimath2jax: { delimiters: [] }
       })
       MathJax.Hub.Queue([
         ['Typeset', MathJax.Hub, 'mathjax-buffer'],
         () => {
           const buf = window.document.getElementById('mathjax-buffer')
-          const text = (buf && buf.innerHTML) || ''
+          const text = (buf && buf.innerText) || ''
           const html = marked(text, {
              gfm: true,
              tables: true,

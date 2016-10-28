@@ -20,12 +20,13 @@ async function createSpecial(language: string, missionTitle: string,
 
 export default async function initialize() {
   const sourceCodes = [
-    createSourceWeek(3),
-    createSourceWeek(4),
     createSourceWeek(5),
     createSourceWeek(6),
     createSourceWeek(8),
-    await createSpecial('rune_curve', 'Mission 4', 'Curve', 3)
+    createSourceWeek(9),
+    createSourceWeek(10),
+    await createSpecial('rune_curve', 'Mission 4', 'Curve', 3),
+    await createSpecial('practical-exam', 'PE 2015', 'PE 2015', 13)
     // Await createSpecial('sound_tone_matrix', 'Mission 15', 'Tone Matrix', 6),
   ]
   initializeRespace(sourceCodes)

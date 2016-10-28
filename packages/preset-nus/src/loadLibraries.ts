@@ -7,7 +7,7 @@ declare interface WindowWithExportSymbol extends Window {
 
 declare var window: WindowWithExportSymbol
 
-const baseLib = 'https://source-academy-assets.s3.amazonaws.com/lib'
+const baseLib = 'http://source-academy-assets.s3.amazonaws.com/lib'
 
 const __LIBRARY_CACHE__: { [index: string]: boolean } = {}
 
@@ -32,14 +32,6 @@ interface IMissionMetadata {
   libraries: string[]
 }
 
-function getMetadata(missionTitle: string): Promise<IMissionMetadata> {
-  return new Promise((resolve, reject) => {
-    $.getJSON(`${baseLib}/${missionTitle}.json`).then((data, status) => {
-      resolve(data as IMissionMetadata)
-    }).fail(reject)
-  })
-}
-
 function isValidLibrary(json: any) {
   return json.libraries instanceof Array &&
     (<any[]> json.libraries).every(s => typeof s === 'string')
@@ -49,19 +41,8 @@ export default async function loadLibraries(missionTitle: string) {
   missionTitle = missionTitle.toLowerCase().replace(' ', '-')
   console.log(`Mission: ${missionTitle}`)
   const missionNumber = parseInt(missionTitle.split('-')[1], 10)
-  if (missionNumber >= 8) {
-    // await getScript('list')
-  }
   let globals: string[] = []
   let context: {[name: string]: any} = {}
-  try {
-    const json: { libraries: string[] } = await getMetadata(missionTitle)
-    if (isValidLibrary(json)) {
-      await Promise.all(json.libraries.map(getScript))
-    }
-  } catch (e) {
-    console.log('Metadata not found, assuming bundled library')
-  }
 
   window.export_symbol = (s, m) => {
     globals.push(s)

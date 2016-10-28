@@ -1,6 +1,3 @@
-import { Observable } from 'rxjs/Observable'
-import { IPubSub } from '@respace/common'
-
 export type SnapshotAction<T extends ISnapshot, E extends ISnapshotError<T>> =
     SnapshotRequest<T>
   | SnapshotError<E>
@@ -22,10 +19,9 @@ export type SnapshotError<E> = {
 }
 
 export interface ILanguageService<T extends ISnapshot,
-                                  E extends ISnapshotError<T>>
-extends IPubSub<SnapshotAction<T, E>> {
+                                  E extends ISnapshotError<T>> {
   language: string
-  outputSink: Observable<string>
+  publish(action: SnapshotAction<T, E>, store: any): T | E
   valueToString(snapshot: T): string
   errorToString(error: E): string
 }

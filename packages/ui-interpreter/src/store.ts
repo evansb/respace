@@ -1,9 +1,11 @@
 import * as rs from '@respace/common'
 import * as uuid from 'uuid'
-import { observable, action, autorun, transaction } from 'mobx'
+import { observable, action, autorun, toJS } from 'mobx'
 import { ILanguageService, ISnapshot, ISnapshotError,
   SnapshotRequest } from './language-service'
 import SnapshotData from './snapshot-data'
+
+declare var window: any
 
 export default class InterpreterStore<T extends ISnapshot,
                                       E extends ISnapshotError<T>> {
@@ -43,7 +45,6 @@ export default class InterpreterStore<T extends ISnapshot,
   constructor(private _document: rs.SourceCode,
               private _service: ILanguageService<T, E>) {
     this.pipeRunToRequest()
-    this.connectToService()
   }
 
   @action('interpreter.clear')
@@ -79,10 +80,16 @@ export default class InterpreterStore<T extends ISnapshot,
   addCode(code: string) {
     const parentData = this.snapshots[this.snapshots.length - 1]
     const parent = parentData && parentData.snapshot
-    if (parent) {
-      this._service.publish(this.createRequest(code, parent))
+    let result
+    if (parent && parent.done) {
+      result = this._service.publish(this.createRequest(code, parent), this)
     } else {
-      this._service.publish(this.createRequest(code))
+      result = this._service.publish(this.createRequest(code), this)
+    }
+    if (result['code']) {
+      this.handleSnapshot(result as T)
+    } else {
+      this.handleError(result as E)
     }
   }
 
@@ -138,21 +145,9 @@ export default class InterpreterStore<T extends ISnapshot,
   }
 
   private handleLog(log: string) {
-    this.snapshots[this.snapshots.length - 1].logs.push(log)
-  }
-
-  private connectToService() {
-    this._service.subscribe(s => {
-      if (s.type === 'snapshotReply') {
-        this.handleSnapshot(<T> s.payload)
-      } else if (s.type === 'snapshotError') {
-        this.handleError(<E> s.payload)
-      }
-      return undefined
-    })
-    this._service.outputSink.subscribe(value => {
-      this.handleLog(value)
-    })
+    setTimeout(() => {
+      this.snapshots[this.snapshots.length - 1].logs.push(log)
+    }, 1)
   }
 
   private createRequest(code: string, parent?: T,
@@ -171,6 +166,7 @@ export default class InterpreterStore<T extends ISnapshot,
     let data = new SnapshotData(id, code, this._service)
     data.isCodeShown = !this._hideCode[id]
     this.snapshots.push(data)
+    console.log(toJS(this.snapshots))
     this._cycleHistoryN = (this.snapshots.length - 1)
     return request
   }
@@ -181,7 +177,12 @@ export default class InterpreterStore<T extends ISnapshot,
         this.clearAll()
         const request = this.createRequest(
           this._document.value, undefined, false)
-        this._service.publish(request)
+        const result = this._service.publish(request, this)
+        if (result['code']) {
+          this.handleSnapshot(result as T)
+        } else {
+          this.handleError(result as E)
+        }
       }
       return undefined
     })

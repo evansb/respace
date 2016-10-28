@@ -146,22 +146,37 @@ export default function initialize() {
 
     const { answers, assessment,
       submission, questions, user } = $.parseJSON($data.text())
-    const isGraded = submission.workflow_state === 'graded'
+    const isGraded = (submission.workflow_state === 'graded')
+      || submission.graded_at
     const isSubmitted = submission.workflow_state === 'submitted'
-    const answer = answers[0]
-    const question = questions[0]
 
     const { globals, context } = await loadLibraries(assessment.title)
 
-    const sourceCode = {
-      value: answer.answer_text || question.description,
-      template: question.description,
-      language: window.mission_type || 'source-week-3',
-      title: assessment.title,
-      readonly: isGraded || isSubmitted,
-      globals,
-      handlers: [codeHandler],
-      context
+    let sourceCodes: any[] = []
+
+    for (var i = 0; i < questions.length; i++) {
+      if (i === questions.length - 1) {
+        const solution_prefix = '__pe__solution__copy__';
+        eval(questions[i].description)
+        window.define_solution();
+        window.exportedFunc.forEach(function(funcName) {
+          window.export_symbol(solution_prefix + funcName, eval(funcName));
+        });
+        continue
+      }
+      const answer = answers[i]
+      const question = questions[i]
+      const sourceCode = {
+        value: answer.answer_text || question.description,
+        template: question.description,
+        language: window.mission_type || 'source-week-3',
+        title: questions.length === 1 ? assessment.title : `Question ${i + 1}`,
+        readonly: isGraded || isSubmitted,
+        globals,
+        handlers: [codeHandler],
+        context
+      }
+      sourceCodes.push(sourceCode)
     }
 
     const mission = new MissionDescription({
@@ -236,7 +251,7 @@ export default function initialize() {
       statusbarExts.push(TokenCounter)
     }
 
-    initializeRespace([sourceCode], extraDocuments, extraComponents, {
+    initializeRespace(sourceCodes, extraDocuments, extraComponents, {
       toolbar: [toolbarButton],
       statusbar: statusbarExts
     })

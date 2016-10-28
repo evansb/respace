@@ -39,7 +39,6 @@ export default function initialize(
     new Editor(editorExtensions),
     new Canvas,
     new ListVisualizer,
-    new EnvironmentVisualizer,
     new ToneMatrix
   ]
   const components = basicComponents

@@ -32,7 +32,8 @@ const Sidebar = ({ documentStore, uiStore, layoutStore }: ISidebarProps) => {
   const style = {
     float: 'left',
     width: uiStore.sidebarWidth + 'px',
-    height: uiStore.appHeight + 'px'
+    height: uiStore.appHeight + 'px',
+    overflow: 'auto'
   }
   return (
     <div className='sidebar' style={style}>

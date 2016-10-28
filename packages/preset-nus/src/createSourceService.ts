@@ -1,11 +1,9 @@
 import uuid from 'uuid'
-import { Snapshot, ISnapshotError, printErrorToString, createServer, IRequest,
-  printValueToString, listToString } from 'the-source'
-import { Subject } from 'rxjs/Subject'
+import { toJS } from 'mobx'
+import { Snapshot, ISnapshotError, printErrorToString, createSourceParser,
+  printValueToString, listToString, parseAndEvaluate,
+  parseAndSanitize, lint } from 'the-source'
 import { service } from '@respace/ui-interpreter'
-
-import 'rxjs/add/operator/map'
-import 'rxjs/add/operator/share'
 
 declare var window: any
 
@@ -22,6 +20,8 @@ function weekOfLanguage(language: string): number {
     return 3
   }
 }
+
+type IRequest = any
 
 function createRuntimeObject() {
   const defaultTimeout = parseInt(window.timeout, 10) || 10000
@@ -59,70 +59,85 @@ export default function createSourceService(init: {
   context: any
   globals: string[]
 }): service.ILanguageService<Snapshot, ISnapshotError> {
-  const requests$ = new Subject<IRequest>()
-  const outputSink$ = new Subject<string>()
-  const server = createServer(requests$).share()
+  let system = createRuntimeObject()
+  let lastSnapshot: Snapshot
 
-  const system = createRuntimeObject()
   init.context.system = system
   init.globals.push('system')
 
-  return {
+  const service =  {
     language: init.language,
-    outputSink: outputSink$,
-    publish(action: service.SnapshotAction<Snapshot, ISnapshotError>) {
-      if (action.type === 'snapshotRequest') {
-        const actionRequest = <service.SnapshotRequest<Snapshot>> action
-        const { id, code, parent } = actionRequest.payload
-        const week = weekOfLanguage(init.language)
-        let request: IRequest = { id, code, week }
-        if (!parent) {
-          request.globals = init.globals
-          request.context = init.context
-          if (week >= 4) {
-            request.globals.push('display')
-            request.context.display = (value) => {
-              let str: string
-              if (value instanceof Array) {
-                str = listToString(value)
-              } else if (typeof value.toString === 'function') {
-                str = value.toString()
-              } else {
-                str = value + ''
-              }
-              outputSink$.next(str)
-            }
-            window['display'] = request.context.display
-          }
+    publish(action: service.SnapshotAction<Snapshot, ISnapshotError>,
+            store: any) {
+      const actionRequest = <service.SnapshotRequest<Snapshot>> action
+      const { id, code, parent } = actionRequest.payload
+      const week = weekOfLanguage(init.language)
+      let request: IRequest = { id, code, week }
+      lastSnapshot = actionRequest.payload
 
-          const globals = request.globals || []
-          system.get_globals = () => {
-            let str = ''
-            for (var x = 0; x < globals.length; x++) {
-              if (x !== globals.length - 1) {
-                str += globals[x] + '\n'
-              } else {
-                str += globals[x]
-              }
+      if (!parent) {
+        request.globals = toJS(init.globals)
+        request.context = toJS(init.context)
+        if (week >= 4) {
+          request.globals.push('display')
+          request.context.display = (value) => {
+            let str: string
+            if (value instanceof Array) {
+              str = listToString(value)
+            } else if (typeof value.toString === 'function') {
+              str = value.toString()
+            } else {
+              str = value + ''
             }
-            return str
+            store.handleLog(str)
           }
-        } else {
-          request.parent = parent
+          window['display'] = request.context.display
         }
-        request.timeout = system.runtime_limit.get_timeout()
-        request.maxCallStack = system.runtime_limit.get_stack_size()
-        requests$.next(request)
+
+        if (week >= 10) {
+          const parse = createSourceParser(week)
+          request.globals.push('parse')
+          request.context.parse = parse
+        }
+
+        const globals = request.globals || []
+        system.get_globals = () => {
+          let str = ''
+          for (var x = 0; x < globals.length; x++) {
+            if (x !== globals.length - 1) {
+              str += globals[x] + '\n'
+            } else {
+              str += globals[x]
+            }
+          }
+          return str
+        }
       }
-    },
-    subscribe(handler) {
-      return server.map(snapshotOrError => {
-        if (snapshotOrError instanceof Snapshot) {
-          return { type: 'snapshotReply', payload: snapshotOrError }
-        } else {
-          return { type: 'snapshotError', payload: snapshotOrError }
+      request.parent = parent
+      if (parent) {
+        request.runtime = parent.runtime
+      }
+      system = toJS(system)
+      request.timeout = system.runtime_limit.get_timeout()
+      request.maxCallStack = system.runtime_limit.get_stack_size()
+      request.lines = code.split('\n')
+      window.before_parse_and_evaluate()
+      try {
+        const lintErrors = lint(request.code, request)
+        if (lintErrors.length > 0) {
+          return lintErrors[0]
         }
-      }).subscribe(handler)
+        const parsedSnapshot = parseAndSanitize(request)
+        if (parsedSnapshot instanceof Array) {
+          return parsedSnapshot[0]
+        }
+        let result = parseAndEvaluate(request)
+        window.after_parse_and_evaluate()
+        return result
+      } catch (e) {
+        console.log(e)
+        return e
+      }
     },
     errorToString(error: ISnapshotError) {
       return printErrorToString(error)
@@ -131,4 +146,9 @@ export default function createSourceService(init: {
       return printValueToString(snapshot.value, snapshot.context)
     }
   }
+
+  window.parse_and_evaluate = (code, isMore) => {
+    parseAndEvaluate(lastSnapshot, code, isMore)
+  }
+  return service
 }

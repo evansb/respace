@@ -1,5 +1,6 @@
 const webpack = require('webpack')
 const path = require('path')
+const ForkCheckerPlugin = require('awesome-typescript-loader').ForkCheckerPlugin
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = (webpackConfig, config) => {
@@ -16,6 +17,7 @@ module.exports = (webpackConfig, config) => {
   ]
 
   webpackConfig.plugins.push(
+    new ForkCheckerPlugin(),
     new HtmlWebpackPlugin({
       template,
       hash: false,
