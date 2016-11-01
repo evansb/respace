@@ -7,7 +7,7 @@ import $ from 'jquery'
 declare var MathJax: any
 declare var window: any
 
-const MATHJAX_URL = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML' // tslint:disable-line
+const MATHJAX_URL = 'http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML' // tslint:disable-line
 
 type Props = rs.IComponentProps<MissionDescription, void>
 
@@ -73,7 +73,7 @@ class MissionView extends React.Component<Props, { html: string}> {
         ['Typeset', MathJax.Hub, 'mathjax-buffer'],
         () => {
           const buf = window.document.getElementById('mathjax-buffer')
-          const text = (buf && buf.innerText) || ''
+          const text = (buf && buf.innerHTML) || ''
           const html = marked(text, {
              gfm: true,
              tables: true,

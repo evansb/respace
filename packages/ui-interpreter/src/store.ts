@@ -166,7 +166,6 @@ export default class InterpreterStore<T extends ISnapshot,
     let data = new SnapshotData(id, code, this._service)
     data.isCodeShown = !this._hideCode[id]
     this.snapshots.push(data)
-    console.log(toJS(this.snapshots))
     this._cycleHistoryN = (this.snapshots.length - 1)
     return request
   }

@@ -60,7 +60,6 @@ export default function createSourceService(init: {
   globals: string[]
 }): service.ILanguageService<Snapshot, ISnapshotError> {
   let system = createRuntimeObject()
-  let lastSnapshot: Snapshot
 
   init.context.system = system
   init.globals.push('system')
@@ -73,7 +72,14 @@ export default function createSourceService(init: {
       const { id, code, parent } = actionRequest.payload
       const week = weekOfLanguage(init.language)
       let request: IRequest = { id, code, week }
-      lastSnapshot = actionRequest.payload
+
+      if (!window.pe_solution_defined && window.pe_solution) {
+        eval(window.pe_solution)
+        if (window.define_solution) {
+          window.define_solution()
+        }
+        window.pe_solution_defined = true
+      }
 
       if (!parent) {
         request.globals = toJS(init.globals)
@@ -100,6 +106,14 @@ export default function createSourceService(init: {
           request.context.parse = parse
         }
 
+        if (window.mission_type === 'practical-exam') {
+          const solution_prefix = '__pe__solution__copy__'
+          window.exportedFunc.forEach(function(funcName) {
+            request.globals.push(solution_prefix + funcName)
+            request.context[solution_prefix + funcName] = eval(funcName)
+          })
+        }
+
         const globals = request.globals || []
         system.get_globals = () => {
           let str = ''
@@ -121,7 +135,11 @@ export default function createSourceService(init: {
       request.timeout = system.runtime_limit.get_timeout()
       request.maxCallStack = system.runtime_limit.get_stack_size()
       request.lines = code.split('\n')
-      window.before_parse_and_evaluate()
+      /*
+      if (window.before_parse_and_evaluate && !parent) {
+        window.before_parse_and_evaluate(request)
+      }
+      */
       try {
         const lintErrors = lint(request.code, request)
         if (lintErrors.length > 0) {
@@ -132,10 +150,14 @@ export default function createSourceService(init: {
           return parsedSnapshot[0]
         }
         let result = parseAndEvaluate(request)
-        window.after_parse_and_evaluate()
+/*
+        if (window.after_parse_and_evaluate && !parent) {
+          window.after_parse_and_evaluate(result)
+          parseAndEvaluate(result, ';', true)
+        }
+*/
         return result
       } catch (e) {
-        console.log(e)
         return e
       }
     },
@@ -147,8 +169,8 @@ export default function createSourceService(init: {
     }
   }
 
-  window.parse_and_evaluate = (code, isMore) => {
-    parseAndEvaluate(lastSnapshot, code, isMore)
+  window.parse_and_evaluate = (code, isMore, snapshot) => {
+    return parseAndEvaluate(snapshot, code, isMore)
   }
   return service
 }

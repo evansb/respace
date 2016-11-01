@@ -41,26 +41,6 @@ export default function Editor(props: Props) {
           store.save()
         }
       })
-      /*
-      const document = props.component.document
-      document.subscribe(function(action, document, files = []) {
-       if (action.type !== 'drop') { return }
-       const file: File = files[0]
-       if (file && file.type === 'text/javascript') {
-         const xhr = new XMLHttpRequest()
-         xhr.open('GET', (file as any).preview)
-         xhr.responseType = 'text'
-         xhr.onload = function (e) {
-           if (this.status === 200) {
-             const text = this.response
-             document.data.value = text
-             editor.setValue(text)
-           }
-         }
-         xhr.send()
-       }
-      })
-      */
       editor.setOptions({ useWorker: false })
       store.setEditor(editor)
     }

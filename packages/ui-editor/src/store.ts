@@ -6,9 +6,12 @@ import 'rxjs/add/observable/fromEvent'
 import 'rxjs/add/operator/map'
 import 'rxjs/add/operator/debounceTime'
 
+declare var window: any
+
 export default class EditorStore {
   MIN_FONT_SIZE = 8
   MAX_FONT_SIZE = 64
+  idx: number
 
   @observable theme = 'ace/theme/tomorrow_night'
   @observable mode = 'javascript'
@@ -25,6 +28,7 @@ export default class EditorStore {
   private _editor: AceAjax.Editor
 
   constructor(public sourceCode: rs.SourceCode) {
+    this.idx = parseInt(this.sourceCode.title.split(' ')[1], 10)
     this.sourceCode.subscribe(a => {
       if (a.type === 'rehydrated' && this._editor) {
         this._editor.setValue(sourceCode.value)
@@ -103,6 +107,9 @@ export default class EditorStore {
       .debounceTime(100)
       .subscribe(() => {
         this.isDirty = true
+        if (window.SOURCE_CODES) {
+          window.SOURCE_CODES[this.idx - 1] = this._editor.getValue()
+        }
         this.sourceCode.setValue(this._editor.getValue())
       })
   }

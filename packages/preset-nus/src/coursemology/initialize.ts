@@ -15,6 +15,8 @@ const CODE = 'textarea.text.optional.form-control'
 const SAVE_BUTTON = 'input[name="commit"]'
 const SUBMIT_BUTTON = 'input[name="submission[finalise]"]'
 
+let sourceCodes: any[] = []
+
 interface IQuestion {
   description: string
 }
@@ -99,14 +101,24 @@ const codeHandler: rs.ActionHandler<rs.SourceCodeActions.All> = (action) => {
   const code = (<rs.SourceCodeActions.Save> action).payload
   const $saveButton = $(SAVE_BUTTON)
   const $submitButton = $(SUBMIT_BUTTON)
+
   const $code = $(CODE)
+
+  if (sourceCodes.length > 1) {
+    $code.each(function(i, el) {
+      if (i < sourceCodes.length - 1) {
+        $(el).text(window.SOURCE_CODES[i])
+      }
+    })
+  } else {
+    $code.text(code)
+  }
+
   switch (action.type) {
     case 'save':
-      $code.text(code)
       $saveButton.click()
       break
     case 'submit':
-      $code.text(code)
       $submitButton.click()
       break
     default: return undefined
@@ -152,16 +164,13 @@ export default function initialize() {
 
     const { globals, context } = await loadLibraries(assessment.title)
 
-    let sourceCodes: any[] = []
+    if (questions.length > 1) {
+      window.SOURCE_CODES = []
+    }
 
     for (var i = 0; i < questions.length; i++) {
-      if (i === questions.length - 1) {
-        const solution_prefix = '__pe__solution__copy__';
-        eval(questions[i].description)
-        window.define_solution();
-        window.exportedFunc.forEach(function(funcName) {
-          window.export_symbol(solution_prefix + funcName, eval(funcName));
-        });
+      if (questions.length > 1 && i === questions.length - 1) {
+        window.pe_solution = questions[i].description
         continue
       }
       const answer = answers[i]
@@ -170,7 +179,8 @@ export default function initialize() {
         value: answer.answer_text || question.description,
         template: question.description,
         language: window.mission_type || 'source-week-3',
-        title: questions.length === 1 ? assessment.title : `Question ${i + 1}`,
+        title: questions.length === 1
+            ? assessment.title : `Question ${i + 1}`,
         readonly: isGraded || isSubmitted,
         globals,
         handlers: [codeHandler],
