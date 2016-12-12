@@ -7,7 +7,7 @@ declare interface WindowWithExportSymbol extends Window {
 
 declare var window: WindowWithExportSymbol
 
-const baseLib = 'http://source-academy-assets.s3.amazonaws.com/lib'
+const baseLib = 'https://source-academy-assets.s3.amazonaws.com/lib'
 
 const __LIBRARY_CACHE__: { [index: string]: boolean } = {}
 

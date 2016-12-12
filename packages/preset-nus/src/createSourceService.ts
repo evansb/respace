@@ -73,14 +73,6 @@ export default function createSourceService(init: {
       const week = weekOfLanguage(init.language)
       let request: IRequest = { id, code, week }
 
-      if (!window.pe_solution_defined && window.pe_solution) {
-        eval(window.pe_solution)
-        if (window.define_solution) {
-          window.define_solution()
-        }
-        window.pe_solution_defined = true
-      }
-
       if (!parent) {
         request.globals = toJS(init.globals)
         request.context = toJS(init.context)
@@ -106,14 +98,6 @@ export default function createSourceService(init: {
           request.context.parse = parse
         }
 
-        if (window.mission_type === 'practical-exam') {
-          const solution_prefix = '__pe__solution__copy__'
-          window.exportedFunc.forEach(function(funcName) {
-            request.globals.push(solution_prefix + funcName)
-            request.context[solution_prefix + funcName] = eval(funcName)
-          })
-        }
-
         const globals = request.globals || []
         system.get_globals = () => {
           let str = ''
@@ -135,11 +119,6 @@ export default function createSourceService(init: {
       request.timeout = system.runtime_limit.get_timeout()
       request.maxCallStack = system.runtime_limit.get_stack_size()
       request.lines = code.split('\n')
-      /*
-      if (window.before_parse_and_evaluate && !parent) {
-        window.before_parse_and_evaluate(request)
-      }
-      */
       try {
         const lintErrors = lint(request.code, request)
         if (lintErrors.length > 0) {
@@ -150,12 +129,6 @@ export default function createSourceService(init: {
           return parsedSnapshot[0]
         }
         let result = parseAndEvaluate(request)
-/*
-        if (window.after_parse_and_evaluate && !parent) {
-          window.after_parse_and_evaluate(result)
-          parseAndEvaluate(result, ';', true)
-        }
-*/
         return result
       } catch (e) {
         return e

@@ -15,7 +15,7 @@ function loadScript(url, callback) {
     document.getElementsByTagName('head')[0].appendChild(script)
 }
 
-const BASE_URL = 'http://source-academy-assets.s3.amazonaws.com/lib'
+const BASE_URL = 'https://source-academy-assets.s3.amazonaws.com/lib'
 const KINETIC_URL = BASE_URL + '/KineticJS.js'
 const JQUERY_URL =
   'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'

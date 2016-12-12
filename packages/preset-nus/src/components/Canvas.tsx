@@ -19,6 +19,7 @@ declare var window: ICoursemologyWindowWithCanvas
 export type Props = rs.IComponentProps<rs.SourceCode, void>
 
 class CanvasView extends React.Component<Props, { size: number }> {
+
   refs: { [index: string]: any, canvas: any }
 
   CANVAS_RENDER_SIZE = 512

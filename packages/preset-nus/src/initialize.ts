@@ -44,22 +44,25 @@ export default function initialize(
   const components = basicComponents
     .concat(extraComponents)
     .concat(interpreters)
-  const documents: rs.AnyDocument[] =
-    extraDocuments.concat(sourceCodes.map(sc => {
-      const code = new rs.SourceCode(sc.value, sc.template,
-        sc.language, sc.title)
-      code.id = sc.title
-      if (sc.disablePersistence) {
-        code.setPersistence(false)
-      }
-      if (sc.readonly) {
-        code.setReadOnly(true)
-      }
-      if (sc.handlers instanceof Array) {
-        sc.handlers.forEach(h => { code.subscribe(h) })
-      }
-      return code
-    }))
+  const dsourceCodes = sourceCodes.map(sc => {
+    const code = new rs.SourceCode(sc.value, sc.template,
+      sc.language, sc.title)
+    code.id = sc.title
+    if (sc.disablePersistence) {
+      code.setPersistence(false)
+    }
+    if (sc.readonly) {
+      code.setReadOnly(true)
+    }
+    if (sc.handlers instanceof Array) {
+      sc.handlers.forEach(h => { code.subscribe(h) })
+    }
+    return code
+  }))
+  const documents: rs.AnyDocument[] = extraDocuments.concat(dsourceCodes)
+  if (window.mission_type === 'practical-exam') {
+    window.sourceCodes = dsourceCodes
+  }
   const workspace = Workspace.create({ components, documents })
   workspace.render(container)
 }

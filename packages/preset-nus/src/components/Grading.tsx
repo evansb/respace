@@ -44,7 +44,7 @@ class GradingView extends React.Component<Props, void> {
     $stats.show()
     const $rows = $stats.find('tr')
     $($rows[$rows.length - 1]).hide()
-    $($rows[$rows.length - 2]).hide()
+    $form.find('hr').hide()
     $form.contents().filter(
       function() { return this.nodeType === 3 }).remove()
     $form.appendTo($this).css('display', 'block')
@@ -67,7 +67,6 @@ class GradingView extends React.Component<Props, void> {
             If your submission is not graded within 24 hours,
             you may want send a reminder to your avenger
             </h3> }
-      { baseXp && <h3>Max XP: {baseXp}</h3> }
       <Row ref='form' style={{ position: 'relative', padding: '20px' }} />
     </div>
   }

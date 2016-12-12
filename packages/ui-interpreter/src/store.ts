@@ -81,7 +81,7 @@ export default class InterpreterStore<T extends ISnapshot,
     const parentData = this.snapshots[this.snapshots.length - 1]
     const parent = parentData && parentData.snapshot
     let result
-    if (parent && parent.done) {
+    if (parent) {
       result = this._service.publish(this.createRequest(code, parent), this)
     } else {
       result = this._service.publish(this.createRequest(code), this)

@@ -104,16 +104,6 @@ const codeHandler: rs.ActionHandler<rs.SourceCodeActions.All> = (action) => {
 
   const $code = $(CODE)
 
-  if (sourceCodes.length > 1) {
-    $code.each(function(i, el) {
-      if (i < sourceCodes.length - 1) {
-        $(el).text(window.SOURCE_CODES[i])
-      }
-    })
-  } else {
-    $code.text(code)
-  }
-
   switch (action.type) {
     case 'save':
       $saveButton.click()
@@ -159,14 +149,24 @@ export default function initialize() {
     const { answers, assessment,
       submission, questions, user } = $.parseJSON($data.text())
     const isGraded = (submission.workflow_state === 'graded')
+      || (submission.workflow_state === 'published')
       || submission.graded_at
     const isSubmitted = submission.workflow_state === 'submitted'
 
-    const { globals, context } = await loadLibraries(assessment.title)
+    const $code = $(CODE)
+    const codes = []
 
-    if (questions.length > 1) {
-      window.SOURCE_CODES = []
+    $code.each(function () {
+      codes.push($(this).text())
+    })
+
+    if (!isGraded) {
+      codes[2] = codes[1]
+      codes[1] = codes[0]
+      codes[0] = codes[3]
     }
+
+    const { globals, context } = await loadLibraries(assessment.title)
 
     for (var i = 0; i < questions.length; i++) {
       if (questions.length > 1 && i === questions.length - 1) {
@@ -176,7 +176,7 @@ export default function initialize() {
       const answer = answers[i]
       const question = questions[i]
       const sourceCode = {
-        value: answer.answer_text || question.description,
+        value: codes[i] || question.description,
         template: question.description,
         language: window.mission_type || 'source-week-3',
         title: questions.length === 1

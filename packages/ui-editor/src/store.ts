@@ -87,6 +87,7 @@ export default class EditorStore {
 
   @action('editor.run')
   run() {
+    window.runningCode = this.sourceCode.title
     this.sourceCode.publish(<rs.SourceCodeActions.Run> {
       type: 'run',
       payload: this._editor.getValue()
@@ -107,9 +108,6 @@ export default class EditorStore {
       .debounceTime(100)
       .subscribe(() => {
         this.isDirty = true
-        if (window.SOURCE_CODES) {
-          window.SOURCE_CODES[this.idx - 1] = this._editor.getValue()
-        }
         this.sourceCode.setValue(this._editor.getValue())
       })
   }

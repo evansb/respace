@@ -1,3 +1,5 @@
+import $ from 'jquery'
+window.$ = $
 import '@respace/theme-dark'
 import initializeOnlineDemo from './onlineDemo/initialize'
 import initializeCoursemology from './coursemology/initialize'

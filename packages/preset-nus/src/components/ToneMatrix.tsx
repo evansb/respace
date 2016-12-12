@@ -20,7 +20,7 @@ function loadScript(url, callback) {
 }
 
 const JQUERY_URL =
-  'http://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'
+  'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js'
 
 class ToneMatrixView extends React.Component<Props, void> {
   refs: { [index: string]: any, matrix: any }

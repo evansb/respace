@@ -7,7 +7,7 @@ import $ from 'jquery'
 declare var MathJax: any
 declare var window: any
 
-const MATHJAX_URL = 'http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML' // tslint:disable-line
+const MATHJAX_URL = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML' // tslint:disable-line
 
 type Props = rs.IComponentProps<MissionDescription, void>
 
