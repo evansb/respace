@@ -1,0 +1,10 @@
+{
+  "extends": "tslint:recommended",
+  "rules": {
+    "quotemark": ["single"],
+    "semicolon": [true, "never"],
+    "member-access": [false],
+    "trailing-comma": [true, "never"],
+    "no-reference": false
+  }
+}

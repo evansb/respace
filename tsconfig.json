@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "es6",
+    "target": "es6",
+    "jsx": "preserve",
+    "noImplicitAny": true,
+    "removeComments": false,
+    "strictNullChecks": true,
+    "preserveConstEnums": true,
+    "sourceMap": true
+  },
+  "awesomeTypescriptLoaderOptions": {
+    "useBabel": true,
+    "useCache": true
+  }
+}
