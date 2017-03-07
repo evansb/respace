@@ -65,6 +65,8 @@
     "@types/react-hot-loader": "^3.0.1",
     "babel-polyfill": "^6.23.0",
     "debug": "^2.6.1",
+    "flexboxgrid": "^6.3.1",
+    "normalize.css": "^5.0.0",
     "react": "^15.4.2",
     "react-addons-css-transition-group": "^15.4.2",
     "react-dom": "^15.4.2",

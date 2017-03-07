@@ -1,0 +1,21 @@
+@import '~normalize.css/normalize.css';
+@import '~@blueprintjs/core/dist/variables';
+@import '~@blueprintjs/core/dist/blueprint.css';
+@import '~flexboxgrid/dist/flexboxgrid.css';
+@import '../helpers';
+
+#rs-app {
+  height: 100vh;
+}
+
+#rs-sidenav {
+  background: $dark-gray1;
+}
+
+#rs-sidebar {
+  background: $dark-gray4;
+}
+
+#rs-sidebar {
+  background: $light-gray5;
+}
