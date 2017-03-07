@@ -1,16 +1,9 @@
-
-.vscode
-.idea
 .awcache
+.uglifycache
 
 node_modules
-typings
 npm-debug.log
 *.log
 dist
-definitions
 es5
 es6
-
-assets
-templates

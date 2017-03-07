@@ -46,8 +46,6 @@ const config: webpack.Configuration = {
   },
 
   output: {
-    filename: '[name].bundle.js',
-    path: path.resolve(__dirname, '../dist'),
     publicPath
   },
 

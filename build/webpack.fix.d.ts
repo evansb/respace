@@ -7,4 +7,6 @@ declare module 'webpack-merge' {
 
 declare module 'extract-text-webpack-plugin'
 declare module 'awesome-typescript-loader'
+declare module 'webpack-bundle-analyzer'
 declare module 'html-webpack-plugin'
+declare module 'webpack-parallel-uglify-plugin'
