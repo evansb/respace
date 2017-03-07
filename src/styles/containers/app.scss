@@ -9,13 +9,21 @@
 }
 
 #rs-sidenav {
-  background: $dark-gray1;
-}
-
-#rs-sidebar {
   background: $dark-gray4;
 }
 
 #rs-sidebar {
+  background: $dark-gray3;
+  padding: 0;
+}
+
+#rs-content {
   background: $light-gray5;
+  padding: 0;
+}
+
+#rs-user-status {
+  background: $dark-gray1;
+  height: 50px;
+  margin: 0;
 }
