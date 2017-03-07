@@ -26,7 +26,7 @@ const wdm = webpackDevMiddleware(compiler, {
   hot: true,
   lazy: false,
   publicPath: config.output.publicPath,
-  quiet: true,
+  quiet: false,
   stats: {
     colors: true
   }

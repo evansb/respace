@@ -32,6 +32,7 @@
     "css-loader": "^0.26.2",
     "express": "^4.15.2",
     "extract-text-webpack-plugin": "^2.1.0",
+    "file-loader": "^0.10.1",
     "html-webpack-plugin": "^2.28.0",
     "node-sass": "^4.5.0",
     "sass-loader": "^6.0.2",
@@ -41,6 +42,7 @@
     "tslint": "^4.5.1",
     "tslint-react": "^2.4.0",
     "typescript": "^2.2.1",
+    "url-loader": "^0.5.8",
     "webpack": "^2.2.1",
     "webpack-bundle-analyzer": "^2.3.0",
     "webpack-dev-middleware": "^1.10.1",
@@ -49,6 +51,7 @@
     "webpack-parallel-uglify-plugin": "^0.4.1"
   },
   "dependencies": {
+    "@blueprintjs/core": "^1.11.1",
     "@types/debug": "^0.0.29",
     "@types/react": "^15.0.14",
     "@types/react-dom": "^0.14.23",
@@ -56,6 +59,7 @@
     "babel-polyfill": "^6.23.0",
     "debug": "^2.6.1",
     "react": "^15.4.2",
+    "react-addons-css-transition-group": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-hot-loader": "next",
     "react-redux": "^5.0.3",
