@@ -4,6 +4,10 @@
 @import '~flexboxgrid/dist/flexboxgrid.css';
 @import '../helpers';
 
+.pt-navbar {
+  box-shadow: none;
+}
+
 #rs-app, #rs-root {
   height: 100vh;
 }
