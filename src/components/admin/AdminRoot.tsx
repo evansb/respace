@@ -1,15 +1,15 @@
 import * as React from 'react'
 
-import {Content} from '../../containers/Content'
-import {Sidebar} from '../../containers/Sidebar'
+import {Page} from '../../containers/Page'
 
-export class AdminRoot extends React.Component<void, void> {
-  render() {
-    return (
-      <div id="rs-root" className="row">
-        <Sidebar><h4>Admin Sidebar</h4></Sidebar>
-        <Content>{this.props.children}</Content>
-      </div>
-    )
-  }
+export interface IAdminRootProps {
+  children: React.ReactElement<any>
+}
+
+export function AdminRoot({children}: IAdminRootProps) {
+  return (
+    <Page sidebarComponent={<h4>Admin Sidebar</h4>}> 
+      {children}
+    </Page>
+  )
 }

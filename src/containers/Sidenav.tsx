@@ -1,6 +1,3 @@
-/**
- * Side Navigation Bar
- */
 import * as React from 'react'
 
 export function Sidenav() {

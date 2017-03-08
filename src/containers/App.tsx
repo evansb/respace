@@ -1,6 +1,3 @@
-/**
- * Main Container
- */
 import * as React from 'react'
 
 import {Sidebar} from './Sidebar'
