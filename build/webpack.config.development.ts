@@ -19,12 +19,17 @@ const hot = 'webpack-hot-middleware/client?path=' +
 const config: webpack.Configuration = {
   devtool: 'inline-source-map',
 
-  entry: [
-    'babel-polyfill',
-    'react-hot-loader/patch',
-    hot,
-    './src/index'
-  ],
+  entry: {
+    app: [
+      'babel-polyfill',
+      'react-hot-loader/patch',
+      hot,
+      './src/index'
+    ],
+    blueprintjs: [
+      './src/blueprintjs'
+    ]
+  },
 
   module: {
     rules: [
