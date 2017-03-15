@@ -1,6 +1,7 @@
 .awcache
 .uglifycache
 
+coverage
 node_modules
 npm-debug.log
 *.log
