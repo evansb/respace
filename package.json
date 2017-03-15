@@ -2,7 +2,7 @@
   "name": "respace",
   "version": "2.0.0",
   "description": "IDE for SourceSpace",
-  "main": "es5/index.js",
+  "main": "dist/app.bundle.js",
   "repository": "https://github.com/respace-js/respace.git",
   "author": {
     "name": "Evan Sebastian",
@@ -15,8 +15,10 @@
     "npm": ">=3.x"
   },
   "scripts": {
+    "clean": "rimraf dist .awcache .uglifycache coverage",
     "dev": "cross-env DEBUG=respace,express NODE_ENV=development ts-node -O '{\"module\":\"commonjs\",\"target\":\"es5\"}' bin/server.ts",
-    "bundle": "cross-env NODE_ENV=production ts-node -O '{\"module\":\"commonjs\",\"target\":\"es5\"}' bin/bundle.ts"
+    "bundle": "cross-env NODE_ENV=production ts-node -O '{\"module\":\"commonjs\",\"target\":\"es5\"}' bin/bundle.ts",
+    "test": "node --harmony_proxies node_modules/.bin/jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "devDependencies": {
     "@types/enzyme": "^2.7.5",
