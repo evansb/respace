@@ -13,7 +13,7 @@ export interface IAppProps {
   toggleSidebar: () => void
 }
 
-class App extends React.Component<any, any> {
+class App extends React.Component<IAppProps, any> {
   render() {
     return (
       <div id="rs-app">
@@ -21,7 +21,7 @@ class App extends React.Component<any, any> {
           isSidebarToggled={this.props.sidebarToggled}
           toggleSidebar={this.props.toggleSidebar} />
         <div className='row pt-dark'>
-          <Sidebar />
+          { this.props.sidebarToggled && <Sidebar /> }
           <Content />
         </div>
       </div>

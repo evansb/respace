@@ -14,7 +14,9 @@ export function Navbar({
   const toggleSidebarButton =
     <Button
       id='rs-toggle-sidebar'
-      className='pt-minimal'
+      className={classnames(
+        isSidebarToggled ? 'pt-intent-primary' : 'pt-minimal')
+      }
       onClick={toggleSidebar}
       iconName={isSidebarToggled ? 'one-column' : 'two-columns'} />
 
