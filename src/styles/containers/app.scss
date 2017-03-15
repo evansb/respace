@@ -2,17 +2,6 @@
 @import '~@blueprintjs/core/dist/variables';
 @import '~@blueprintjs/core/dist/blueprint.css';
 @import '~flexboxgrid/dist/flexboxgrid.css';
-@import '../helpers';
-
-.pt-navbar {
-  box-shadow: none;
-  padding-right: 2em;
-
-  .pt-navbar-heading {
-    font-weight: 500;
-    color: $dark-gray5;
-  }
-}
 
 #rs-app, #rs-root {
   height: 100vh;
@@ -25,6 +14,14 @@
 #rs-sidebar {
   background: $dark-gray3;
   padding: 0;
+  width: 200px;
+  height: 100vh;
+}
+
+@media(max-width: 800px) {
+  #rs-sidebar {
+    width: 50px;
+  }
 }
 
 #rs-content {

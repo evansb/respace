@@ -1,13 +1,8 @@
 import * as React from 'react'
 
-export interface ISidebarProps {
-  children?: React.ReactElement<any>
-}
-
-export function Sidebar({ children }: ISidebarProps) {
+export function Sidebar() {
   return (
-    <div id="rs-sidebar" className="col-sidebar">
-      {children}
+    <div id="rs-sidebar">
     </div>
   )
 }
