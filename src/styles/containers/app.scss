@@ -14,14 +14,8 @@
   background: $dark-gray3;
   padding: 0;
   padding-top: $pt-navbar-height;
-  width: 200px;
+  width: 250px;
   height: 100vh;
-}
-
-@media(max-width: 800px) {
-  #rs-sidebar {
-    width: 50px;
-  }
 }
 
 #rs-content {
