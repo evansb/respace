@@ -10,7 +10,7 @@ export class App extends React.Component<void, void> {
     return (
       <div id="rs-app">
         <Navbar />
-        <div className='row'>
+        <div className='row pt-dark'>
           <Sidebar />
           <Content />
         </div>

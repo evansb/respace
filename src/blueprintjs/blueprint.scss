@@ -1,3 +1,9 @@
 // Customize then Load Blueprint CSS
 @import 'variables';
 @import '~@blueprintjs/core/src/blueprint';
+
+.pt-navbar {
+  background: $dark-gray1;
+  box-shadow: none;
+  color: white;
+}
