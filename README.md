@@ -1,5 +1,7 @@
 ReSpace
 =========
+[![Build Status](https://travis-ci.org/evansb/respace.svg?branch=master)](https://travis-ci.org/evansb/respace)
+[![Coverage Status](https://coveralls.io/repos/github/evansb/respace/badge.svg?branch=master)](https://coveralls.io/github/evansb/respace?branch=master)
 
 Respace is a web based IDE for guided and interactive programming assignments.
 
