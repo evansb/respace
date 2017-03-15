@@ -58,7 +58,7 @@
     "webpack-parallel-uglify-plugin": "^0.4.1"
   },
   "dependencies": {
-    "@blueprintjs/core": "^1.11.1",
+    "@blueprintjs/core": "1.12.0",
     "@types/debug": "^0.0.29",
     "@types/react": "^15.0.14",
     "@types/react-dom": "^0.14.23",
