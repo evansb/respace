@@ -1,10 +1,12 @@
 import * as React from 'react'
-import {Navbar} from '../components/Navbar'
 
-export function Content({ children = undefined }) {
+export interface IContentProps {
+  children?: React.ReactElement<any>
+}
+
+export function Content({ children }: IContentProps) {
   return (
     <div id="rs-content" className="col-xs">
-      <Navbar></Navbar>
       {children}
     </div>
   )

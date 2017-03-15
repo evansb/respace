@@ -6,6 +6,12 @@
 
 .pt-navbar {
   box-shadow: none;
+  padding-right: 2em;
+
+  .pt-navbar-heading {
+    font-weight: 500;
+    color: $dark-gray5;
+  }
 }
 
 #rs-app, #rs-root {
