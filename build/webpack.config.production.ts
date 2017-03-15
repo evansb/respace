@@ -14,7 +14,10 @@ const merge = require('webpack-merge') // tslint:disable-line
 export default merge(baseConfig, {
   devtool: 'cheap-module-source-map',
 
-  entry: ['babel-polyfill', './src/index'],
+  entry: {
+    app: ['babel-polyfill', './src/index'],
+    blueprintjs: [ './src/blueprintjs' ]
+  },
 
   module: {
     rules: [
@@ -29,7 +32,7 @@ export default merge(baseConfig, {
   },
 
   output: {
-    filename: 'respace.bundle.js',
+    filename: '[name].bundle.js',
     path: path.join(__dirname, '../dist'),
     publicPath: '/'
   },
