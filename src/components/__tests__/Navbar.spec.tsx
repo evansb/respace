@@ -1,13 +1,14 @@
 import * as React from 'react'
 
 import { Button } from '@blueprintjs/core'
-import { shallow, mount } from 'enzyme'
+import { mount, shallow } from 'enzyme'
 import { INavbarProps, Navbar } from '../Navbar'
 
 describe('Navbar', () => {
+  const toggleSidebar = jest.fn()
   const mockProps: INavbarProps = {
     isSidebarToggled: true,
-    toggleSidebar: () => {return}
+    toggleSidebar
   }
 
   it('renders the correct id', () => {
@@ -19,6 +20,12 @@ describe('Navbar', () => {
     const navbar = shallow(<Navbar {...mockProps} />)
     expect(navbar.find('#rs-submit').length).toBe(1)
     expect(navbar.find('#rs-toggle-sidebar').length).toBe(1)
+  })
+
+  it('calls toggle sidebar when clicked', () => {
+    const navbar1 = shallow(<Navbar {...mockProps} />)
+    navbar1.find('#rs-toggle-sidebar').simulate('click')
+    expect(toggleSidebar.mock.calls.length).toBe(1)
   })
 
   it('renders the sidebar toggle button as active/inactive', () => {
