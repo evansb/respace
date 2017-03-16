@@ -25,6 +25,7 @@ export function SettingsDialog({
 
   return (
     <Dialog title='Settings' iconName='cog'
+            canOutsideClickClose={false}
             isOpen={isOpen} onClose={toggleDialogOpen}>
       <div className='pt-dialog-body'>
         {darkModeToggle}
