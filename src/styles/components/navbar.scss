@@ -1,0 +1,46 @@
+@import '../../blueprintjs/variables';
+
+.pt-navbar {
+  background: white;
+  box-shadow: none;
+  color: black;
+}
+
+.pt-navbar.pt-dark {
+  color: white;
+  background: $dark-gray1;
+}
+
+#rs-toggle-sidebar {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  top: 0;
+  left: 0;
+}
+
+.pt-align-right {
+  padding-right: 120px;
+}
+
+.pt-navbar-heading {
+  margin-left: 40px;
+  font-weight: 500;
+}
+
+#rs-submit {
+  position: absolute;
+  height: $pt-navbar-height;
+  top: 0;
+  right: 0;
+  width: 120px;
+}
+
+@media (max-width: 600px) {
+  #rs-submit {
+    width: 40px;
+    span {
+      display: none;
+    }
+  }
+}

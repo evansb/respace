@@ -1,0 +1,28 @@
+@import '../../blueprintjs/variables';
+
+#rs-sidebar {
+  background: $light-gray3;
+  padding-top: $pt-navbar-height;
+  width: 300px;
+  height: 100vh;
+
+  .pt-tree-node-icon {
+    color: $gray4;
+  }
+
+  .pt-tree-node.pt-tree-node-selected > .pt-tree-node-content {
+    background: $gray1;
+  }
+
+  .rs-sidebar-header {
+    margin-top: 5px;
+    margin-left: 20px;
+    font-weight: 500;
+    letter-spacing: -0.5px;
+    color: $gray1;
+  }
+}
+
+#rs-sidebar.pt-dark {
+  background: $dark-gray3;
+}

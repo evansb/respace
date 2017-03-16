@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { mount, shallow, render } from 'enzyme'
+import { mount, shallow } from 'enzyme'
 import { SettingsDialog } from '../SettingsDialog'
 
 describe('Settings Dialog', () => {

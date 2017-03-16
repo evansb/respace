@@ -1,30 +1,12 @@
 @import '~normalize.css/normalize.css';
 @import '~flexboxgrid/dist/flexboxgrid.css';
 @import '../../blueprintjs/variables';
+@import '../components/navbar';
+@import './sidebar';
 
 #rs-app {
   height: 100vh;
 }
-
-#rs-sidebar {
-  background: $light-gray3;
-  padding-top: $pt-navbar-height;
-  width: 300px;
-  height: 100vh;
-
-  .pt-tree-node-icon {
-    color: $gray4;
-  }
-
-  .pt-tree-node.pt-tree-node-selected > .pt-tree-node-content {
-    background: $gray1;
-  }
-}
-
-#rs-sidebar.pt-dark {
-  background: $dark-gray3;
-}
-
 
 #rs-content {
   background: $light-gray5;
@@ -35,56 +17,4 @@
 
 #rs-content.pt-dark {
   background: $dark-gray4;
-}
-
-#rs-user-status {
-  background: $dark-gray1;
-  height: 50px;
-  margin: 0;
-}
-
-.pt-align-right {
-  padding-right: 120px;
-}
-
-.pt-navbar-heading {
-  margin-left: 40px;
-  font-size: 0.95em !important;
-}
-
-.rs-sidebar-header {
-  margin-top: 5px;
-  margin-left: 20px;
-  font-weight: 500;
-  letter-spacing: -0.5px;
-  color: $gray1;
-}
-
-#rs-toggle-sidebar {
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  top: 0;
-  left: 0;
-}
-
-#rs-submit {
-  position: absolute;
-  height: $pt-navbar-height;
-  top: 0;
-  right: 0;
-  width: 120px;
-}
-
-@media (max-width: 600px) {
-  #rs-submit {
-    width: 40px;
-    span {
-      display: none;
-    }
-  }
-}
-
-.pt-navbar-heading {
-  font-weight: 500;
 }
