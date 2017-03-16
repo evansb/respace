@@ -1,6 +1,7 @@
 /// <reference path='./hmr.fix.d.ts' />
 import * as React from 'react'
 import { render } from 'react-dom'
+import initReactFastClick from 'react-fastclick'
 import { AppContainer } from 'react-hot-loader'
 import { Provider } from 'react-redux'
 
@@ -8,6 +9,8 @@ import App from './containers/App'
 import createStore from './store/createStore'
 
 import './styles/containers/app.scss'
+
+initReactFastClick()
 
 const container = document.getElementById('root') || document.body
 const store = createStore()

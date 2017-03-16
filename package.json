@@ -82,6 +82,7 @@
     "react": "^15.4.2",
     "react-addons-css-transition-group": "^15.4.2",
     "react-dom": "^15.4.2",
+    "react-fastclick": "^3.0.1",
     "react-hot-loader": "next",
     "react-redux": "^5.0.3",
     "redux": "^3.6.0",
