@@ -7,6 +7,7 @@ import { INavbarProps, Navbar } from '../Navbar'
 describe('Navbar', () => {
   const toggleSidebar = jest.fn()
   const mockProps: INavbarProps = {
+    isDarkMode: false,
     isSidebarToggled: true,
     toggleSidebar
   }
@@ -39,5 +40,13 @@ describe('Navbar', () => {
     const navbar2 = mount(<Navbar {...mockProps2} />)
     expect(navbar2.find('#rs-toggle-sidebar')
       .hasClass('pt-icon-two-columns')).toBe(true)
+  })
+
+  it('applies pt-dark on dark mode', () => {
+    const darkMode = Object.assign({}, mockProps, {
+      isDarkMode: true
+    })
+    const navbar = shallow(<Navbar {...darkMode} />)
+    expect(navbar.hasClass('pt-dark')).toBe(true)
   })
 })

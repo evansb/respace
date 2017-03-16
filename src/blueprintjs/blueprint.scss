@@ -3,7 +3,12 @@
 @import '~@blueprintjs/core/src/blueprint';
 
 .pt-navbar {
-  background: $dark-gray1;
+  background: white;
   box-shadow: none;
+  color: black;
+}
+
+.pt-navbar.pt-dark {
   color: white;
+  background: $dark-gray1;
 }

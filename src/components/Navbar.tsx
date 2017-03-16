@@ -3,12 +3,13 @@ import * as classnames from 'classnames'
 import * as React from 'react'
 
 export interface INavbarProps {
+  isDarkMode: boolean
   isSidebarToggled: boolean
   toggleSidebar: () => void
 }
 
 export function Navbar({
-  isSidebarToggled, toggleSidebar
+  isDarkMode, isSidebarToggled, toggleSidebar
 }: INavbarProps) {
 
   const toggleSidebarButton =
@@ -27,7 +28,11 @@ export function Navbar({
     </Button>
 
   return (
-    <nav id='rs-navbar' className='pt-navbar pt-fixed-top'>
+    <nav
+      id='rs-navbar'
+      className={classnames('pt-navbar', 'pt-fixed-top', {
+        'pt-dark': isDarkMode
+      })}>
       <div className="pt-navbar-group pt-align-left">
         {toggleSidebarButton}
         <div className="pt-navbar-heading">

@@ -14,6 +14,7 @@ describe('App container', () => {
   const createStore = createMockStore()
   const store = createStore({
     app: {
+      darkMode: false,
       sidebarToggled: true
     }
   })
