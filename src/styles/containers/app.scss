@@ -76,6 +76,15 @@
   width: 120px;
 }
 
+@media (max-width: 600px) {
+  #rs-submit {
+    width: 40px;
+    span {
+      display: none;
+    }
+  }
+}
+
 .pt-navbar-heading {
   font-weight: 500;
 }
