@@ -19,7 +19,7 @@ export function Navbar({
         isSidebarToggled ? 'pt-intent-primary' : 'pt-minimal')
       }
       onClick={toggleSidebar}
-      iconName={isSidebarToggled ? 'one-column' : 'two-columns'} />
+      iconName='list' />
 
   const submitButton =
     <Button id='rs-submit' iconName='upload'

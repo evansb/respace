@@ -32,14 +32,14 @@ describe('Navbar', () => {
   it('renders the sidebar toggle button as active/inactive', () => {
     const navbar1 = mount(<Navbar {...mockProps} />)
     expect(navbar1.find('#rs-toggle-sidebar')
-      .hasClass('pt-icon-one-column')).toBe(true)
+      .hasClass('pt-intent-primary')).toBe(true)
 
     const mockProps2 = Object.assign({}, mockProps, {
       isSidebarToggled: false
     })
     const navbar2 = mount(<Navbar {...mockProps2} />)
     expect(navbar2.find('#rs-toggle-sidebar')
-      .hasClass('pt-icon-two-columns')).toBe(true)
+      .hasClass('pt-intent-primary')).toBe(false)
   })
 
   it('applies pt-dark on dark mode', () => {
