@@ -9,13 +9,18 @@ export interface ISidebarProps {
   tasks: List<ITask>
   isSettingsDialogOpen: boolean
   isDarkMode: boolean
+  activeResource: string
+  activeResourceId: number
 
   toggleDarkMode: () => void
   toggleSettingsDialogOpen: () => void
+  setActiveResource: (resource: string, id: number) => void
 }
 
 export function Sidebar({
+  activeResource, activeResourceId,
   isSettingsDialogOpen, isDarkMode, tasks,
+  setActiveResource,
   toggleDarkMode, toggleSettingsDialogOpen
 }: ISidebarProps) {
 
@@ -32,25 +37,23 @@ export function Sidebar({
     </div>
   )
 
-  const assignmentRootNode: ITreeNode = {
+  const briefingNode: ITreeNode = {
     iconName: 'manual',
-    id: 'assignment-briefing',
+    id: 'briefing-0',
     isExpanded: true,
-    isSelected: true,
+    isSelected: activeResource === 'briefing',
     label: 'Mission Briefing'
   }
 
   const tasksNode = tasks.map((task: ITask) => ({
     iconName: 'circle',
-    id: `tasks-${task.id}`,
+    id: `task-${task.id}`,
     isExpanded: true,
+    isSelected: activeResource === 'task' && activeResourceId === task.id,
     label: task.title
   })).toJS()
 
-  const treeContents = [
-    assignmentRootNode
-  ].concat(tasksNode)
-
+  const treeContents = [briefingNode].concat(tasksNode)
 
   const settingsDialog = (
     <SettingsDialog
@@ -61,13 +64,25 @@ export function Sidebar({
     />
   )
 
+  const handleClickNode = (node: ITreeNode) => {
+    const resource = node.id.toString().split('-')[0]
+    const id = node.id.toString().split('-')[1]
+    if (resource === 'briefing') {
+      setActiveResource('briefing', 0)
+    } else if (resource === 'task') {
+      setActiveResource('task', parseInt(id, 10))
+    }
+  }
+
   return (
     <div id='rs-sidebar'
          className={classnames({
            'pt-dark': isDarkMode
          })}>
        {extraButtons}
-       <Tree contents={treeContents} />
+       <Tree 
+          onNodeClick={handleClickNode}
+          contents={treeContents} />
        {settingsDialog}
     </div>
   )

@@ -1,14 +1,17 @@
 import * as React from 'react'
 
-import { shallow } from 'enzyme'
+import { mount, shallow } from 'enzyme'
 import { List } from 'immutable'
 import { Task } from '../../reducers/taskReducer'
 import { Sidebar } from '../Sidebar'
 
 describe('Sidebar', () => {
   const props = {
+    activeResource: 'briefing',
+    activeResourceId: 0,
     isDarkMode: false,
     isSettingsDialogOpen: false,
+    setActiveResource: jest.fn(),
     tasks: List([
       new Task({
         description: 'Test task description',
@@ -26,7 +29,7 @@ describe('Sidebar', () => {
       })
     ]),
     toggleDarkMode: jest.fn(),
-    toggleSettingsDialogOpen: jest.fn()
+    toggleSettingsDialogOpen: jest.fn(),
   }
 
   it('renders with correct id', () => {

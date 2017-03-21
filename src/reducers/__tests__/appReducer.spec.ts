@@ -1,6 +1,6 @@
 import { appReducer, AppState, defaultParams } from '../appReducer'
 
-import { toggleDarkMode, toggleSettingsDialogOpen,
+import { setActiveResource, toggleDarkMode, toggleSettingsDialogOpen,
   toggleSidebar } from '../../actions/creators'
 
 describe('App reducer', () => {
@@ -32,5 +32,14 @@ describe('App reducer', () => {
     expect(nextState.settingsDialogOpen).toBe(true)
     nextState = appReducer(nextState, toggleSettingsDialogOpen())
     expect(nextState.settingsDialogOpen).toBe(false)
+  })
+
+  it('should handle setting active resource', () => {
+    const state = new AppState(defaultParams)
+    let nextState = appReducer(state, setActiveResource('task', 2))
+    expect(nextState.activeResource).toBe('task')
+    expect(nextState.activeResourceId).toBe(2)
+    nextState = appReducer(nextState, setActiveResource('briefing', 0))
+    expect(nextState.activeResource).toBe('briefing')
   })
 })

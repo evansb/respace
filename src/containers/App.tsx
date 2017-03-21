@@ -7,6 +7,7 @@ import { Sidebar } from './Sidebar'
 
 import {
   fetchTasks,
+  setActiveResource,
   toggleDarkMode,
   toggleSettingsDialogOpen,
   toggleSidebar
@@ -17,6 +18,8 @@ import { State } from '../store/shape'
 import { ITask } from '../types'
 
 export interface IAppProps {
+  activeResource: ('briefing' | 'task')
+  activeResourceId: number
   sidebarToggled: boolean
   darkMode: boolean
   settingsDialogOpen: boolean
@@ -25,6 +28,7 @@ export interface IAppProps {
   toggleSettingsDialogOpen: () => void
   toggleDarkMode: () => void
   toggleSidebar: () => void
+  setActiveResource: (resource: ('briefing' | 'task'), id: number) => void
 
   fetchTasks: () => void
 }
@@ -45,9 +49,12 @@ class App extends React.Component<IAppProps, any> {
         <div className='row'>
           { this.props.sidebarToggled &&
             <Sidebar
+              activeResource={this.props.activeResource}
+              activeResourceId={this.props.activeResourceId}
               tasks={this.props.tasks}
               isDarkMode={this.props.darkMode}
               isSettingsDialogOpen={this.props.settingsDialogOpen}
+              setActiveResource={this.props.setActiveResource}
               toggleSettingsDialogOpen={this.props.toggleSettingsDialogOpen}
               toggleDarkMode={this.props.toggleDarkMode} /> }
           <Content
@@ -61,6 +68,8 @@ class App extends React.Component<IAppProps, any> {
 
 export default connect(
   (state: State) => ({
+    activeResource: state.app.activeResource,
+    activeResourceId: state.app.activeResourceId,
     darkMode: state.app.darkMode,
     settingsDialogOpen: state.app.settingsDialogOpen,
     sidebarToggled: state.app.sidebarToggled,
@@ -70,6 +79,9 @@ export default connect(
   (dispatch: Dispatch<State>) => ({
     fetchTasks: () => {
       dispatch(fetchTasks())
+    },
+    setActiveResource: (resource: ('briefing' | 'task'), id: number) => {
+      dispatch(setActiveResource(resource, id))
     },
     toggleDarkMode: () => {
       dispatch(toggleDarkMode())

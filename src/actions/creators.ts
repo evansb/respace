@@ -2,6 +2,7 @@ import {
   FETCH_TASKS,
   FETCH_TASKS_START,
   FETCH_TASKS_SUCCESS,
+  SET_ACTIVE_RESOURCE,
   TOGGLE_DARK_MODE,
   TOGGLE_SETTINGS_DIALOG_OPEN,
   TOGGLE_SIDEBAR
@@ -30,4 +31,12 @@ export const fetchTasksStart = () => ({
 export const fetchTasksSuccess = (tasks: any[]) => ({
   payload: tasks,
   type: FETCH_TASKS_SUCCESS
+})
+
+export const setActiveResource = (resource: ('briefing' | 'task'), id: number) => ({
+  payload: {
+    resource,
+    id
+  },
+  type: SET_ACTIVE_RESOURCE
 })
