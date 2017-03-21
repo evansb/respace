@@ -1,9 +1,11 @@
 import { applyMiddleware, compose, createStore, Middleware,
   StoreEnhancer } from 'redux'
-import createSagaMiddleware from 'redux-saga'
+import createSagaMiddleware, { SagaIterator } from 'redux-saga'
+import { IInitializer } from '../initializer'
+import { createMainSaga } from '../sagas/mainSaga'
 import rootReducers from './reducers'
 
-export default (initialState = {}) => {
+export default (initializer: IInitializer, initialState = {}) => {
 
   let composeEnchancers = compose
 
@@ -29,6 +31,10 @@ export default (initialState = {}) => {
       store.replaceReducer(newReducers)
     })
   }
+
+  const mainSaga = createMainSaga(initializer)
+
+  sagaMiddleware.run(mainSaga)
 
   return store
 }

@@ -1,9 +1,12 @@
 import { Button, ITreeNode, Tree } from '@blueprintjs/core'
 import * as classnames from 'classnames'
+import { List } from 'immutable'
 import * as React from 'react'
 import { SettingsDialog } from '../components/SettingsDialog'
+import { ITask } from '../types'
 
 export interface ISidebarProps {
+  tasks: List<ITask>
   isSettingsDialogOpen: boolean
   isDarkMode: boolean
 
@@ -12,7 +15,7 @@ export interface ISidebarProps {
 }
 
 export function Sidebar({
-  isSettingsDialogOpen, isDarkMode,
+  isSettingsDialogOpen, isDarkMode, tasks,
   toggleDarkMode, toggleSettingsDialogOpen
 }: ISidebarProps) {
 
@@ -37,17 +40,17 @@ export function Sidebar({
     label: 'Mission Briefing'
   }
 
-  const tasksRootNode: ITreeNode = {
+  const tasksNode = tasks.map((task: ITask) => ({
     iconName: 'circle',
-    id: 'tasks-root',
+    id: `tasks-${task.id}`,
     isExpanded: true,
-    label: 'Values and Statements'
-  }
+    label: task.title
+  })).toJS()
 
   const treeContents = [
-    assignmentRootNode,
-    tasksRootNode
-  ]
+    assignmentRootNode
+  ].concat(tasksNode)
+
 
   const settingsDialog = (
     <SettingsDialog

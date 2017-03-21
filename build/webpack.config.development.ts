@@ -16,6 +16,8 @@ const publicPath = `http://localhost:${port}/`
 const hot = 'webpack-hot-middleware/client?path=' +
   publicPath + '__webpack_hmr'
 
+const entryPoint = process.env.EXAMPLE || 'demo'
+
 const config: webpack.Configuration = {
   devtool: 'inline-source-map',
 
@@ -24,7 +26,7 @@ const config: webpack.Configuration = {
       'babel-polyfill',
       'react-hot-loader/patch',
       hot,
-      './src/index'
+      path.resolve(__dirname, '../examples', entryPoint, 'index.ts')
     ],
     blueprintjs: [
       './src/blueprintjs'

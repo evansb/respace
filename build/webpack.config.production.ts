@@ -11,11 +11,13 @@ import baseConfig from './webpack.config.base'
 
 const merge = require('webpack-merge') // tslint:disable-line
 
+const entryPoint = process.env.EXAMPLE || 'demo'
+
 export default merge(baseConfig, {
   devtool: 'cheap-module-source-map',
 
   entry: {
-    app: ['babel-polyfill', './src/index'],
+    app: ['babel-polyfill', path.resolve(__dirname, '../examples', entryPoint, 'index.ts')],
     blueprintjs: [ './src/blueprintjs' ]
   },
 

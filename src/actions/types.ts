@@ -5,3 +5,5 @@ export const TOGGLE_SETTINGS_DIALOG_OPEN = 'app/TOGGLE_SETTINGS_DIALOG_OPEN'
 
 // Tasks
 export const FETCH_TASKS = 'tasks/FETCH_TASKS'
+export const FETCH_TASKS_START = 'tasks/FETCH_TASKS_START'
+export const FETCH_TASKS_SUCCESS = 'tasks/FETCH_TASKS_SUCCESS'
