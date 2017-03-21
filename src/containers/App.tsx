@@ -17,8 +17,7 @@ import {
 import { Briefing } from '../components/Briefing'
 import { Navbar } from '../components/Navbar'
 import { Task } from '../components/Task'
-import { State } from '../store/shape'
-import { ITask } from '../types'
+import { ITask, State } from '../types'
 
 export interface IAppProps {
   activeResource: ('briefing' | 'task')
