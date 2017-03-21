@@ -1,12 +1,30 @@
 import * as React from 'react'
 
 import { shallow } from 'enzyme'
+import { List } from 'immutable'
+import { Task } from '../../reducers/taskReducer'
 import { Sidebar } from '../Sidebar'
 
 describe('Sidebar', () => {
   const props = {
     isDarkMode: false,
     isSettingsDialogOpen: false,
+    tasks: List([
+      new Task({
+        description: 'Test task description',
+        fragment: 0,
+        guided: true,
+        id: 0,
+        title: 'Test Task'
+      }),
+      new Task({
+        description: 'Test task 2 description',
+        fragment: 4,
+        guided: true,
+        id: 1,
+        title: 'Test Task 2'
+      })
+    ]),
     toggleDarkMode: jest.fn(),
     toggleSettingsDialogOpen: jest.fn()
   }

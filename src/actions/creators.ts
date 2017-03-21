@@ -1,5 +1,7 @@
 import {
   FETCH_TASKS,
+  FETCH_TASKS_START,
+  FETCH_TASKS_SUCCESS,
   TOGGLE_DARK_MODE,
   TOGGLE_SETTINGS_DIALOG_OPEN,
   TOGGLE_SIDEBAR
@@ -19,4 +21,13 @@ export const toggleDarkMode = () => ({
 
 export const fetchTasks = () => ({
   type: FETCH_TASKS
+})
+
+export const fetchTasksStart = () => ({
+  type: FETCH_TASKS_START
+})
+
+export const fetchTasksSuccess = (tasks: any[]) => ({
+  payload: tasks,
+  type: FETCH_TASKS_SUCCESS
 })

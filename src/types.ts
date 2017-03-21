@@ -4,4 +4,5 @@ export interface ITask {
   title: string
   description: string
   fragment: number
+  guided: boolean
 }

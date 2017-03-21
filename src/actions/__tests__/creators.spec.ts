@@ -15,4 +15,22 @@ describe('App action creators', () => {
     expect(c.toggleDarkMode().type).toBe(
       types.TOGGLE_DARK_MODE)
   })
+
+  it('creates fetch tasks action', () => {
+    expect(c.fetchTasks().type).toBe(
+      types.FETCH_TASKS)
+  })
+
+  it('creates fetch tasks start action', () => {
+    expect(c.fetchTasksStart().type).toBe(
+      types.FETCH_TASKS_START)
+  })
+
+  it('creates fetch tasks success action', () => {
+    const tasks = ['test']
+    expect(c.fetchTasksSuccess(tasks)).toEqual({
+      payload: tasks,
+      type: types.FETCH_TASKS_SUCCESS
+    })
+  })
 })

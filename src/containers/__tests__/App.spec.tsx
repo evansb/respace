@@ -2,12 +2,15 @@ import * as React from 'react'
 import createMockStore from 'redux-mock-store'
 
 import { mount } from 'enzyme'
+import { List } from 'immutable'
 import { Provider } from 'react-redux'
+import { Action } from 'redux'
 
 import App from '../App'
 import { Content } from '../Content'
 import { Sidebar } from '../Sidebar'
 
+import { FETCH_TASKS } from '../../actions/types'
 import { Navbar } from '../../components/Navbar'
 
 describe('App container', () => {
@@ -16,7 +19,8 @@ describe('App container', () => {
     app: {
       darkMode: false,
       sidebarToggled: true
-    }
+    },
+    tasks: List()
   })
 
   const app = mount(
@@ -39,7 +43,8 @@ describe('App container', () => {
   const store2 = createStore({
     app: {
       sidebarToggled: false
-    }
+    },
+    tasks: List()
   })
 
   const app2 = mount(
@@ -50,5 +55,10 @@ describe('App container', () => {
 
   it('will not render sidebar if not toggled', () => {
     expect(app2.find(Sidebar)).toHaveLength(0)
+  })
+
+  it('dispatch FETCH_TASKS on mount', () => {
+    const actions = store2.getActions()
+    expect(actions.filter((a) => a.type === FETCH_TASKS)).toHaveLength(1)
   })
 })

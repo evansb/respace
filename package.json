@@ -18,7 +18,9 @@
     "clean": "rimraf dist .awcache .uglifycache coverage",
     "dev": "cross-env DEBUG=respace,express NODE_ENV=development ts-node -O '{\"module\":\"commonjs\",\"target\":\"es5\"}' bin/server.ts",
     "bundle": "cross-env NODE_ENV=production ts-node -O '{\"module\":\"commonjs\",\"target\":\"es5\"}' bin/bundle.ts",
-    "test": "node --harmony_proxies node_modules/.bin/jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    "test": "node_modules/.bin/jest --coverage", 
+    "test-ci": "npm run test && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "test-watch": "node_modules/.bin/jest --watch" 
   },
   "devDependencies": {
     "@types/enzyme": "^2.7.5",

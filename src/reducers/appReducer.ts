@@ -6,19 +6,19 @@ import {
   TOGGLE_SIDEBAR
 } from '../actions/types'
 
-type AppStateParams = {
+export type AppStateParams = {
   sidebarToggled?: boolean
   settingsDialogOpen?: boolean
   darkMode?: boolean
 }
 
-const defaultParams: AppStateParams = {
+export const defaultParams: AppStateParams = {
   darkMode: false,
   settingsDialogOpen: false,
   sidebarToggled: true
 }
 
-class AppState extends Record(defaultParams) {
+export class AppState extends Record(defaultParams) {
   darkMode: boolean
   sidebarToggled: boolean
   settingsDialogOpen: boolean
@@ -34,7 +34,7 @@ class AppState extends Record(defaultParams) {
 
 const initialState = new AppState(defaultParams)
 
-const appReducer = (state = initialState, action: Action): AppState => {
+export const appReducer = (state = initialState, action: Action): AppState => {
   switch (action.type) {
     case TOGGLE_SIDEBAR:
       return state.with({ sidebarToggled: !state.sidebarToggled })
@@ -46,5 +46,3 @@ const appReducer = (state = initialState, action: Action): AppState => {
       return state
   }
 }
-
-export { appReducer, AppState, AppStateParams }

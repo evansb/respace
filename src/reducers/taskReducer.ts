@@ -6,13 +6,15 @@ import { ITask } from '../types'
 const defaultTask = {
   experiencePoint: 0,
   fragments: List(),
+  guided: false,
   id: 0,
   title: ''
 }
 
-class Task extends Record(defaultTask) {
+export class Task extends Record(defaultTask) {
   id: number
   title: string
+  guided: boolean
   description: string
   fragment: number
 
