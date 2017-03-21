@@ -50,4 +50,12 @@ describe('Sidebar', () => {
     sidebar.find('#rs-open-settings-dialog').simulate('click')
     expect(props.toggleSettingsDialogOpen.mock.calls.length).toBe(1)
   })
+
+  it('set active resource on tree node click', () => {
+    const sidebar = mount(<Sidebar {...props} ></Sidebar>)
+    sidebar.find('li.pt-tree-node > div').last().simulate('click')
+    expect(props.setActiveResource).toHaveBeenCalledWith('task', 1)
+    sidebar.find('li.pt-tree-node > div').first().simulate('click')
+    expect(props.setActiveResource).toHaveBeenCalledWith('briefing', 0)
+  })
 })
