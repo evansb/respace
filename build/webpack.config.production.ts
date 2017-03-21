@@ -43,8 +43,9 @@ export default merge(baseConfig, {
     publicPath: '/'
   },
 
-  plugins: [
-    new BundleAnalyzerPlugin(),
+  plugins: (process.env.SKIP_BA ? [] : [
+    new BundleAnalyzerPlugin()
+  ]).concat([
     new ParallelUglifyPlugin({
       cacheDir: path.resolve(__dirname, '../.uglifycache')
     }),
@@ -63,5 +64,5 @@ export default merge(baseConfig, {
         NODE_ENV: JSON.stringify('production')
       }
     })
-  ]
+  ])
 })
