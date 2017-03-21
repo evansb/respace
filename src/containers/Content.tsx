@@ -7,7 +7,7 @@ import { Interpreter } from '../components/Interpreter'
 
 export interface IContentProps {
   activeWidget: string
-  isDarkMode: boolean
+  darkMode: boolean
   children?: React.ReactElement<any>
   setActiveWidget: (widget: ('comments' | 'none' | 'interpreter')) => void
 }
@@ -16,7 +16,7 @@ export function Content({
   activeWidget,
   children,
   setActiveWidget,
-  isDarkMode
+  darkMode
 }: IContentProps) {
   const childClassName = activeWidget === 'none' ? 'col-xs' : 'col-xs-7'
 
@@ -30,7 +30,7 @@ export function Content({
 
   return (
     <div id="rs-content" className={classnames('row', {
-           'pt-dark': isDarkMode
+           'pt-dark': darkMode
          })}>
       <div className={childClassName}>
         { children }

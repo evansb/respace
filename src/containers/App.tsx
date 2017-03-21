@@ -64,28 +64,13 @@ export class App extends React.Component<IAppProps, any> {
   render() {
     return (
       <div id="rs-app">
-        <Navbar
-          activeWidget={this.props.activeWidget}
-          isDarkMode={this.props.darkMode}
-          isSidebarToggled={this.props.sidebarToggled}
-          toggleSidebar={this.props.toggleSidebar}
-          setActiveWidget={this.props.setActiveWidget} />
+        <Navbar {...this.props} />
         <div className='row'>
-          { this.props.sidebarToggled &&
-            <Sidebar
-              activeResource={this.props.activeResource}
-              activeResourceId={this.props.activeResourceId}
-              tasks={this.props.tasks}
-              isDarkMode={this.props.darkMode}
-              isSettingsDialogOpen={this.props.settingsDialogOpen}
-              setActiveResource={this.props.setActiveResource}
-              toggleSettingsDialogOpen={this.props.toggleSettingsDialogOpen}
-              toggleDarkMode={this.props.toggleDarkMode} /> }
+          { this.props.sidebarToggled && <Sidebar {...this.props} /> }
           <div className='col-xs'>
-            <Content
-                activeWidget={this.props.activeWidget}
+            <Content activeWidget={this.props.activeWidget}
                 setActiveWidget={this.props.setActiveWidget}
-                isDarkMode={this.props.darkMode}>
+                darkMode={this.props.darkMode}>
               { this.content }
             </Content>
           </div>

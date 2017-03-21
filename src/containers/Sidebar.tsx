@@ -7,8 +7,8 @@ import { ITask } from '../types'
 
 export interface ISidebarProps {
   tasks: List<ITask>
-  isSettingsDialogOpen: boolean
-  isDarkMode: boolean
+  settingsDialogOpen: boolean
+  darkMode: boolean
   activeResource: string
   activeResourceId: number
 
@@ -19,7 +19,7 @@ export interface ISidebarProps {
 
 export function Sidebar({
   activeResource, activeResourceId,
-  isSettingsDialogOpen, isDarkMode, tasks,
+  settingsDialogOpen, darkMode, tasks,
   setActiveResource,
   toggleDarkMode, toggleSettingsDialogOpen
 }: ISidebarProps) {
@@ -56,8 +56,8 @@ export function Sidebar({
 
   const settingsDialog = (
     <SettingsDialog
-      isOpen={isSettingsDialogOpen}
-      isDarkMode={isDarkMode}
+      isOpen={settingsDialogOpen}
+      isDarkMode={darkMode}
       toggleDarkMode={toggleDarkMode}
       toggleDialogOpen={toggleSettingsDialogOpen}
     />
@@ -76,7 +76,7 @@ export function Sidebar({
   return (
     <div id='rs-sidebar'
          className={classnames({
-           'pt-dark': isDarkMode
+           'pt-dark': darkMode
          })}>
        {extraButtons}
        <Tree

@@ -4,15 +4,17 @@ import * as React from 'react'
 
 export interface INavbarProps {
   activeWidget: string
-  isDarkMode: boolean
-  isSidebarToggled: boolean
+  darkMode: boolean
+  sidebarToggled: boolean
   toggleSidebar: () => void
   setActiveWidget: (widget: ('comments' | 'none' | 'interpreter')) => void
 }
 
 export function Navbar({
   activeWidget,
-  isDarkMode, isSidebarToggled, toggleSidebar,
+  darkMode,
+  sidebarToggled,
+  toggleSidebar,
   setActiveWidget
 }: INavbarProps) {
 
@@ -20,7 +22,7 @@ export function Navbar({
     <Button
       id='rs-toggle-sidebar'
       className={classnames(
-        isSidebarToggled ? 'pt-intent-primary' : 'pt-minimal')
+        sidebarToggled ? 'pt-intent-primary' : 'pt-minimal')
       }
       onClick={toggleSidebar}
       iconName='list' />
@@ -45,12 +47,12 @@ export function Navbar({
       Comments
     </Button>
 
+  const classNames = classnames('pt-navbar', 'pt-fixed-top', {
+    'pt-dark': darkMode
+  })
+
   return (
-    <nav
-      id='rs-navbar'
-      className={classnames('pt-navbar', 'pt-fixed-top', {
-        'pt-dark': isDarkMode
-      })}>
+    <nav id='rs-navbar' className={classNames}>
       <div className="pt-navbar-group pt-align-left">
         {toggleSidebarButton}
         <div className="pt-navbar-heading">

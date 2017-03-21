@@ -9,9 +9,9 @@ describe('Sidebar', () => {
   const props = {
     activeResource: 'briefing',
     activeResourceId: 0,
-    isDarkMode: false,
-    isSettingsDialogOpen: false,
+    darkMode: false,
     setActiveResource: jest.fn(),
+    settingsDialogOpen: false,
     tasks: List([
       new Task({
         description: 'Test task description',
@@ -38,9 +38,7 @@ describe('Sidebar', () => {
   })
 
   it('applies pt-dark on dark mode', () => {
-    const darkMode = Object.assign({}, props, {
-      isDarkMode: true
-    })
+    const darkMode = Object.assign({}, props, { darkMode: true })
     const sidebar = shallow(<Sidebar {...darkMode} ></Sidebar>)
     expect(sidebar.hasClass('pt-dark')).toBe(true)
   })

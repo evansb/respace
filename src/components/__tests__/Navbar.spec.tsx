@@ -9,8 +9,8 @@ describe('Navbar', () => {
   const setActiveWidget = jest.fn()
   const mockProps: INavbarProps = {
     activeWidget: 'none',
-    isDarkMode: false,
-    isSidebarToggled: true,
+    darkMode: false,
+    sidebarToggled: true,
     setActiveWidget,
     toggleSidebar
   }
@@ -37,18 +37,14 @@ describe('Navbar', () => {
     expect(navbar1.find('#rs-toggle-sidebar')
       .hasClass('pt-intent-primary')).toBe(true)
 
-    const mockProps2 = Object.assign({}, mockProps, {
-      isSidebarToggled: false
-    })
+    const mockProps2 = Object.assign({}, mockProps, { sidebarToggled: false })
     const navbar2 = mount(<Navbar {...mockProps2} />)
     expect(navbar2.find('#rs-toggle-sidebar')
       .hasClass('pt-intent-primary')).toBe(false)
   })
 
   it('applies pt-dark on dark mode', () => {
-    const darkMode = Object.assign({}, mockProps, {
-      isDarkMode: true
-    })
+    const darkMode = Object.assign({}, mockProps, { darkMode: true })
     const navbar = shallow(<Navbar {...darkMode} />)
     expect(navbar.hasClass('pt-dark')).toBe(true)
   })

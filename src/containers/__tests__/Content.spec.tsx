@@ -8,7 +8,7 @@ describe('Content container', () => {
   const setActiveWidget = jest.fn()
 
   let content = shallow(<Content
-    isDarkMode={false}
+    darkMode={false}
     setActiveWidget={setActiveWidget}
     activeWidget='none'
   >Dummy Child</Content>)
@@ -26,7 +26,7 @@ describe('Content container', () => {
   })
 
   content = shallow(<Content
-    isDarkMode={false}
+    darkMode={false}
     setActiveWidget={setActiveWidget}
     activeWidget='interpreter'
   >Dummy Child</Content>)
