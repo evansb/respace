@@ -38,7 +38,7 @@ export interface IAppProps {
   fetchTasks: () => void
 }
 
-class App extends React.Component<IAppProps, any> {
+export class App extends React.Component<IAppProps, any> {
 
   componentDidMount() {
     this.props.fetchTasks()

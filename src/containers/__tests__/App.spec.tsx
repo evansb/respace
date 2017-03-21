@@ -1,20 +1,23 @@
 import * as React from 'react'
 import createMockStore from 'redux-mock-store'
 
-import { mount } from 'enzyme'
+import { mount, shallow } from 'enzyme'
 import { List } from 'immutable'
 import { Provider } from 'react-redux'
 import { Action } from 'redux'
 
 import App from '../App'
+import { App as NApp } from '../App'
 import { Content } from '../Content'
 import { Sidebar } from '../Sidebar'
 
 import { FETCH_TASKS } from '../../actions/types'
 import { Navbar } from '../../components/Navbar'
+import { ITask } from '../../types'
 
 describe('App container', () => {
   const createStore = createMockStore()
+
   const store = createStore({
     app: {
       darkMode: false,
@@ -23,11 +26,20 @@ describe('App container', () => {
     tasks: List()
   })
 
-  const app = mount(
-    <Provider store={store as any}>
-      <App></App>
-    </Provider>
-  )
+  const app = shallow(<NApp
+    activeResource='briefing'
+    activeResourceId={0}
+    activeWidget='none'
+    sidebarToggled={true}
+    darkMode={true}
+    settingsDialogOpen={false}
+    tasks={List<ITask>()}
+    toggleSettingsDialogOpen={jest.fn()}
+    toggleDarkMode={jest.fn()}
+    toggleSidebar={jest.fn()}
+    setActiveResource={jest.fn()} 
+    setActiveWidget={jest.fn()}
+    fetchTasks={jest.fn()} ></NApp>)
 
   it('renders with correct id', () => {
     expect(app.find('#rs-app').length).toBe(1)
