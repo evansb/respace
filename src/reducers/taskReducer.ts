@@ -4,8 +4,8 @@ import { FETCH_TASKS_SUCCESS } from '../actions/types'
 import { ITask } from '../types'
 
 const defaultTask = {
-  experiencePoint: 0,
-  fragments: List(),
+  description: '',
+  fragment: 0,
   guided: false,
   id: 0,
   title: ''

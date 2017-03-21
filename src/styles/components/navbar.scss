@@ -36,11 +36,24 @@
   width: 120px;
 }
 
-@media (max-width: 600px) {
-  #rs-submit {
+#rs-toggle-interpreter {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+#rs-toggle-comments {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+@media (max-width: 800px) {
+  #rs-submit, #rs-toggle-interpreter, #rs-toggle-comments {
     width: 40px;
     span {
       display: none;
     }
+  }
+  .pt-align-right {
+    padding-right: 40px;
   }
 }

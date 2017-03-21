@@ -21,6 +21,10 @@
     letter-spacing: -0.5px;
     color: $gray1;
   }
+
+  .pt-tree-node.pt-tree-node-selected > .pt-tree-node-content {
+    background: $pt-intent-primary;
+  }
 }
 
 #rs-sidebar.pt-dark {

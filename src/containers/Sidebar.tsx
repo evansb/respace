@@ -32,7 +32,6 @@ export function Sidebar({
           iconName='cog'
           onClick={toggleSettingsDialogOpen}
           className='pt-minimal'/>
-        <Button iconName='help' className='pt-minimal' />
       </div>
     </div>
   )
@@ -80,7 +79,7 @@ export function Sidebar({
            'pt-dark': isDarkMode
          })}>
        {extraButtons}
-       <Tree 
+       <Tree
           onNodeClick={handleClickNode}
           contents={treeContents} />
        {settingsDialog}

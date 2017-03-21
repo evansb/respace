@@ -2,6 +2,7 @@
 @import '~flexboxgrid/dist/flexboxgrid.css';
 @import '../../blueprintjs/variables';
 @import '../components/navbar';
+@import '../components/task';
 @import './sidebar';
 
 #rs-app {
@@ -16,5 +17,5 @@
 }
 
 #rs-content.pt-dark {
-  background: $dark-gray4;
+  background: $dark-gray2;
 }

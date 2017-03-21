@@ -6,9 +6,12 @@ import { INavbarProps, Navbar } from '../Navbar'
 
 describe('Navbar', () => {
   const toggleSidebar = jest.fn()
+  const setActiveWidget = jest.fn()
   const mockProps: INavbarProps = {
+    activeWidget: 'none',
     isDarkMode: false,
     isSidebarToggled: true,
+    setActiveWidget,
     toggleSidebar
   }
 
@@ -48,5 +51,18 @@ describe('Navbar', () => {
     })
     const navbar = shallow(<Navbar {...darkMode} />)
     expect(navbar.hasClass('pt-dark')).toBe(true)
+  })
+
+  it('renders the comments and interpreter toggle', () => {
+    const navbar = mount(<Navbar {...mockProps} />)
+    expect(navbar.find('#rs-toggle-comments').length).toBe(1)
+    expect(navbar.find('#rs-toggle-interpreter').length).toBe(1)
+  })
+
+  it('calls setActiveWidget on click', () => {
+    const navbar = mount(<Navbar {...mockProps} />)
+    navbar.find('#rs-toggle-comments').simulate('click')
+    navbar.find('#rs-toggle-interpreter').simulate('click')
+    expect(setActiveWidget.mock.calls.length).toBe(2)
   })
 })

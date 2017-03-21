@@ -3,6 +3,7 @@ import {
   FETCH_TASKS_START,
   FETCH_TASKS_SUCCESS,
   SET_ACTIVE_RESOURCE,
+  SET_ACTIVE_WIDGET,
   TOGGLE_DARK_MODE,
   TOGGLE_SETTINGS_DIALOG_OPEN,
   TOGGLE_SIDEBAR
@@ -40,3 +41,9 @@ export const setActiveResource = (resource: ('briefing' | 'task'), id: number) =
   },
   type: SET_ACTIVE_RESOURCE
 })
+
+export const setActiveWidget = (widget: ('none' | 'interpreter' | 'comments')) => ({
+  payload: widget,
+  type: SET_ACTIVE_WIDGET
+})
+

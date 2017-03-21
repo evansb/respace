@@ -1,0 +1,44 @@
+.rs-task {
+  max-width: 800px;
+  padding: 30px;
+
+  h1 {
+    font-size: 24px;
+  }
+  h2 {
+    font-size: 22px;
+  }
+  h3 {
+    font-size: 20px;
+  }
+  h4 {
+    font-size: 18;
+  }
+
+  .rs-xp-inline {
+    background: $green3;
+    color: white;
+    border: 2px solid $green2;
+    border-radius: 0.2em;
+    padding: 0px 5px;
+    margin-right: 10px;
+    font-size: 0.8em;
+  }
+}
+
+.rs-task-widgets {
+  background: $gray2;
+  position: relative;
+  height: 95vh;
+  padding: 30px;
+}
+
+.rs-widget-close {
+  position: absolute;
+  right: 10px;
+  top: 0px;
+}
+
+.pt-dark > .col-xs > .rs-task-widgets {
+  background: $dark-gray1;
+}

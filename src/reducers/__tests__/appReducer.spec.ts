@@ -1,7 +1,12 @@
 import { appReducer, AppState, defaultParams } from '../appReducer'
 
-import { setActiveResource, toggleDarkMode, toggleSettingsDialogOpen,
-  toggleSidebar } from '../../actions/creators'
+import {
+  setActiveResource,
+  setActiveWidget,
+  toggleDarkMode,
+  toggleSettingsDialogOpen,
+  toggleSidebar
+} from '../../actions/creators'
 
 describe('App reducer', () => {
 
@@ -41,5 +46,11 @@ describe('App reducer', () => {
     expect(nextState.activeResourceId).toBe(2)
     nextState = appReducer(nextState, setActiveResource('briefing', 0))
     expect(nextState.activeResource).toBe('briefing')
+  })
+
+  it('should handle setting active widget', () => {
+    const state = new AppState(defaultParams)
+    let nextState = appReducer(state, setActiveWidget('comments'))
+    expect(nextState.activeWidget).toBe('comments')
   })
 })
